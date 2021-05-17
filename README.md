@@ -1,20 +1,16 @@
 # Introduction 
-TODO: Give a short introduction of your project. Let this section explain the objectives or the motivation behind this project. 
+This is the best Reddit clone you'll ever see.
 
 # Getting Started
-TODO: Guide users through getting your code up and running on their own system. In this section you can talk about:
-1.	Installation process
-2.	Software dependencies
-3.	Latest releases
-4.	API references
+### Backend
+Install `poetry` and run `poetry install` from the `backend` directory (where the `pyproject.toml` file is located).
 
-# Build and Test
-TODO: Describe and show how to build your code and run the tests. 
+Copy the contents of the `dot_env_example` to a new file called `.env` in the same directory and adjust credentials for production and testing DB.
 
-# Contribute
-TODO: Explain how other users and developers can contribute to make your code better. 
+To run, execute `poetry run app/main.py` from the `backend` directory.
 
-If you want to learn more about creating good readme files then refer the following [guidelines](https://docs.microsoft.com/en-us/azure/devops/repos/git/create-a-readme?view=azure-devops). You can also seek inspiration from the below readme files:
-- [ASP.NET Core](https://github.com/aspnet/Home)
-- [Visual Studio Code](https://github.com/Microsoft/vscode)
-- [Chakra Core](https://github.com/Microsoft/ChakraCore)
+To resolve the modules correctly in your IDE, the `backend` directory needs to be in your `PYTHONPATH` (e.g. [instructions for PyCharm](https://www.jetbrains.com/help/pycharm/installing-uninstalling-and-reloading-interpreter-paths.html)).
+
+# Test
+### Backend
+Run `poetry run pytest` to run all tests, see the documentation of `pytest` for running specific tests.
