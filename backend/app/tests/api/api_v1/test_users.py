@@ -1,7 +1,7 @@
 from fastapi.testclient import TestClient
 
 from app import models
-from app.config import settings
+from app.core.config import settings
 
 
 def register_user(client, email, username, password):

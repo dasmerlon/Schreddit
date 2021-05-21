@@ -20,7 +20,7 @@ class CRUDBase(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
         self.model = model
 
     @db.read_transaction
-    def get(self, *, uid: UniqueIdProperty) -> Optional[ModelType]:
+    def get(self, uid: UniqueIdProperty) -> Optional[ModelType]:
         """
         Get one node from the model class.
         :param uid: the unique identifier of the node to get
@@ -70,7 +70,7 @@ class CRUDBase(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
         return db_obj
 
     @db.write_transaction
-    def remove(self, *, uid: UniqueIdProperty) -> Optional[ModelType]:
+    def remove(self, uid: UniqueIdProperty) -> Optional[ModelType]:
         """
         Remove a node.
         :param uid: the unique identifier of the node to be removed

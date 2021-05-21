@@ -3,6 +3,7 @@ from typing import Any, Dict, Optional, Union
 from neomodel import db
 from pydantic import EmailStr
 
+from app.core.security import get_password_hash, verify_password
 from app.crud.base import CRUDBase
 from app.models import User
 from app.schemas import UserCreate, UserUpdate
@@ -36,7 +37,7 @@ class CRUDUser(CRUDBase[User, UserCreate, UserUpdate]):
         :param obj_in: the `UserCreate` schema
         :return: the `User` model of the created user
         """
-        hashed_password = obj_in.password  # TODO: hash password
+        hashed_password = get_password_hash(obj_in.password)
         db_obj = self.model(
             email=obj_in.email,
             username=obj_in.username,
@@ -62,6 +63,14 @@ class CRUDUser(CRUDBase[User, UserCreate, UserUpdate]):
             del update_data["password"]
             update_data["hashed_password"] = hashed_password
         return super().update(db, db_obj=db_obj, obj_in=update_data)
+
+    def authenticate(self, email: EmailStr, password: str) -> Optional[User]:
+        user = self.get_by_email(email)
+        if not user:
+            return None
+        if not verify_password(password, user.hashed_password):
+            return None
+        return user
 
 
 user = CRUDUser(User)

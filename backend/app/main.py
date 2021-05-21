@@ -4,7 +4,7 @@ import uvicorn
 from fastapi import FastAPI
 
 from app.api.api_v1.main import router
-from app.config import settings
+from app.core.config import settings
 from app.db.init_db import init_neo4j
 from app.sessions.init_db import init_redis
 
