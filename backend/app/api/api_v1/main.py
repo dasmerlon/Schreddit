@@ -1,6 +1,6 @@
 from fastapi import APIRouter
 
-from app.api.api_v1.endpoints import subreddits, auth, account, users, submit
+from app.api.api_v1.endpoints import account, auth, submit, subreddits, users
 
 router = APIRouter()
 router.include_router(account.router, prefix="/account")

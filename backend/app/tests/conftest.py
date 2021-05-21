@@ -1,10 +1,11 @@
 from typing import Generator
 
 import pytest
-from app.config import settings
 from fastapi.testclient import TestClient
+from neomodel import clear_neo4j_database, config, db
+
+from app.config import settings
 from app.main import app
-from neomodel import config, clear_neo4j_database, db
 
 
 @pytest.fixture(scope="session")

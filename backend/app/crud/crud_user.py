@@ -1,9 +1,11 @@
 from typing import Any, Dict, Optional, Union
-from pydantic import EmailStr
+
 from neomodel import db
+from pydantic import EmailStr
+
+from app.crud.base import CRUDBase
 from app.models import User
 from app.schemas import UserCreate, UserUpdate
-from app.crud.base import CRUDBase
 
 
 class CRUDUser(CRUDBase[User, UserCreate, UserUpdate]):
@@ -35,9 +37,11 @@ class CRUDUser(CRUDBase[User, UserCreate, UserUpdate]):
         :return: the `User` model of the created user
         """
         hashed_password = obj_in.password  # TODO: hash password
-        db_obj = self.model(email=obj_in.email,
-                            username=obj_in.username,
-                            hashed_password=hashed_password)
+        db_obj = self.model(
+            email=obj_in.email,
+            username=obj_in.username,
+            hashed_password=hashed_password,
+        )
         db_obj.save()
         return db_obj
 

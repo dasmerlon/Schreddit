@@ -1,10 +1,8 @@
-from typing import Any, Dict, Generic, List, Optional, Type, TypeVar, Union
+from typing import Any, Dict, Generic, Optional, Type, TypeVar, Union
 
 from fastapi.encoders import jsonable_encoder
+from neomodel import NodeSet, StructuredNode, UniqueIdProperty, db
 from pydantic import BaseModel
-
-from neomodel import db
-from neomodel import StructuredNode, UniqueIdProperty, NodeSet
 
 ModelType = TypeVar("ModelType", bound=StructuredNode)
 CreateSchemaType = TypeVar("CreateSchemaType", bound=BaseModel)
@@ -51,10 +49,8 @@ class CRUDBase(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
         return db_obj
 
     @db.write_transaction
-    def update(self,
-               *,
-               db_obj: ModelType,
-               obj_in: Union[UpdateSchemaType, Dict[str, Any]]
+    def update(
+        self, *, db_obj: ModelType, obj_in: Union[UpdateSchemaType, Dict[str, Any]]
     ) -> ModelType:
         """
         Update a node.

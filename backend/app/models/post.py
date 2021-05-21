@@ -1,9 +1,4 @@
-from neomodel import StructuredNode, StructuredRel, RelationshipTo
-from neomodel import (DateTimeProperty,
-                      EmailProperty,
-                      StringProperty,
-                      UniqueIdProperty)
-
+from neomodel import StructuredNode, UniqueIdProperty
 
 # Relationships
 

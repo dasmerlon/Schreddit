@@ -1,7 +1,7 @@
 # Introduction 
 This is the best Reddit clone you'll ever see.
 
-# Getting Started
+# Run
 ### Backend
 Install `poetry` and run `poetry install` from the `backend` directory (where the `pyproject.toml` file is located).
 
@@ -13,4 +13,11 @@ To resolve the modules correctly in your IDE, the `backend` directory needs to b
 
 # Test
 ### Backend
-Run `poetry run pytest` to run all tests, see the documentation of `pytest` for running specific tests.
+Run `scripts/test.sh` to run all tests including a coverage report.
+
+# Develop
+### Backend
+For code linting run `scripts/lint.sh` from the `backend` directory.
+
+Before commiting, run `scripts/format.sh` from the `backend` directory
+It does automatic code formatting, import sorting, and removes unused imports.

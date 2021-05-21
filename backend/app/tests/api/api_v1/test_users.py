@@ -1,15 +1,13 @@
 from fastapi.testclient import TestClient
-from app.config import settings
+
 from app import models
+from app.config import settings
 
 
 def register_user(client, email, username, password):
-    payload = {
-        "email": email,
-        "username": username,
-        "password": password
-    }
+    payload = {"email": email, "username": username, "password": password}
     return client.post(f"{settings.API_V1_STR}/users/register", json=payload)
+
 
 def test_register_user(client: TestClient, database):
     email = "test@example.com"
