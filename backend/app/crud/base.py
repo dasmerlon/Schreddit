@@ -26,7 +26,7 @@ class CRUDBase(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
         :param uid: the unique identifier of the node to get
         :return: the requested node if it exists, else None
         """
-        return self.model.get_or_none(uid=uid)
+        return self.model.nodes.get_or_none(uid=uid)
 
     @db.read_transaction
     def get_all(self) -> NodeSet:

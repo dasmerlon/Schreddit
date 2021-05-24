@@ -5,7 +5,7 @@ from jose import jwt
 from app import crud, models, schemas
 from app.core.config import settings
 
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl=f"{settings.API_V1_STR}/auth/token")
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl=f"{settings.API_V1_STR}/auth/login")
 
 
 def get_current_user(token: str = Depends(oauth2_scheme)) -> models.User:

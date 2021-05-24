@@ -10,7 +10,7 @@ from app.core.config import settings
 router = APIRouter()
 
 
-@router.post("/token", response_model=schemas.Token)
+@router.post("/login", response_model=schemas.Token)
 def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends()):
     user = crud.user.authenticate(email=form_data.username, password=form_data.password)
     if not user:
