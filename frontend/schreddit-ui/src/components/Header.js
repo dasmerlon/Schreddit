@@ -252,7 +252,7 @@ export default function PrimarySearchAppBar() {
                     </div>
                     <div className={classes.grow} />
                     <div className={classes.sectionDesktop}>
-                        <Button variant="outlined" aria-label="login button" style={{ margin: '7px' }}  color="inherit">
+                        <Button variant="outlined" aria-label="login button" style={{ margin: '7px' }} color="inherit">
                             Login
                         </Button>
 
@@ -276,7 +276,6 @@ export default function PrimarySearchAppBar() {
                                     onChange={handleEmailChange}
                                 />
                                 <TextField
-                                    autoFocus
                                     margin="dense"
                                     id="username"
                                     label="Username"
@@ -285,7 +284,6 @@ export default function PrimarySearchAppBar() {
                                     onChange={handleUsernameChange}
                                 />
                                 <TextField
-                                    autoFocus
                                     margin="dense"
                                     id="password"
                                     label="Password"
