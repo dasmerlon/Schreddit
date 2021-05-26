@@ -1,4 +1,5 @@
 import React from 'react';
+import axios from 'axios';
 import { fade, makeStyles } from '@material-ui/core/styles';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
@@ -12,8 +13,15 @@ import MenuIcon from '@material-ui/icons/Menu';
 import SearchIcon from '@material-ui/icons/Search';
 import AccountCircle from '@material-ui/icons/AccountCircle';
 import MailIcon from '@material-ui/icons/Mail';
+import Button from '@material-ui/core/Button'
 import NotificationsIcon from '@material-ui/icons/Notifications';
 import MoreIcon from '@material-ui/icons/MoreVert';
+import TextField from '@material-ui/core/TextField';
+import Dialog from '@material-ui/core/Dialog';
+import DialogActions from '@material-ui/core/DialogActions';
+import DialogContent from '@material-ui/core/DialogContent';
+import DialogContentText from '@material-ui/core/DialogContentText';
+import DialogTitle from '@material-ui/core/DialogTitle';
 
 const useStyles = makeStyles((theme) => ({
     grow: {
@@ -86,6 +94,8 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
+
+
 export default function PrimarySearchAppBar() {
     const classes = useStyles();
     const [anchorEl, setAnchorEl] = React.useState(null);
@@ -110,6 +120,50 @@ export default function PrimarySearchAppBar() {
     const handleMobileMenuOpen = (event) => {
         setMobileMoreAnchorEl(event.currentTarget);
     };
+
+    const [open, setOpenRegisterForm] = React.useState(false);
+
+    const openRegisterForm = () => {
+        setOpenRegisterForm(true);
+    };
+
+    const handleClose = () => {
+        setOpenRegisterForm(false);
+    };
+    const [username, setUsername] = React.useState("");
+    const [email, setEmail] = React.useState("");
+    const [password, setPassword] = React.useState("");
+
+    const handleEmailChange = event => {
+        setEmail({
+            email: event.target.value
+        })
+    }
+
+    const handleUsernameChange = event => {
+        setUsername({
+            username: event.target.value,
+        })
+    }
+
+    const handlePasswordChange = event => {
+        setPassword({
+            password: event.target.value,
+        })
+    }
+
+    const sendRegisterData = async () => {
+        const user = JSON.stringify({
+            username,
+            email,
+            password
+
+        })
+        const response = await axios.post("https://jsonplaceholder.typicode.com/users", { user })
+        console.log(user)
+        console.log(response.data)
+    };
+
 
     const menuId = 'primary-search-account-menu';
     const renderMenu = (
@@ -199,15 +253,60 @@ export default function PrimarySearchAppBar() {
                     <div className={classes.grow} />
                     <div className={classes.sectionDesktop}>
                         <IconButton aria-label="show 4 new mails" color="inherit">
-                            <Badge badgeContent={4} color="secondary">
-                                <MailIcon />
-                            </Badge>
+                            <Button variant="outlined" >
+                                Login
+                            </Button>
                         </IconButton>
+
                         <IconButton aria-label="show 17 new notifications" color="inherit">
-                            <Badge badgeContent={17} color="secondary">
-                                <NotificationsIcon />
-                            </Badge>
+                            <Button variant="outlined" onClick={openRegisterForm}>
+                                Register
+                            </Button>
                         </IconButton>
+                        <Dialog open={open} onClose={handleClose} aria-labelledby="regiter-form">
+                            <DialogTitle id="form-dialog-title">Register</DialogTitle>
+                            <DialogContent>
+                                <DialogContentText>
+                                    To register to schreddit please enter the following information:
+                                </DialogContentText>
+                                <TextField
+                                    autoFocus
+                                    margin="dense"
+                                    id="name"
+                                    label="Email Address"
+                                    type="email"
+                                    fullWidth
+                                    onChange={handleEmailChange}
+                                />
+                                <TextField
+                                    autoFocus
+                                    margin="dense"
+                                    id="username"
+                                    label="Username"
+                                    type="text"
+                                    fullWidth
+                                    onChange={handleUsernameChange}
+                                />
+                                <TextField
+                                    autoFocus
+                                    margin="dense"
+                                    id="password"
+                                    label="Password"
+                                    type="password"
+                                    fullWidth
+                                    onChange={handlePasswordChange}
+                                />
+                            </DialogContent>
+                            <DialogActions>
+                                <Button onClick={handleClose} color="primary">
+                                    Cancel
+                                </Button>
+                                <Button onClick={sendRegisterData} color="primary">
+                                    Register
+                                </Button>
+                            </DialogActions>
+                        </Dialog>
+
                         <IconButton
                             edge="end"
                             aria-label="account of current user"
