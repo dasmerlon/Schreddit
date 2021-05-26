@@ -252,17 +252,14 @@ export default function PrimarySearchAppBar() {
                     </div>
                     <div className={classes.grow} />
                     <div className={classes.sectionDesktop}>
-                        <IconButton aria-label="show 4 new mails" color="inherit">
-                            <Button variant="outlined" >
-                                Login
-                            </Button>
-                        </IconButton>
+                        <Button variant="outlined" aria-label="login button" style={{ margin: '7px' }}  color="inherit">
+                            Login
+                        </Button>
 
-                        <IconButton aria-label="show 17 new notifications" color="inherit">
-                            <Button variant="outlined" onClick={openRegisterForm}>
-                                Register
+
+                        <Button variant="outlined" aria-label="register button" style={{ margin: '7px' }} color="inherit" styles="theme.spacing(1)" onClick={openRegisterForm}>
+                            Register
                             </Button>
-                        </IconButton>
                         <Dialog open={open} onClose={handleClose} aria-labelledby="regiter-form">
                             <DialogTitle id="form-dialog-title">Register</DialogTitle>
                             <DialogContent>
