@@ -1,6 +1,6 @@
-from neomodel import (DateTimeProperty, EmailProperty, RelationshipTo,
-                      StringProperty, StructuredNode, StructuredRel,
-                      UniqueIdProperty)
+from neomodel import (DateTimeProperty, EmailProperty, RelationshipFrom,
+                      RelationshipTo, StringProperty, StructuredNode,
+                      StructuredRel, UniqueIdProperty)
 
 
 # Relationships
@@ -18,3 +18,4 @@ class User(StructuredNode):
 
     # Relationships
     friend = RelationshipTo("User", "FRIENDS_WITH", model=Friendship)
+    post_author = RelationshipFrom(".post.Post", "AUTOHRED_BY")
