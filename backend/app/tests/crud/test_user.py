@@ -1,8 +1,10 @@
 from fastapi.encoders import jsonable_encoder
 
 from app import crud
+from app.core.config import settings
 from app.core.security import verify_password
-from app.schemas.user import UserCreate, UserUpdate
+from app.models import User
+from app.schemas import UserCreate, UserUpdate
 
 
 def test_create_user() -> None:
@@ -11,42 +13,33 @@ def test_create_user() -> None:
     password = "password"
     user_in = UserCreate(email=email, username=username, password=password)
     user = crud.user.create(obj_in=user_in)
+    assert user
     assert user.email == email
     assert user.username == username
     assert hasattr(user, "hashed_password")
 
 
-def test_authenticate_user() -> None:
-    email = "authenticate@example.com"
-    username = "authenticate"
-    password = "password"
-    user_in = UserCreate(email=email, username=username, password=password)
-    user = crud.user.create(obj_in=user_in)
-    authenticated_user = crud.user.authenticate(email=email, password=password)
-    assert authenticated_user
-    assert user.email == authenticated_user.email
-    assert user.username == authenticated_user.username
+def test_authenticate_user(fake_user: User) -> None:
+    user = crud.user.authenticate(
+        email=settings.TEST_USER_EMAIL, password=settings.TEST_USER_PASSWORD
+    )
+    assert user
+    assert user.email == settings.TEST_USER_EMAIL
+    assert user.username == settings.TEST_USER_USERNAME
 
 
-def test_not_authenticate_user() -> None:
+def test_authentication_fail() -> None:
     email = "noauth@example.com"
     password = "1"
     user = crud.user.authenticate(email=email, password=password)
     assert user is None
 
 
-def test_get_user() -> None:
-    email = "getme@example.com"
-    username = "getme"
-    password = "password"
-    user_in = UserCreate(email=email, username=username, password=password)
-    user = crud.user.create(obj_in=user_in)
-
-    created_user = crud.user.get(user.uid)
-    assert created_user
-    assert user.email == created_user.email
-    assert user.username == created_user.username
-    assert jsonable_encoder(user) == jsonable_encoder(created_user)
+def test_get_user_by_email(fake_user: User) -> None:
+    user = crud.user.get_by_email(settings.TEST_USER_EMAIL)
+    assert user
+    assert user.email == settings.TEST_USER_EMAIL
+    assert user.username == settings.TEST_USER_USERNAME
 
 
 def test_update_user() -> None:

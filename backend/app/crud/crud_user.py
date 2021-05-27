@@ -38,7 +38,7 @@ class CRUDUser(CRUDBase[User, UserCreate, UserUpdate]):
         :return: the `User` model of the created user
         """
         hashed_password = get_password_hash(obj_in.password)
-        db_obj = self.model(
+        db_obj = User(
             email=obj_in.email,
             username=obj_in.username,
             hashed_password=hashed_password,

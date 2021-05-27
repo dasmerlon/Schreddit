@@ -12,6 +12,12 @@ class Settings(BaseSettings):
     SUB_PREFIX: str = "uid:"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
 
+    MAX_TITLE_LENGTH = 300
+
+    TEST_USER_USERNAME: str
+    TEST_USER_EMAIL: str
+    TEST_USER_PASSWORD: str
+
     class Config:
         case_sensitive = True
         env_file = Path(__file__).parent.parent.absolute() / Path(".env")
