@@ -1,7 +1,5 @@
-from neomodel import StructuredNode, StructuredRel, RelationshipTo
-from neomodel import (DateTimeProperty,
-                      EmailProperty,
-                      StringProperty,
+from neomodel import (DateTimeProperty, EmailProperty, RelationshipTo,
+                      StringProperty, StructuredNode, StructuredRel,
                       UniqueIdProperty)
 
 
@@ -19,4 +17,4 @@ class User(StructuredNode):
     hashed_password = StringProperty()
 
     # Relationships
-    friend = RelationshipTo('User', 'FRIENDS_WITH', model=Friendship)
+    friend = RelationshipTo("User", "FRIENDS_WITH", model=Friendship)

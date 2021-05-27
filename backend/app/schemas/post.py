@@ -1,5 +1,6 @@
 from enum import Enum
 from typing import Optional
+
 from fastapi import Query
 from pydantic import BaseModel, HttpUrl
 
@@ -23,6 +24,10 @@ class PostBase(BaseModel):
 
 
 class PostCreate(PostBase):
+    pass
+
+
+class PostUpdate(PostBase):
     pass
 
 
