@@ -4,7 +4,7 @@ import pytest
 from fastapi.testclient import TestClient
 from neomodel import clear_neo4j_database, config, db
 
-from app.config import settings
+from app.core.config import settings
 from app.main import app
 
 

@@ -4,11 +4,13 @@ from pydantic import BaseModel, EmailStr
 
 
 class UserBase(BaseModel):
-    email: EmailStr
-    username: str
+    email: Optional[EmailStr] = None
+    username: Optional[str] = None
 
 
 class UserCreate(UserBase):
+    email: EmailStr
+    username: str
     password: str
 
 
