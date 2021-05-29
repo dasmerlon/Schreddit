@@ -55,10 +55,12 @@ class CRUDUser(CRUDBase[User, UserCreate, UserUpdate]):
         :param obj_in: the `UserUpdate` schema or a dict containing the updated data
         :return: the `User` model of the updated user
         """
+        # Convert object to dictionary, so we have a consistent way of accessing fields.
         if isinstance(obj_in, dict):
             update_data = obj_in
         else:
             update_data = obj_in.dict(exclude_unset=True)
+        # If the password is updated, create a password hash and persist it.
         if update_data["password"]:
             hashed_password = get_password_hash(update_data["password"])
             del update_data["password"]
