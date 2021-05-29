@@ -29,3 +29,25 @@ def register(user: schemas.UserCreate):
         )
     registered_user = crud.user.create(user)
     return registered_user
+
+
+@router.get(
+    "/{username}",
+    name="Get User Data",
+    response_model=schemas.User,
+    status_code=status.HTTP_200_OK,
+)
+def get_user(username: str):
+    """
+    Get user data from an existing user.
+    """
+    user = crud.user.get_by_username(username)
+    if user is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="User doesn't exists.",
+        )
+    return user
+
+
+
