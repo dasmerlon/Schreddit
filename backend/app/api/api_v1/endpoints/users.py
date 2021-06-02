@@ -2,6 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException, status
 
 from app import crud, models, schemas
 from app.api import deps
+from app.core.security import verify_password
 
 router = APIRouter()
 
@@ -46,7 +47,7 @@ def get_user(username: str):
     if user is None:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail="User doesn't exists.",
+            detail="User doesn't exist.",
         )
     return user
 
@@ -63,25 +64,24 @@ def update_user(
     """
     Update a user's data.
     """
-    is_updated = False
+    to_update = {}
 
     # Check if we got a new and different email.
     if user_update.email is not None and user_update.email != current_user.email:
-        is_updated = True
+        to_update["email"] = user_update.email
 
-    # Check if the password changed. We do this by checking, whether the user can currently log in
-    # with the new password. If that's the case, the password didn't change.
-    if user_update.password is not None and user_update.password != current_user.email:
-        user = crud.user.authenticate(
-            email=current_user.username, password=user_update.password
+    # Check if the password changed.
+    if user_update.password is not None:
+        same_password = verify_password(
+            user_update.password, current_user.hashed_password
         )
-        if not user:
-            # We cannot login -> the new password is different
-            is_updated = True
 
-    if not is_updated:
+        if not same_password:
+            to_update["password"] = user_update.password
+
+    if not bool(to_update):
         raise HTTPException(
             status_code=status.HTTP_304_NOT_MODIFIED,
         )
 
-    crud.user.update(current_user, user_update)
+    crud.user.update(current_user, to_update)
