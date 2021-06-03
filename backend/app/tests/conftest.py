@@ -11,9 +11,13 @@ from app.models import User
 from app.tests.utils.user import create_test_user, override_get_current_user
 
 
-@pytest.fixture(autouse=True, scope="function")
-def database():
+@pytest.fixture(scope="session")
+def init_database():
     config.DATABASE_URL = settings.NEO4J_TEST_BOLT_URL
+
+
+@pytest.fixture(autouse=True, scope="function")
+def database(init_database):
     clear_neo4j_database(db)
     yield
     clear_neo4j_database(db)
