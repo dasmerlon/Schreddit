@@ -6,6 +6,16 @@ This project was bootstrapped with [Create React App](https://github.com/faceboo
 
 In the project directory, you can run:
 
+### npm install @mdi/js
+
+Installs a Icon Library, that is needed to display some Icons.
+
+### `npm install`
+
+This command installs a package and any packages that it depends on.\
+If the package has a package-lock, or an npm shrinkwrap file, or a yarn lock file, the installation of dependencies will be driven by that.\
+For more [information](https://docs.npmjs.com/cli/v7/commands/npm-install).
+
 ### `npm start`
 
 Runs the app in the development mode.\
