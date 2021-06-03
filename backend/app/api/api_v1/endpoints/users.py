@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, Response, status
 
 from app import crud, models, schemas
 from app.api import deps
@@ -71,13 +71,10 @@ def update_user(
         to_update["email"] = user_update.email
 
     # Check if the password changed.
-    if user_update.password is not None:
-        same_password = verify_password(
-            user_update.password, current_user.hashed_password
-        )
-
-        if not same_password:
-            to_update["password"] = user_update.password
+    if user_update.password and not verify_password(
+        user_update.password, current_user.hashed_password
+    ):
+        to_update["password"] = user_update.password
 
     if not bool(to_update):
         raise HTTPException(
@@ -85,3 +82,4 @@ def update_user(
         )
 
     crud.user.update(current_user, to_update)
+    return Response(status_code=status.HTTP_204_NO_CONTENT)
