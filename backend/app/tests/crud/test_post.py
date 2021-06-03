@@ -13,7 +13,7 @@ def test_create_post(database) -> None:
     post_create = PostCreate(
         nsfw=nsfw, spoiler=spoiler, sr=sr, title=title, type=type, url=url
     )
-    post = crud.post.create(obj_in=post_create)
+    post = crud.post.create(post_create)
     for key in post_create.dict():
         if key != "sr":
             assert getattr(post, key) == getattr(post_create, key)

@@ -41,8 +41,8 @@ def submit_post(
             detail="Posts of type other than 'link' must include a 'text' parameter and must not include a 'url' parameter.",
         )
     # TODO: throw exception if subreddit does not exist
-    created_post = crud.post.create(obj_in=post)
-    author = crud.post.set_author(db_obj=created_post, author=current_user)
+    created_post = crud.post.create(post)
+    author = crud.post.set_author(created_post, current_user)
     # TODO: uncomment when subreddit logic is implemented
     # subreddit = crud.post.set_subreddit(db_obj=created_post, subreddit=subreddit)
     post_out = schemas.Post.from_orm(created_post)

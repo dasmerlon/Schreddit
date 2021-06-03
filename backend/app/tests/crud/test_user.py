@@ -12,7 +12,7 @@ def test_create_user(database) -> None:
     username = "create"
     password = "password"
     user_in = UserCreate(email=email, username=username, password=password)
-    user = crud.user.create(obj_in=user_in)
+    user = crud.user.create(user_in)
     assert user
     assert user.email == email
     assert user.username == username
@@ -47,11 +47,11 @@ def test_update_user(database) -> None:
     username = "unsure"
     password = "pleasechangeme"
     user_in = UserCreate(email=email, username=username, password=password)
-    user = crud.user.create(obj_in=user_in)
+    user = crud.user.create(user_in)
 
     new_password = "ithinkthisisbetter"
     user_in_update = UserUpdate(password=new_password)
-    crud.user.update(db_obj=user, obj_in=user_in_update)
+    crud.user.update(user, user_in_update)
     updated_user = crud.user.get(user.uid)
     assert updated_user
     assert user.email == updated_user.email
@@ -62,7 +62,7 @@ def test_update_user(database) -> None:
     user_in_update = UserUpdate(password=new_password)
     print(user_in_update)
     obj_in_data = jsonable_encoder(user_in_update)
-    crud.user.update(db_obj=user, obj_in=obj_in_data)
+    crud.user.update(user, obj_in_data)
     updated_user = crud.user.get(user.uid)
     assert updated_user
     assert user.email == updated_user.email
