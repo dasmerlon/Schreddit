@@ -11,7 +11,7 @@ from app.models import User
 from app.tests.utils.user import create_test_user, override_get_current_user
 
 
-@pytest.fixture(autouse=True, scope="session")
+@pytest.fixture(autouse=True, scope="function")
 def database():
     config.DATABASE_URL = settings.NEO4J_TEST_BOLT_URL
     clear_neo4j_database(db)
@@ -19,8 +19,8 @@ def database():
     clear_neo4j_database(db)
 
 
-@pytest.fixture(scope="session")
-def fake_user() -> User:
+@pytest.fixture(scope="function")
+def fake_user(database) -> User:
     return create_test_user()
 
 

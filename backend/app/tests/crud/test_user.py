@@ -23,6 +23,8 @@ def test_authenticate_user(fake_user: User) -> None:
     user = crud.user.authenticate(
         email=settings.TEST_USER_EMAIL, password=settings.TEST_USER_PASSWORD
     )
+    for user in crud.user.get_all():
+        print(user)
     assert user
     assert user.email == settings.TEST_USER_EMAIL
     assert user.username == settings.TEST_USER_USERNAME

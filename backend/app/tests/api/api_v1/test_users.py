@@ -1,7 +1,11 @@
+import pytest
 from fastapi import status
 from fastapi.testclient import TestClient
 
+from app import crud
 from app.core.config import settings
+from app.core.security import verify_password
+from app.models import User
 
 
 def register_user(client, email, username, password):
@@ -39,5 +43,39 @@ def test_register_existing_username(client: TestClient) -> None:
     password = "password"
     register_user(client, email1, username, password)
     r = register_user(client, email2, username, password)
-    assert r.status_code == 403
+    assert r.status_code == status.HTTP_403_FORBIDDEN
     assert "detail" in r.json()
+
+
+def test_get_user(client: TestClient, fake_user: User) -> None:
+    payload = client.get(f"{settings.API_V1_STR}/users/{fake_user.username}").json()
+    assert payload["email"] == fake_user.email
+    assert payload["username"] == fake_user.username
+
+
+def test_get_not_existing_user(client: TestClient) -> None:
+    response = client.get(f"{settings.API_V1_STR}/users/not_existing")
+    assert response.status_code == status.HTTP_404_NOT_FOUND
+    assert "detail" in response.json()
+
+
+@pytest.mark.parametrize(
+    "payload",
+    [
+        {"email": "new_email@example.com", "password": "hunter2"},
+        {"email": "new_email@example.com"},
+        {"password": "hunter2"},
+    ],
+)
+def test_update_user(client: TestClient, fake_auth, database, payload: dict) -> None:
+    response = client.put(f"{settings.API_V1_STR}/users/settings", json=payload)
+    assert response.status_code == status.HTTP_204_NO_CONTENT
+
+    updated_user = crud.user.get_by_username(settings.TEST_USER_USERNAME)
+    assert updated_user is not None
+
+    for key, value in payload.items():
+        if key == "password":
+            assert verify_password(value, updated_user.hashed_password)
+        else:
+            assert getattr(updated_user, key) == value
