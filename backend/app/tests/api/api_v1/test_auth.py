@@ -16,7 +16,7 @@ def test_get_access_token(client: TestClient, fake_user):
     assert access_token
 
 
-def test_get_access_token_wrong_username(client: TestClient):
+def test_get_access_token_wrong_username(client: TestClient, database):
     payload_login = {"username": "adversary@example.com", "password": "password"}
     r = client.post(f"{settings.API_V1_STR}/auth/login", data=payload_login)
     assert r.status_code == status.HTTP_401_UNAUTHORIZED

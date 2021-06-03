@@ -7,7 +7,7 @@ from app.models import User
 from app.schemas import UserCreate, UserUpdate
 
 
-def test_create_user() -> None:
+def test_create_user(database) -> None:
     email = "create@example.com"
     username = "create"
     password = "password"
@@ -30,7 +30,7 @@ def test_authenticate_user(fake_user: User) -> None:
     assert user.username == settings.TEST_USER_USERNAME
 
 
-def test_authentication_fail() -> None:
+def test_authentication_fail(database) -> None:
     email = "noauth@example.com"
     password = "1"
     user = crud.user.authenticate(email=email, password=password)
@@ -44,7 +44,7 @@ def test_get_user_by_email(fake_user: User) -> None:
     assert user.username == settings.TEST_USER_USERNAME
 
 
-def test_update_user() -> None:
+def test_update_user(database) -> None:
     email = "unsure@example.com"
     username = "unsure"
     password = "pleasechangeme"

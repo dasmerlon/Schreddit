@@ -13,7 +13,7 @@ def register_user(client, email, username, password):
     return client.post(f"{settings.API_V1_STR}/users/register", json=payload)
 
 
-def test_register_user(client: TestClient) -> None:
+def test_register_user(client: TestClient, database) -> None:
     email = "test@example.com"
     username = "test"
     password = "password"
@@ -25,7 +25,7 @@ def test_register_user(client: TestClient) -> None:
     assert registered_user["username"] == username
 
 
-def test_register_existing_email(client: TestClient) -> None:
+def test_register_existing_email(client: TestClient, database) -> None:
     email = "dup@example.com"
     username1 = "dup1"
     username2 = "dup2"
@@ -36,7 +36,7 @@ def test_register_existing_email(client: TestClient) -> None:
     assert "detail" in r.json()
 
 
-def test_register_existing_username(client: TestClient) -> None:
+def test_register_existing_username(client: TestClient, database) -> None:
     email1 = "dup1@example.com"
     email2 = "dup2@example.com"
     username = "dup"
@@ -53,7 +53,7 @@ def test_get_user(client: TestClient, fake_user: User) -> None:
     assert payload["username"] == fake_user.username
 
 
-def test_get_not_existing_user(client: TestClient) -> None:
+def test_get_not_existing_user(client: TestClient, database) -> None:
     response = client.get(f"{settings.API_V1_STR}/users/not_existing")
     assert response.status_code == status.HTTP_404_NOT_FOUND
     assert "detail" in response.json()
@@ -67,7 +67,7 @@ def test_get_not_existing_user(client: TestClient) -> None:
         {"password": "hunter2"},
     ],
 )
-def test_update_user(client: TestClient, fake_auth, database, payload: dict) -> None:
+def test_update_user(client: TestClient, fake_auth, payload: dict) -> None:
     response = client.put(f"{settings.API_V1_STR}/users/settings", json=payload)
     assert response.status_code == status.HTTP_204_NO_CONTENT
 

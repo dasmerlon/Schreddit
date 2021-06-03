@@ -2,7 +2,7 @@ from app import crud
 from app.schemas.post import PostCreate, PostType
 
 
-def test_create_post() -> None:
+def test_create_post(database) -> None:
     nsfw = True
     spoiler = False
     sr = "subreddit"
