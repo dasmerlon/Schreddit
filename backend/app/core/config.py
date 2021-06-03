@@ -1,5 +1,5 @@
 from pathlib import Path
-
+from typing import Set
 from pydantic import BaseSettings
 
 
@@ -17,6 +17,10 @@ class Settings(BaseSettings):
     TEST_USER_USERNAME: str
     TEST_USER_EMAIL: str
     TEST_USER_PASSWORD: str
+
+    FRONTEND_ORIGINS: Set[str] = {
+        "http://localhost:3000"
+    }
 
     class Config:
         case_sensitive = True
