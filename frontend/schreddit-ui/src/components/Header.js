@@ -154,13 +154,6 @@ export default function PrimarySearchAppBar() {
     }
 
     const sendRegisterData = async () => {
-        const user = JSON.stringify({
-            email: email.email,
-            username: username.username,
-            password: password.password
-
-        })
-        console.log(user)
         const response = await axios.post(configData.USER_API_URL + '/register', {
             email: email.email,
             username: username.username,
