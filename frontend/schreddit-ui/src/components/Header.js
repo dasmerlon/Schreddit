@@ -1,4 +1,5 @@
 import React from 'react';
+import configData from './config.json'
 import axios from 'axios';
 import { fade, makeStyles } from '@material-ui/core/styles';
 import AppBar from '@material-ui/core/AppBar';
@@ -153,14 +154,11 @@ export default function PrimarySearchAppBar() {
     }
 
     const sendRegisterData = async () => {
-        const user = JSON.stringify({
-            username,
-            email,
-            password
-
+        const response = await axios.post(configData.USER_API_URL + '/register', {
+            email: email.email,
+            username: username.username,
+            password: password.password
         })
-        const response = await axios.post("https://jsonplaceholder.typicode.com/users", { user })
-        console.log(user)
         console.log(response.data)
     };
 
