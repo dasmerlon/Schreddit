@@ -79,3 +79,17 @@ def test_update_user(client: TestClient, fake_auth, payload: dict) -> None:
             assert verify_password(value, updated_user.hashed_password)
         else:
             assert getattr(updated_user, key) == value
+
+
+@pytest.mark.parametrize(
+    "payload",
+    [
+        {"email": settings.TEST_USER_EMAIL, "password": settings.TEST_USER_PASSWORD},
+        {"email": settings.TEST_USER_EMAIL},
+        {"password": settings.TEST_USER_PASSWORD},
+        {},
+    ],
+)
+def test_update_user_not_modified(client: TestClient, fake_auth, payload: dict) -> None:
+    response = client.put(f"{settings.API_V1_STR}/users/settings", json=payload)
+    assert response.status_code == status.HTTP_304_NOT_MODIFIED
