@@ -24,7 +24,7 @@ def database(init_database):
 
 
 @pytest.fixture(scope="function")
-def fake_user(database) -> User:
+def fake_user() -> User:
     return create_test_user()
 
 

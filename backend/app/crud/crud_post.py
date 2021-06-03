@@ -9,7 +9,7 @@ class CRUDPost(CRUDBase[Post, PostCreate, PostUpdate]):
     """Post class for CRUD operations"""
 
     @db.write_transaction
-    def create(self, *, obj_in: PostCreate) -> Post:
+    def create(self, obj_in: PostCreate) -> Post:
         """
         Create a new post.
         :param obj_in: the `UserCreate` schema
@@ -28,7 +28,7 @@ class CRUDPost(CRUDBase[Post, PostCreate, PostUpdate]):
         return db_obj
 
     @db.write_transaction
-    def set_author(self, *, db_obj: Post, author: User) -> User:
+    def set_author(self, db_obj: Post, author: User) -> User:
         db_obj.author.connect(author)
         return db_obj.author.single()
 
