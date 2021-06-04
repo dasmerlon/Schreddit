@@ -12,7 +12,7 @@ router = APIRouter()
 
 @router.post("/login", response_model=schemas.Token)
 def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends()):
-    user = crud.user.authenticate(email=form_data.username, password=form_data.password)
+    user = crud.user.authenticate(form_data.username, form_data.password)
     if not user:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,

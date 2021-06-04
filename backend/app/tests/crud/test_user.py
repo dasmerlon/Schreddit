@@ -21,7 +21,7 @@ def test_create_user() -> None:
 
 def test_authenticate_user(fake_user: User) -> None:
     user = crud.user.authenticate(
-        email=settings.TEST_USER_EMAIL, password=settings.TEST_USER_PASSWORD
+        settings.TEST_USER_EMAIL, settings.TEST_USER_PASSWORD
     )
     assert user
     assert user.email == settings.TEST_USER_EMAIL
@@ -31,7 +31,7 @@ def test_authenticate_user(fake_user: User) -> None:
 def test_authentication_fail() -> None:
     email = "noauth@example.com"
     password = "1"
-    user = crud.user.authenticate(email=email, password=password)
+    user = crud.user.authenticate(email, password)
     assert user is None
 
 
