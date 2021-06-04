@@ -3,11 +3,18 @@ from enum import Enum
 from typing import List, Optional
 
 from fastapi import Query
-from pydantic import BaseModel, HttpUrl
+from pydantic import UUID4, BaseModel, HttpUrl
 
 from app.core.config import settings
 from app.schemas.base import Pagination
 from app.schemas.user import User
+
+
+class PostSort(str, Enum):
+    best = "best"
+    hot = "hot"
+    new = "new"
+    top = "top"
 
 
 class PostType(str, Enum):
@@ -38,7 +45,7 @@ class PostCreate(PostBase):
 
 
 class PostUpdate(PostBase):
-    uid: str
+    uid: UUID4
 
 
 class Post(PostBase):
@@ -46,7 +53,7 @@ class Post(PostBase):
     updated_at: Optional[datetime]
     type: PostType
     # sr: Subreddit TODO: uncomment when subreddit logic is implemented
-    uid: str
+    uid: UUID4
     author: User
 
     class Config:

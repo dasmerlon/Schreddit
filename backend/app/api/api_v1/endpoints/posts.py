@@ -1,7 +1,7 @@
-from datetime import datetime
 from typing import Optional
 
 from fastapi import APIRouter, Depends, HTTPException, Query, Response, status
+from pydantic import UUID4
 
 from app import crud, models, schemas
 from app.api import deps
@@ -16,8 +16,9 @@ router = APIRouter()
     status_code=status.HTTP_200_OK,
 )
 def get_posts(
-    after: Optional[datetime] = None,
-    before: Optional[datetime] = None,
+    after: Optional[UUID4] = None,
+    before: Optional[UUID4] = None,
+    sort: Optional[schemas.PostSort] = schemas.PostSort.new,
     limit: Optional[int] = Query(25, gt=0, le=100),
 ):
     if after is not None and before is not None:
@@ -25,18 +26,22 @@ def get_posts(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="The parameters 'after' and 'before' should not be specified both.",
         )
-    results = crud.post.get_selection(after, before, limit)
-
+    if (after is not None and crud.post.get(after.hex) is None) or (
+        before is not None and crud.post.get(before.hex) is None
+    ):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="The cursor contains an invalid UUID.",
+        )
+    results = crud.post.get_selection(after, before, sort, limit)
+    new_after, new_before = crud.post.get_new_cursors(results, sort)
     # set pagination
-    pagination = schemas.Pagination(
-        after=results[-1].created_at, before=results[0].created_at, limit=limit
-    )
+    pagination = schemas.Pagination(after=new_after, before=new_before, limit=limit)
 
     # transform posts from model to schema
     post_list = []
     for result in results:
-        post = schemas.Post.from_orm(result)
-        post.author = result.author.single()
+        post = schemas.Post(**result.serialize)
         post_list.append(post)
 
     return schemas.PostList(pagination=pagination, results=post_list)

@@ -1,6 +1,6 @@
 from typing import Optional
 
-from pydantic import BaseModel, EmailStr
+from pydantic import UUID4, BaseModel, EmailStr
 
 
 class UserBase(BaseModel):
@@ -18,7 +18,7 @@ class UserUpdate(UserBase):
 
 
 class User(UserBase):
-    uid: str
+    uid: UUID4
     username: str
 
     class Config:

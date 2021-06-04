@@ -71,9 +71,7 @@ def test_get_not_existing_user(client: TestClient) -> None:
     ],
 )
 def test_update_user(
-    client: TestClient,
-    fake_test_user_auth: models.User,
-    payload: dict
+    client: TestClient, fake_test_user_auth: models.User, payload: dict
 ) -> None:
     response = client.put(f"{settings.API_V1_STR}/users/settings", json=payload)
     assert response.status_code == status.HTTP_204_NO_CONTENT
@@ -98,9 +96,7 @@ def test_update_user(
     ],
 )
 def test_update_user_not_modified(
-    client: TestClient,
-    fake_test_user_auth: models.User,
-    payload: dict
+    client: TestClient, fake_test_user_auth: models.User, payload: dict
 ) -> None:
     response = client.put(f"{settings.API_V1_STR}/users/settings", json=payload)
     assert response.status_code == status.HTTP_304_NOT_MODIFIED
