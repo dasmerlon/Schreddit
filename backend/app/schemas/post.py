@@ -1,11 +1,12 @@
 from datetime import datetime
 from enum import Enum
-from typing import Optional
+from typing import List, Optional
 
 from fastapi import Query
 from pydantic import BaseModel, HttpUrl
 
 from app.core.config import settings
+from app.schemas.base import Pagination
 from app.schemas.user import User
 
 
@@ -32,9 +33,12 @@ class PostCreate(PostBase):
     title: str = Query(..., max_length=settings.MAX_TITLE_LENGTH)
     type: PostType
 
+    class Config:
+        use_enum_values = True
+
 
 class PostUpdate(PostBase):
-    pass
+    uid: str
 
 
 class Post(PostBase):
@@ -42,7 +46,13 @@ class Post(PostBase):
     updated_at: Optional[datetime]
     type: PostType
     # sr: Subreddit TODO: uncomment when subreddit logic is implemented
+    uid: str
     author: User
 
     class Config:
         orm_mode = True
+
+
+class PostList(BaseModel):
+    pagination: Pagination
+    results: List[Post]

@@ -4,7 +4,6 @@ from neomodel import (BooleanProperty, DateTimeProperty, RelationshipTo,
 
 from app.core.config import settings
 
-# Relationships
 
 # Nodes
 class Post(StructuredNode):
@@ -24,3 +23,22 @@ class Post(StructuredNode):
     author = RelationshipTo(".user.User", "AUTHORED_BY", cardinality=cardinality.One)
     # TODO: uncomment when subreddit logic is implemented
     # subreddit = RelationshipTo('.subreddit.Subreddit', 'POSTED_IN', cardinality=One)
+
+    @property
+    def serialize(self):
+        return {
+            "uid": self.uid,
+            "nsfw": self.nsfw,
+            "spoiler": self.spoiler,
+            "text": self.text,
+            "title": self.title,
+            "type": self.type,
+            "url": self.url,
+            "created_at": self.created_at,
+            "updated_at": self.updated_at,
+            "author": {
+                "uid": self.author[0].uid,
+                "email": self.author[0].email,
+                "username": self.author[0].username,
+            },
+        }

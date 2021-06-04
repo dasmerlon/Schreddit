@@ -18,7 +18,8 @@ class UserUpdate(UserBase):
 
 
 class User(UserBase):
-    username: Optional[str] = None
+    uid: str
+    username: str
 
     class Config:
         orm_mode = True

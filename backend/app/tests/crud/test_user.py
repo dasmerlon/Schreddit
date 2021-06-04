@@ -7,21 +7,18 @@ from app.models import User
 from app.schemas import UserCreate, UserUpdate
 
 
-def test_create_user() -> None:
-    email = "create@example.com"
-    username = "create"
-    password = "password"
-    user_in = UserCreate(email=email, username=username, password=password)
-    user = crud.user.create(user_in)
+def test_create_user(fake_schema_test_user_create: UserCreate, remove_user) -> None:
+    user = crud.user.create(fake_schema_test_user_create)
+    remove_user(user.uid)
     assert user
-    assert user.email == email
-    assert user.username == username
+    assert user.email == fake_schema_test_user_create.email
+    assert user.username == fake_schema_test_user_create.username
     assert hasattr(user, "hashed_password")
 
 
-def test_authenticate_user(fake_user: User) -> None:
+def test_authenticate_user(fake_test_user_in_db: User) -> None:
     user = crud.user.authenticate(
-        settings.TEST_USER_EMAIL, settings.TEST_USER_PASSWORD
+        email=settings.TEST_USER_EMAIL, password=settings.TEST_USER_PASSWORD
     )
     assert user
     assert user.email == settings.TEST_USER_EMAIL
@@ -35,36 +32,29 @@ def test_authentication_fail() -> None:
     assert user is None
 
 
-def test_get_user_by_email(fake_user: User) -> None:
-    user = crud.user.get_by_email(settings.TEST_USER_EMAIL)
+def test_get_user_by_email(fake_random_user_in_db: User) -> None:
+    user = crud.user.get_by_email(fake_random_user_in_db.email)
     assert user
-    assert user.email == settings.TEST_USER_EMAIL
-    assert user.username == settings.TEST_USER_USERNAME
+    assert user.email == fake_random_user_in_db.email
+    assert user.username == fake_random_user_in_db.username
 
 
-def test_update_user() -> None:
-    email = "unsure@example.com"
-    username = "unsure"
-    password = "pleasechangeme"
-    user_in = UserCreate(email=email, username=username, password=password)
-    user = crud.user.create(user_in)
-
+def test_update_user(fake_random_user_in_db: User) -> None:
     new_password = "ithinkthisisbetter"
     user_in_update = UserUpdate(password=new_password)
-    crud.user.update(user, user_in_update)
-    updated_user = crud.user.get(user.uid)
+    crud.user.update(fake_random_user_in_db, user_in_update)
+    updated_user = crud.user.get(fake_random_user_in_db.uid)
     assert updated_user
-    assert user.email == updated_user.email
-    assert user.username == updated_user.username
+    assert fake_random_user_in_db.email == updated_user.email
+    assert fake_random_user_in_db.username == updated_user.username
     assert verify_password(new_password, updated_user.hashed_password)
 
     new_password = "thisisdefinitelybetter"
     user_in_update = UserUpdate(password=new_password)
-    print(user_in_update)
     obj_in_data = jsonable_encoder(user_in_update)
-    crud.user.update(user, obj_in_data)
-    updated_user = crud.user.get(user.uid)
+    crud.user.update(fake_random_user_in_db, obj_in_data)
+    updated_user = crud.user.get(fake_random_user_in_db.uid)
     assert updated_user
-    assert user.email == updated_user.email
-    assert user.username == updated_user.username
+    assert fake_random_user_in_db.email == updated_user.email
+    assert fake_random_user_in_db.username == updated_user.username
     assert verify_password(new_password, updated_user.hashed_password)

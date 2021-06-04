@@ -19,3 +19,12 @@ class User(StructuredNode):
     # Relationships
     friend = RelationshipTo("User", "FRIENDS_WITH", model=Friendship)
     post_author = RelationshipFrom(".post.Post", "AUTOHRED_BY")
+
+    @property
+    def serialize(self):
+        return {
+            "uid": self.uid,
+            "email": self.email,
+            "username": self.username,
+            "hashed_password": self.hashed_password,
+        }

@@ -1,3 +1,4 @@
+from datetime import datetime, timezone
 from typing import Any, Dict, Generic, Optional, Type, TypeVar, Union
 
 from fastapi.encoders import jsonable_encoder
@@ -36,7 +37,6 @@ class CRUDBase(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
         """
         return self.model.nodes
 
-    @db.write_transaction
     def create(self, obj_in: CreateSchemaType) -> ModelType:
         """
         Create a new node.
@@ -44,7 +44,7 @@ class CRUDBase(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
         :return: the database model of the created node
         """
         obj_in_data = jsonable_encoder(obj_in)
-        db_obj = self.model(**obj_in_data)  # type: ignore
+        db_obj = self.model(**obj_in_data)
         db_obj.save()
         return db_obj
 
@@ -58,14 +58,15 @@ class CRUDBase(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
         :param obj_in: the UpdateSchema of the node to be updated
         :return: the updated database model
         """
-        obj_data = jsonable_encoder(db_obj)
         if isinstance(obj_in, dict):
             update_data = obj_in
         else:
             update_data = obj_in.dict(exclude_unset=True)
-        for field in obj_data:
+        for field in db_obj.serialize:
             if field in update_data:
                 setattr(db_obj, field, update_data[field])
+        if hasattr(db_obj, "updated_at"):
+            setattr(db_obj, "updated_at", datetime.now(timezone.utc))
         db_obj.save()
         return db_obj
 
@@ -76,6 +77,6 @@ class CRUDBase(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
         :param uid: the unique identifier of the node to be removed
         :return: the removed node
         """
-        obj = self.model.nodes.get_or_none(uid=uid)
+        obj = self.model.nodes.get(uid=uid)
         obj.delete()
         return obj
