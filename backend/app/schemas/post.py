@@ -6,7 +6,7 @@ from fastapi import Query
 from pydantic import UUID4, BaseModel, HttpUrl
 
 from app.core.config import settings
-from app.schemas.base import Pagination
+from app.schemas.base import Pagination, PostGetterDict
 from app.schemas.user import User
 
 
@@ -45,7 +45,7 @@ class PostCreate(PostBase):
 
 
 class PostUpdate(PostBase):
-    uid: UUID4
+    pass
 
 
 class Post(PostBase):
@@ -54,10 +54,11 @@ class Post(PostBase):
     type: PostType
     # sr: Subreddit TODO: uncomment when subreddit logic is implemented
     uid: UUID4
-    author: User
+    author: Optional[User] = None
 
     class Config:
         orm_mode = True
+        getter_dict = PostGetterDict
 
 
 class PostList(BaseModel):

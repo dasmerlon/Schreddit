@@ -30,21 +30,29 @@ def get_posts(
         before is not None and crud.post.get(before.hex) is None
     ):
         raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="The cursor contains an invalid UUID.",
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="The cursor does not reference an existing post.",
         )
     results = crud.post.get_selection(after, before, sort, limit)
     new_after, new_before = crud.post.get_new_cursors(results, sort)
     # set pagination
     pagination = schemas.Pagination(after=new_after, before=new_before, limit=limit)
+    return schemas.PostList(pagination=pagination, results=results)
 
-    # transform posts from model to schema
-    post_list = []
-    for result in results:
-        post = schemas.Post(**result.serialize)
-        post_list.append(post)
 
-    return schemas.PostList(pagination=pagination, results=post_list)
+@router.get(
+    "/{post_uid}",
+    name="Get Post",
+    response_model=schemas.Post,
+    status_code=status.HTTP_200_OK,
+)
+def get_post(post_uid: UUID4):
+    post = crud.post.get(post_uid)
+    if post is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="The post was not found."
+        )
+    return post
 
 
 @router.post(
@@ -87,18 +95,19 @@ def submit_post(
     created_post = crud.post.create(post, current_user)
     # TODO: uncomment when subreddit logic is implemented
     # subreddit = crud.post.set_subreddit(created_post, subreddit)
-    post_out = schemas.Post(**created_post.serialize)
-    return post_out
+    return created_post
 
 
 @router.put(
-    "",
+    "/{post_uid}",
     name="Edit Post",
     response_class=Response,
     status_code=status.HTTP_204_NO_CONTENT,
 )
 def update_post(
-    post: schemas.PostUpdate, current_user: models.User = Depends(deps.get_current_user)
+    post_uid: UUID4,
+    post: schemas.PostUpdate,
+    current_user: models.User = Depends(deps.get_current_user),
 ):
     """
     Update a post.
@@ -110,10 +119,10 @@ def update_post(
     - `uid` : the unique ID of the post to be updated
     - `url` : a valid URL
     """
-    old_post = crud.post.get(post.uid)
+    old_post = crud.post.get(post_uid)
     if old_post is None:
         raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
+            status_code=status.HTTP_404_NOT_FOUND,
             detail="The post you want to update does not exist.",
         )
     if old_post.type == schemas.PostType.link.value and post.text is not None:

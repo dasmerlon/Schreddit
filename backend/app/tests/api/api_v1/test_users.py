@@ -1,59 +1,49 @@
+from typing import Dict, List
+
 import pytest
 from fastapi import status
 from fastapi.testclient import TestClient
 
-from app import crud, models, schemas
+from app import crud
 from app.core.config import settings
 from app.core.security import verify_password
+from app.models import User
+from app.tests.utils.fake_payloads import UserPayloads
 
 
-def register_user(client, email, username, password):
-    payload = {"email": email, "username": username, "password": password}
-    return client.post(f"{settings.API_V1_STR}/users/register", json=payload)
-
-
-def test_register_user(
-    client: TestClient, fake_schema_user_create: schemas.UserCreate, remove_user
-) -> None:
-    payload = fake_schema_user_create.dict()
+def test_register_user(client: TestClient, remove_users: List) -> None:
+    payload = UserPayloads.get_create()
     r = client.post(f"{settings.API_V1_STR}/users/register", json=payload)
     registered_user = r.json()
-    remove_user(registered_user["uid"])
+    remove_users.append(registered_user["uid"])
     assert r.status_code == status.HTTP_201_CREATED
-    assert registered_user["email"] == fake_schema_user_create.email
-    assert registered_user["username"] == fake_schema_user_create.username
+    assert registered_user["uid"] is not None
+    assert registered_user["email"] == payload["email"]
+    assert registered_user["username"] == payload["username"]
 
 
-def test_register_existing_email(
-    client: TestClient,
-    fake_test_user_in_db: models.User,
-    fake_schema_test_user_create: schemas.UserCreate,
-) -> None:
-    payload = fake_schema_test_user_create.dict()
+def test_register_existing_email(client: TestClient, test_user_in_db: User) -> None:
+    payload = UserPayloads.get_create()
     payload["username"] = "newuser-samemail"
     r = client.post(f"{settings.API_V1_STR}/users/register", json=payload)
     assert r.status_code == status.HTTP_403_FORBIDDEN
     assert "detail" in r.json()
 
 
-def test_register_existing_username(
-    client: TestClient,
-    fake_test_user_in_db: models.User,
-    fake_schema_test_user_create: schemas.UserCreate,
-) -> None:
-    payload = fake_schema_test_user_create.dict()
+def test_register_existing_username(client: TestClient, test_user_in_db: User) -> None:
+    payload = UserPayloads.get_create()
     payload["email"] = "newmail@sameuser.com"
     r = client.post(f"{settings.API_V1_STR}/users/register", json=payload)
     assert r.status_code == status.HTTP_403_FORBIDDEN
     assert "detail" in r.json()
 
 
-def test_get_user(client: TestClient, fake_random_user_in_db: models.User) -> None:
+def test_get_user(client: TestClient, test_user_in_db: User) -> None:
     payload = client.get(
-        f"{settings.API_V1_STR}/users/{fake_random_user_in_db.username}"
+        f"{settings.API_V1_STR}/users/{test_user_in_db.username}"
     ).json()
-    assert payload["email"] == fake_random_user_in_db.email
-    assert payload["username"] == fake_random_user_in_db.username
+    assert payload["email"] == test_user_in_db.email
+    assert payload["username"] == test_user_in_db.username
 
 
 def test_get_not_existing_user(client: TestClient) -> None:
@@ -70,9 +60,7 @@ def test_get_not_existing_user(client: TestClient) -> None:
         {"password": "hunter2"},
     ],
 )
-def test_update_user(
-    client: TestClient, fake_test_user_auth: models.User, payload: dict
-) -> None:
+def test_update_user(client: TestClient, fake_auth: User, payload: Dict) -> None:
     response = client.put(f"{settings.API_V1_STR}/users/settings", json=payload)
     assert response.status_code == status.HTTP_204_NO_CONTENT
 
@@ -96,7 +84,7 @@ def test_update_user(
     ],
 )
 def test_update_user_not_modified(
-    client: TestClient, fake_test_user_auth: models.User, payload: dict
+    client: TestClient, fake_auth: User, payload: Dict
 ) -> None:
     response = client.put(f"{settings.API_V1_STR}/users/settings", json=payload)
     assert response.status_code == status.HTTP_304_NOT_MODIFIED
