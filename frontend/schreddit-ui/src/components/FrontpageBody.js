@@ -3,7 +3,7 @@ import {makeStyles} from "@material-ui/core/styles";
 import {Grid, Paper, Container, Hidden} from "@material-ui/core";
 import Post from "./Post";
 import SortByBar from "./SortByBar";
-import NewPost from "./NewPost";
+import CreatePost from "./CreatePost";
 import TrendingComs from "./TrendingComs";
 import Info from "./Info";
 
@@ -32,7 +32,7 @@ export default function ForntpageBody() {
         <Grid container spacing={2} direction='row' className={classes.grid}>
           <Grid item container spacing={3} direction='column' className={classes.grid} xs={12} md={7}>
             <Grid item>
-              <NewPost />
+              <CreatePost />
             </Grid>
             <Grid item>
               <SortByBar />
