@@ -122,15 +122,26 @@ export default function PrimarySearchAppBar() {
         setMobileMoreAnchorEl(event.currentTarget);
     };
 
-    const [open, setOpenRegisterForm] = React.useState(false);
+    const [showRegisterDialog, setShowRegisterDialog] = React.useState(false);
 
-    const openRegisterForm = () => {
-        setOpenRegisterForm(true);
+    const openRegisterDialog = () => {
+        setShowRegisterDialog(true);
     };
 
-    const handleClose = () => {
-        setOpenRegisterForm(false);
+    const handleRegisterDialogClose = () => {
+        setShowRegisterDialog(false);
     };
+
+    const [showLoginDialog, setShowLoginDialog] = React.useState(false);
+
+    const openLoginDialog = () => {
+        setShowLoginDialog(true);
+    };
+
+    const handleLoginDialogClose = () => {
+        setShowLoginDialog(false);
+    };
+
     const [username, setUsername] = React.useState("");
     const [email, setEmail] = React.useState("");
     const [password, setPassword] = React.useState("");
@@ -162,6 +173,13 @@ export default function PrimarySearchAppBar() {
         console.log(response.data)
     };
 
+    const sendLoginData = async () => {
+        const response = await axios.post(configData.USER_API_URL + '/register', {
+            username: username.username,
+            password: password.password
+        })
+        console.log(response.data)
+    };
 
     const menuId = 'primary-search-account-menu';
     const renderMenu = (
@@ -234,7 +252,7 @@ export default function PrimarySearchAppBar() {
                     </IconButton>
                     <Typography className={classes.title} variant="h6" noWrap>
                         Schreddit
-          </Typography>
+                    </Typography>
                     <div className={classes.search}>
                         <div className={classes.searchIcon}>
                             <SearchIcon />
@@ -250,16 +268,48 @@ export default function PrimarySearchAppBar() {
                     </div>
                     <div className={classes.grow} />
                     <div className={classes.sectionDesktop}>
-                        <Button variant="outlined" aria-label="login button" style={{ margin: '7px' }} color="inherit">
+                        <Button variant="outlined" aria-label="login button" style={{ margin: '7px' }} color="inherit" onClick={openLoginDialog}>
                             Login
                         </Button>
+                        <Dialog open={showLoginDialog} onClose={handleLoginDialogClose} aria-labelledby="login-form-dialog">
+                            <DialogTitle id="login-form-dialog-title">Login</DialogTitle>
+                            <DialogContent>
+                                <DialogContentText>
+                                    Please provide your username and your password to login to Schreddit:
+                                </DialogContentText>
+                                <TextField
+                                    autoFocus
+                                    margin="dense"
+                                    id="name"
+                                    label="Email Address"
+                                    type="email"
+                                    fullWidth
+                                    onChange={handleEmailChange}
+                                />
+                                <TextField
+                                    margin="dense"
+                                    id="password"
+                                    label="Password"
+                                    type="password"
+                                    fullWidth
+                                    onChange={handlePasswordChange}
+                                />
+                            </DialogContent>
+                            <DialogActions>
+                                <Button onClick={handleLoginDialogClose} color="primary">
+                                    Cancel
+                                </Button>
+                                <Button onClick={sendLoginData} color="primary">
+                                    Register
+                                </Button>
+                            </DialogActions>
+                        </Dialog>
 
-
-                        <Button variant="outlined" aria-label="register button" style={{ margin: '7px' }} color="inherit" styles="theme.spacing(1)" onClick={openRegisterForm}>
+                        <Button variant="outlined" aria-label="register button" style={{ margin: '7px' }} color="inherit" styles="theme.spacing(1)" onClick={openRegisterDialog}>
                             Register
                             </Button>
-                        <Dialog open={open} onClose={handleClose} aria-labelledby="regiter-form">
-                            <DialogTitle id="form-dialog-title">Register</DialogTitle>
+                        <Dialog open={showRegisterDialog} onClose={handleRegisterDialogClose} aria-labelledby="register-form-dialog">
+                            <DialogTitle id="register-form-dialog-title">Register</DialogTitle>
                             <DialogContent>
                                 <DialogContentText>
                                     To register to schreddit please enter the following information:
@@ -291,7 +341,7 @@ export default function PrimarySearchAppBar() {
                                 />
                             </DialogContent>
                             <DialogActions>
-                                <Button onClick={handleClose} color="primary">
+                                <Button onClick={handleRegisterDialogClose} color="primary">
                                     Cancel
                                 </Button>
                                 <Button onClick={sendRegisterData} color="primary">
