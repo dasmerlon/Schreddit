@@ -29,46 +29,54 @@ export default function Login(props) {
         props.handleLogin(response.data.access_token);
         handleLoginDialogClose();
     };
+    if (!props.cookies.loggedIn) {
+        return (
+            <div>
+                <Button variant="outlined" aria-label="login button" style={{ margin: '7px' }} color="inherit" onClick={openLoginDialog}>
+                    Login
+                            </Button>
+                <Dialog open={showLoginDialog} onClose={handleLoginDialogClose} onKeyDown={(e) => { if (e.keyCode === 13) { sendLoginData() } }} aria-labelledby="login-form-dialog">
+                    <DialogTitle id="login-form-dialog-title">Login</DialogTitle>
+                    <DialogContent>
+                        <DialogContentText>
+                            Please provide your username and your password to login to Schreddit:
+                                    </DialogContentText>
+                        <TextField
+                            autoFocus
+                            margin="dense"
+                            id="name"
+                            label="Email Address"
+                            type="email"
+                            fullWidth
+                            onChange={props.handleEmailChange}
+                        />
+                        <TextField
+                            margin="dense"
+                            id="password"
+                            label="Password"
+                            type="password"
+                            fullWidth
+                            onChange={props.handlePasswordChange}
+                        />
+                    </DialogContent>
+                    <DialogActions>
+                        <Button onClick={handleLoginDialogClose} color="primary">
+                            Cancel
+                                    </Button>
+                        <Button onClick={sendLoginData} color="primary">
+                            Login
+                                    </Button>
+                    </DialogActions>
+                </Dialog>
+            </div>
+        )
+    } else {
+        return (
+            <div>
 
-    return (
-        <div>
-            <Button variant="outlined" aria-label="login button" style={{ margin: '7px' }} color="inherit" onClick={openLoginDialog}>
-                Login
-                        </Button>
-            <Dialog open={showLoginDialog} onClose={handleLoginDialogClose} onKeyDown={(e) => { if (e.keyCode === 13) { sendLoginData() } }} aria-labelledby="login-form-dialog">
-                <DialogTitle id="login-form-dialog-title">Login</DialogTitle>
-                <DialogContent>
-                    <DialogContentText>
-                        Please provide your username and your password to login to Schreddit:
-                                </DialogContentText>
-                    <TextField
-                        autoFocus
-                        margin="dense"
-                        id="name"
-                        label="Email Address"
-                        type="email"
-                        fullWidth
-                        onChange={props.handleEmailChange}
-                    />
-                    <TextField
-                        margin="dense"
-                        id="password"
-                        label="Password"
-                        type="password"
-                        fullWidth
-                        onChange={props.handlePasswordChange}
-                    />
-                </DialogContent>
-                <DialogActions>
-                    <Button onClick={handleLoginDialogClose} color="primary">
-                        Cancel
-                                </Button>
-                    <Button onClick={sendLoginData} color="primary">
-                        Login
-                                </Button>
-                </DialogActions>
-            </Dialog>
-        </div>
-    )
+            </div>
+        )
+    }
+
 
 }
