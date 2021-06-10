@@ -23,6 +23,8 @@ import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
+import Login from './auth/Login'
+import Register from './auth/Register'
 
 const useStyles = makeStyles((theme) => ({
     grow: {
@@ -122,25 +124,11 @@ export default function PrimarySearchAppBar(props) {
         setMobileMoreAnchorEl(event.currentTarget);
     };
 
-    const [showRegisterDialog, setShowRegisterDialog] = React.useState(false);
 
-    const openRegisterDialog = () => {
-        setShowRegisterDialog(true);
-    };
 
-    const handleRegisterDialogClose = () => {
-        setShowRegisterDialog(false);
-    };
 
-    const [showLoginDialog, setShowLoginDialog] = React.useState(false);
 
-    const openLoginDialog = () => {
-        setShowLoginDialog(true);
-    };
 
-    const handleLoginDialogClose = () => {
-        setShowLoginDialog(false);
-    };
     const [username, setUsername] = React.useState("");
     const [email, setEmail] = React.useState("");
     const [password, setPassword] = React.useState("");
@@ -163,24 +151,8 @@ export default function PrimarySearchAppBar(props) {
         })
     }
 
-    const sendRegisterData = async () => {
-        const response = await axios.post(configData.USER_API_URL + '/register', {
-            email: email.email,
-            username: username.username,
-            password: password.password
-        })
-        console.log(response.data)
-        handleRegisterDialogClose();
-    };
 
-    const sendLoginData = async () => {
-        const loginData = new URLSearchParams();
-        loginData.append('username', email.email);
-        loginData.append('password', password.password);
-        const response = await axios.post(configData.LOGIN_API_URL, loginData);
-        props.handleLogin(response.data.access_token);
-        handleLoginDialogClose();
-    };
+
 
     const menuId = 'primary-search-account-menu';
     const renderMenu = (
@@ -269,87 +241,22 @@ export default function PrimarySearchAppBar(props) {
                     </div>
                     <div className={classes.grow} />
                     <div className={classes.sectionDesktop}>
-                        <Button variant="outlined" aria-label="login button" style={{ margin: '7px' }} color="inherit" onClick={openLoginDialog}>
-                            Login
-                        </Button>
-                        <Dialog open={showLoginDialog} onClose={handleLoginDialogClose} onKeyDown={(e) => { if (e.keyCode === 13) { sendLoginData() } }} aria-labelledby="login-form-dialog">
-                            <DialogTitle id="login-form-dialog-title">Login</DialogTitle>
-                            <DialogContent>
-                                <DialogContentText>
-                                    Please provide your username and your password to login to Schreddit:
-                                </DialogContentText>
-                                <TextField
-                                    autoFocus
-                                    margin="dense"
-                                    id="name"
-                                    label="Email Address"
-                                    type="email"
-                                    fullWidth
-                                    onChange={handleEmailChange}
-                                />
-                                <TextField
-                                    margin="dense"
-                                    id="password"
-                                    label="Password"
-                                    type="password"
-                                    fullWidth
-                                    onChange={handlePasswordChange}
-                                />
-                            </DialogContent>
-                            <DialogActions>
-                                <Button onClick={handleLoginDialogClose} color="primary">
-                                    Cancel
-                                </Button>
-                                <Button onClick={sendLoginData} color="primary">
-                                    Login
-                                </Button>
-                            </DialogActions>
-                        </Dialog>
+                        <Login
+                            email={email}
+                            password={password}
+                            handleEmailChange={handleEmailChange}
+                            handlePasswordChange={handlePasswordChange}
+                            handleLogin={props.handleLogin}
+                        />
 
-                        <Button variant="outlined" aria-label="register button" style={{ margin: '7px' }} color="inherit" styles="theme.spacing(1)" onClick={openRegisterDialog}>
-                            Register
-                            </Button>
-                        <Dialog open={showRegisterDialog} onClose={handleRegisterDialogClose} onKeyDown={(e) => { if (e.keyCode === 13) { sendRegisterData() } }} aria-labelledby="register-form-dialog">
-                            <DialogTitle id="register-form-dialog-title">Register</DialogTitle>
-                            <DialogContent>
-                                <DialogContentText>
-                                    To register to schreddit please enter the following information:
-                                </DialogContentText>
-                                <TextField
-                                    autoFocus
-                                    margin="dense"
-                                    id="name"
-                                    label="Email Address"
-                                    type="email"
-                                    fullWidth
-                                    onChange={handleEmailChange}
-                                />
-                                <TextField
-                                    margin="dense"
-                                    id="username"
-                                    label="Username"
-                                    type="text"
-                                    fullWidth
-                                    onChange={handleUsernameChange}
-                                />
-                                <TextField
-                                    margin="dense"
-                                    id="password"
-                                    label="Password"
-                                    type="password"
-                                    fullWidth
-                                    onChange={handlePasswordChange}
-                                />
-                            </DialogContent>
-                            <DialogActions>
-                                <Button onClick={handleRegisterDialogClose} color="primary">
-                                    Cancel
-                                </Button>
-                                <Button onClick={sendRegisterData} color="primary">
-                                    Register
-                                </Button>
-                            </DialogActions>
-                        </Dialog>
+                        <Register
+                            email={email}
+                            username={username}
+                            password={password}
+                            handleEmailChange={handleEmailChange}
+                            handleUsernameChange={handleUsernameChange}
+                            handlePasswordChange={handlePasswordChange}
+                        />
 
                         <IconButton
                             edge="end"
