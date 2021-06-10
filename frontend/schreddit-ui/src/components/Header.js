@@ -1,7 +1,6 @@
 import React from 'react';
 import configData from './config.json'
 import axios from 'axios';
-import { useCookies } from 'react-cookie';
 import { fade, makeStyles } from '@material-ui/core/styles';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
@@ -98,7 +97,7 @@ const useStyles = makeStyles((theme) => ({
 
 
 
-export default function PrimarySearchAppBar() {
+export default function PrimarySearchAppBar(props) {
     const classes = useStyles();
     const [anchorEl, setAnchorEl] = React.useState(null);
     const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = React.useState(null);
@@ -134,12 +133,6 @@ export default function PrimarySearchAppBar() {
     };
 
     const [showLoginDialog, setShowLoginDialog] = React.useState(false);
-
-    const [cookies, setCookie, removeCookie] = useCookies(["token"]);
-
-    const handleSetTokenCookie = token => {
-        setCookie("token", token, { path: '/' });
-    }
 
     const openLoginDialog = () => {
         setShowLoginDialog(true);
@@ -185,8 +178,7 @@ export default function PrimarySearchAppBar() {
         loginData.append('username', email.email);
         loginData.append('password', password.password);
         const response = await axios.post(configData.LOGIN_API_URL, loginData);
-        handleSetTokenCookie(response.data.access_token);
-        console.log(response.data.access_token);
+        props.handleLogin(response.data.access_token);
         handleLoginDialogClose();
     };
 
@@ -267,7 +259,7 @@ export default function PrimarySearchAppBar() {
                             <SearchIcon />
                         </div>
                         <InputBase
-                            placeholder="Search…"
+                            placeholder={"Search…" + props.loggedIn}
                             classes={{
                                 root: classes.inputRoot,
                                 input: classes.inputInput,
