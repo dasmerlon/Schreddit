@@ -1,6 +1,6 @@
 import React from 'react';
 import {makeStyles} from "@material-ui/core/styles";
-import {Card, CardHeader, Avatar, SvgIcon, Link, Grid, CardActionArea, Box, Chip} from "@material-ui/core";
+import {Card, CardHeader, Avatar, SvgIcon, Link, Grid, CardActionArea, Chip} from "@material-ui/core";
 import CardActions from '@material-ui/core/CardActions';
 import CardContent from '@material-ui/core/CardContent';
 import IconButton from '@material-ui/core/IconButton';
@@ -63,7 +63,7 @@ export default function Posts() {
               <Grid container>
                 <Button size="small">+Join</Button>
 
-                <Grid item direction="vertical">
+                <Grid item>
                   <IconButton size="small" title="More" onClick={()=>{alert('Upvote') }}> 
                     <SvgIcon ><path d={mdiArrowUpBoldOutline} /></SvgIcon>
                   </IconButton>

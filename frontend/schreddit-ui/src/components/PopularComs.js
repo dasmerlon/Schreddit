@@ -70,7 +70,7 @@ export default function PopularComs() {
           <Typography>POPULAR COMMUNITIES</Typography>
         </AccordionSummary>
         <AccordionDetails>
-            <Grid container direction="vertical" spacing={1}>
+            <Grid container direction="column" spacing={1}>
                 <Grid item container direction="row" spacing={1}> 
                     <Grid item>
                         <Link href="#" variant="subtitle1" color="inherit"> {"AskReddit"} </Link>
@@ -98,7 +98,7 @@ export default function PopularComs() {
           <Typography>GAMING</Typography>
         </AccordionSummary>
         <AccordionDetails>
-            <Grid container direction="vertical" spacing={1}>
+            <Grid container direction="column" spacing={1}>
                 <Grid item container direction="row" spacing={1}> 
                     <Grid item>
                         <Link href="#" variant="subtitle1" color="inherit"> {"StardewValley"} </Link>
@@ -129,7 +129,7 @@ export default function PopularComs() {
           <Typography>SPORTS</Typography>
         </AccordionSummary>
         <AccordionDetails>
-            <Grid container direction="vertical" spacing={1}>
+            <Grid container direction="column" spacing={1}>
                 <Grid item container direction="row" spacing={1}> 
                     <Grid item>
                         <Link href="#" variant="subtitle1" color="inherit"> {"running"} </Link>
@@ -169,7 +169,7 @@ export default function PopularComs() {
           <Typography>TV</Typography>
         </AccordionSummary>
         <AccordionDetails>
-            <Grid container direction="vertical" spacing={1}>
+            <Grid container direction="column" spacing={1}>
                 <Grid item container direction="row" spacing={1}> 
                     <Grid item>
                         <Link href="#" variant="subtitle1" color="inherit"> {"Naruto"} </Link>
@@ -197,7 +197,7 @@ export default function PopularComs() {
           <Typography>TRAVEL</Typography>
         </AccordionSummary>
         <AccordionDetails>
-            <Grid container direction="vertical" spacing={1}>
+            <Grid container direction="column" spacing={1}>
                 <Grid item container direction="row" spacing={1}> 
                     <Grid item>
                         <Link href="#" variant="subtitle1" color="inherit"> {"vancouver"} </Link>
@@ -237,7 +237,7 @@ export default function PopularComs() {
           <Typography>HEALTH & FITNESS</Typography>
         </AccordionSummary>
         <AccordionDetails>
-            <Grid container direction="vertical" spacing={1}>
+            <Grid container direction="column" spacing={1}>
                 <Grid item container direction="row" spacing={1}> 
                     <Grid item>
                         <Link href="#" variant="subtitle1" color="inherit"> {"orangetheory"} </Link>
@@ -268,7 +268,7 @@ export default function PopularComs() {
           <Typography>FASHION</Typography>
         </AccordionSummary>
         <AccordionDetails>
-            <Grid container direction="vertical" spacing={1}>
+            <Grid container direction="column" spacing={1}>
                 <Grid item container direction="row" spacing={1}> 
                     <Grid item>
                         <Link href="#" variant="subtitle1" color="inherit"> {"MakeupAddiction"} </Link>

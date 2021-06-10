@@ -30,7 +30,7 @@ export default function ForntpageBody() {
     const classes = useStyles();
 
     return (
-    <div className={classes.root} > 
+    <div className={classes.root}> 
     <React.Fragment>
       <CssBaseline />
 

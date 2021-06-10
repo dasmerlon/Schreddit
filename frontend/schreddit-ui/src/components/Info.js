@@ -1,6 +1,6 @@
 import React from 'react';
 import {makeStyles} from "@material-ui/core/styles";
-import {Card, List, ListItem, ListItemSecondaryAction, ListItemText, ListSubheader, Link, CardContent, Typography} from "@material-ui/core"
+import {Card, List, ListItem, ListItemSecondaryAction, ListItemText, Link, CardContent, Typography} from "@material-ui/core"
 
 const useStyles = makeStyles((theme) => ({
     root: {
