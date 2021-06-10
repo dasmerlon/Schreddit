@@ -247,6 +247,7 @@ export default function PrimarySearchAppBar(props) {
                             handleEmailChange={handleEmailChange}
                             handlePasswordChange={handlePasswordChange}
                             handleLogin={props.handleLogin}
+                            cookies={props.cookies}
                         />
 
                         <Register
@@ -256,6 +257,7 @@ export default function PrimarySearchAppBar(props) {
                             handleEmailChange={handleEmailChange}
                             handleUsernameChange={handleUsernameChange}
                             handlePasswordChange={handlePasswordChange}
+                            cookies={props.cookies}
                         />
 
                         <IconButton

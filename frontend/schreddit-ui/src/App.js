@@ -17,7 +17,7 @@ const App = () => {
 
   return (
     <div className="container">
-      <Header loggedIn={cookies.loggedIn} handleLogin={handleLogin} />
+      <Header cookies={cookies} handleLogin={handleLogin} />
       <FrontpageBody />
     </div>
   );

@@ -30,55 +30,61 @@ export default function Register(props) {
         })
         handleRegisterDialogClose();
     };
-
-    return (
-        <div>
-            <Button variant="outlined" aria-label="register button" style={{ margin: '7px' }} color="inherit" styles="theme.spacing(1)" onClick={openRegisterDialog}>
-                Register
-                            </Button>
-            <Dialog open={showRegisterDialog} onClose={handleRegisterDialogClose} onKeyDown={(e) => { if (e.keyCode === 13) { sendRegisterData() } }} aria-labelledby="register-form-dialog">
-                <DialogTitle id="register-form-dialog-title">Register</DialogTitle>
-                <DialogContent>
-                    <DialogContentText>
-                        To register to schreddit please enter the following information:
-                                </DialogContentText>
-                    <TextField
-                        autoFocus
-                        margin="dense"
-                        id="name"
-                        label="Email Address"
-                        type="email"
-                        fullWidth
-                        onChange={props.handleEmailChange}
-                    />
-                    <TextField
-                        margin="dense"
-                        id="username"
-                        label="Username"
-                        type="text"
-                        fullWidth
-                        onChange={props.handleUsernameChange}
-                    />
-                    <TextField
-                        margin="dense"
-                        id="password"
-                        label="Password"
-                        type="password"
-                        fullWidth
-                        onChange={props.handlePasswordChange}
-                    />
-                </DialogContent>
-                <DialogActions>
-                    <Button onClick={handleRegisterDialogClose} color="primary">
-                        Cancel
+    if(!props.cookies.loggedIn){
+        return (
+            <div>
+                <Button variant="outlined" aria-label="register button" style={{ margin: '7px' }} color="inherit" styles="theme.spacing(1)" onClick={openRegisterDialog}>
+                    Register
                                 </Button>
-                    <Button onClick={sendRegisterData} color="primary">
-                        Register
-                                </Button>
-                </DialogActions>
-            </Dialog>
+                <Dialog open={showRegisterDialog} onClose={handleRegisterDialogClose} onKeyDown={(e) => { if (e.keyCode === 13) { sendRegisterData() } }} aria-labelledby="register-form-dialog">
+                    <DialogTitle id="register-form-dialog-title">Register</DialogTitle>
+                    <DialogContent>
+                        <DialogContentText>
+                            To register to schreddit please enter the following information:
+                                    </DialogContentText>
+                        <TextField
+                            autoFocus
+                            margin="dense"
+                            id="name"
+                            label="Email Address"
+                            type="email"
+                            fullWidth
+                            onChange={props.handleEmailChange}
+                        />
+                        <TextField
+                            margin="dense"
+                            id="username"
+                            label="Username"
+                            type="text"
+                            fullWidth
+                            onChange={props.handleUsernameChange}
+                        />
+                        <TextField
+                            margin="dense"
+                            id="password"
+                            label="Password"
+                            type="password"
+                            fullWidth
+                            onChange={props.handlePasswordChange}
+                        />
+                    </DialogContent>
+                    <DialogActions>
+                        <Button onClick={handleRegisterDialogClose} color="primary">
+                            Cancel
+                                    </Button>
+                        <Button onClick={sendRegisterData} color="primary">
+                            Register
+                                    </Button>
+                    </DialogActions>
+                </Dialog>
 
-        </div>
-    )
-
+            </div>
+        )
+    } else {
+        return(
+            <div>
+            
+            </div>
+        )
+    }
 }
