@@ -15,9 +15,15 @@ const App = () => {
     setCookie("loggedIn", true, { path: '/' });
   };
 
+  const handleLogout = () => {
+    removeCookie("token");
+    removeCookie("loggedIn")
+    window.location.reload();
+  };
+
   return (
     <div className="container">
-      <Header cookies={cookies} handleLogin={handleLogin} />
+      <Header cookies={cookies} handleLogin={handleLogin} handleLogout={handleLogout} />
       <FrontpageBody />
     </div>
   );

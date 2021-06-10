@@ -231,7 +231,7 @@ export default function PrimarySearchAppBar(props) {
                             <SearchIcon />
                         </div>
                         <InputBase
-                            placeholder={"Search…" + props.loggedIn}
+                            placeholder="Search…"
                             classes={{
                                 root: classes.inputRoot,
                                 input: classes.inputInput,
@@ -247,6 +247,7 @@ export default function PrimarySearchAppBar(props) {
                             handleEmailChange={handleEmailChange}
                             handlePasswordChange={handlePasswordChange}
                             handleLogin={props.handleLogin}
+                            handleLogout={props.handleLogout}
                             cookies={props.cookies}
                         />
 
