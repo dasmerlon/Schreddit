@@ -1,6 +1,7 @@
 import React from 'react';
 import configData from './config.json'
 import axios from 'axios';
+import { useCookies } from 'react-cookie';
 import { fade, makeStyles } from '@material-ui/core/styles';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
@@ -134,6 +135,12 @@ export default function PrimarySearchAppBar() {
 
     const [showLoginDialog, setShowLoginDialog] = React.useState(false);
 
+    const [cookies, setCookie, removeCookie] = useCookies(["token"]);
+
+    const handleSetTokenCookie = token  => {
+        setCookie("token", token , { path: '/' });
+      }
+
     const openLoginDialog = () => {
         setShowLoginDialog(true);
     };
@@ -171,14 +178,17 @@ export default function PrimarySearchAppBar() {
             password: password.password
         })
         console.log(response.data)
+        handleRegisterDialogClose();
     };
 
     const sendLoginData = async () => {
-        const response = await axios.post(configData.USER_API_URL + '/register', {
-            username: username.username,
-            password: password.password
-        })
-        console.log(response.data)
+        const loginData = new URLSearchParams();
+        loginData.append('username', email.email);
+        loginData.append('password', password.password);
+        const response = await axios.post(configData.LOGIN_API_URL, loginData);
+        handleSetTokenCookie(response.data.access_token);
+        console.log(response.data.access_token);
+        handleLoginDialogClose();
     };
 
     const menuId = 'primary-search-account-menu';
@@ -271,7 +281,7 @@ export default function PrimarySearchAppBar() {
                         <Button variant="outlined" aria-label="login button" style={{ margin: '7px' }} color="inherit" onClick={openLoginDialog}>
                             Login
                         </Button>
-                        <Dialog open={showLoginDialog} onClose={handleLoginDialogClose} aria-labelledby="login-form-dialog">
+                        <Dialog open={showLoginDialog} onClose={handleLoginDialogClose} onKeyDown={(e) => {if (e.keyCode === 13) {sendLoginData()} }} aria-labelledby="login-form-dialog">
                             <DialogTitle id="login-form-dialog-title">Login</DialogTitle>
                             <DialogContent>
                                 <DialogContentText>
@@ -300,7 +310,7 @@ export default function PrimarySearchAppBar() {
                                     Cancel
                                 </Button>
                                 <Button onClick={sendLoginData} color="primary">
-                                    Register
+                                    Login
                                 </Button>
                             </DialogActions>
                         </Dialog>
@@ -308,7 +318,7 @@ export default function PrimarySearchAppBar() {
                         <Button variant="outlined" aria-label="register button" style={{ margin: '7px' }} color="inherit" styles="theme.spacing(1)" onClick={openRegisterDialog}>
                             Register
                             </Button>
-                        <Dialog open={showRegisterDialog} onClose={handleRegisterDialogClose} aria-labelledby="register-form-dialog">
+                        <Dialog open={showRegisterDialog} onClose={handleRegisterDialogClose} onKeyDown={(e) => {if (e.keyCode === 13) {sendRegisterData()} }} aria-labelledby="register-form-dialog">
                             <DialogTitle id="register-form-dialog-title">Register</DialogTitle>
                             <DialogContent>
                                 <DialogContentText>
