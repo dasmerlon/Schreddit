@@ -73,7 +73,9 @@ export default function Login(props) {
     } else {
         return (
             <div>
-
+                <Button variant="outlined" aria-label="login button" style={{ margin: '7px' }} color="inherit" onClick={props.handleLogout}>
+                    Logout
+                </Button>
             </div>
         )
     }
