@@ -23,12 +23,15 @@ export default function Register(props) {
 
 
     const sendRegisterData = async () => {
-        const response = await axios.post(configData.USER_API_URL + '/register', {
+        axios.post(configData.USER_API_URL + '/register', {
             email: props.email.email,
             username: props.username.username,
             password: props.password.password
+        }).then(response => {
+            handleRegisterDialogClose();
+        }).catch(error => {
+            console.log(error);
         })
-        handleRegisterDialogClose();
     };
     if(!props.cookies.loggedIn){
         return (
@@ -48,14 +51,18 @@ export default function Register(props) {
                             id="name"
                             label="Email Address"
                             type="email"
+                            variant="outlined"
+                            error={props.email.error}
+                            helperText={props.email.errorMessage}                            
                             fullWidth
-                            onChange={props.handleEmailChange}
+                            onInput={props.handleEmailChange}
                         />
                         <TextField
                             margin="dense"
                             id="username"
                             label="Username"
                             type="text"
+                            variant="outlined"
                             fullWidth
                             onChange={props.handleUsernameChange}
                         />
@@ -64,6 +71,7 @@ export default function Register(props) {
                             id="password"
                             label="Password"
                             type="password"
+                            variant="outlined"
                             fullWidth
                             onChange={props.handlePasswordChange}
                         />

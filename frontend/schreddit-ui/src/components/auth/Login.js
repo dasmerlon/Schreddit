@@ -25,9 +25,14 @@ export default function Login(props) {
         const loginData = new URLSearchParams();
         loginData.append('username', props.email.email);
         loginData.append('password', props.password.password);
-        const response = await axios.post(configData.LOGIN_API_URL, loginData);
-        props.handleLogin(response.data.access_token);
-        handleLoginDialogClose();
+        axios.post(configData.LOGIN_API_URL, loginData)
+            .then(response => {
+                props.handleLogin(response.data.access_token);
+                handleLoginDialogClose();
+            })
+            .catch(error => {
+                console.log(error);
+            });
     };
     if (!props.cookies.loggedIn) {
         return (
@@ -44,17 +49,21 @@ export default function Login(props) {
                         <TextField
                             autoFocus
                             margin="dense"
-                            id="name"
+                            id="email"
                             label="Email Address"
                             type="email"
+                            helperText={props.email.errorMessage}
+                            variant="outlined"
+                            error={props.email.error}
                             fullWidth
-                            onChange={props.handleEmailChange}
+                            onInput={props.handleEmailChange}
                         />
                         <TextField
                             margin="dense"
                             id="password"
                             label="Password"
                             type="password"
+                            variant="outlined"
                             fullWidth
                             onChange={props.handlePasswordChange}
                         />
