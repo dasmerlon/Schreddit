@@ -137,9 +137,9 @@ export default function PrimarySearchAppBar() {
 
     const [cookies, setCookie, removeCookie] = useCookies(["token"]);
 
-    const handleSetTokenCookie = token  => {
-        setCookie("token", token , { path: '/' });
-      }
+    const handleSetTokenCookie = token => {
+        setCookie("token", token, { path: '/' });
+    }
 
     const openLoginDialog = () => {
         setShowLoginDialog(true);
@@ -148,7 +148,6 @@ export default function PrimarySearchAppBar() {
     const handleLoginDialogClose = () => {
         setShowLoginDialog(false);
     };
-
     const [username, setUsername] = React.useState("");
     const [email, setEmail] = React.useState("");
     const [password, setPassword] = React.useState("");
@@ -281,7 +280,7 @@ export default function PrimarySearchAppBar() {
                         <Button variant="outlined" aria-label="login button" style={{ margin: '7px' }} color="inherit" onClick={openLoginDialog}>
                             Login
                         </Button>
-                        <Dialog open={showLoginDialog} onClose={handleLoginDialogClose} onKeyDown={(e) => {if (e.keyCode === 13) {sendLoginData()} }} aria-labelledby="login-form-dialog">
+                        <Dialog open={showLoginDialog} onClose={handleLoginDialogClose} onKeyDown={(e) => { if (e.keyCode === 13) { sendLoginData() } }} aria-labelledby="login-form-dialog">
                             <DialogTitle id="login-form-dialog-title">Login</DialogTitle>
                             <DialogContent>
                                 <DialogContentText>
@@ -318,7 +317,7 @@ export default function PrimarySearchAppBar() {
                         <Button variant="outlined" aria-label="register button" style={{ margin: '7px' }} color="inherit" styles="theme.spacing(1)" onClick={openRegisterDialog}>
                             Register
                             </Button>
-                        <Dialog open={showRegisterDialog} onClose={handleRegisterDialogClose} onKeyDown={(e) => {if (e.keyCode === 13) {sendRegisterData()} }} aria-labelledby="register-form-dialog">
+                        <Dialog open={showRegisterDialog} onClose={handleRegisterDialogClose} onKeyDown={(e) => { if (e.keyCode === 13) { sendRegisterData() } }} aria-labelledby="register-form-dialog">
                             <DialogTitle id="register-form-dialog-title">Register</DialogTitle>
                             <DialogContent>
                                 <DialogContentText>
