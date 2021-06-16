@@ -6,7 +6,7 @@ const useStyles = makeStyles((theme) => ({
     root: {
       width: '100%',
       maxWidth: 400,
-      maxHeight: 440,
+      maxHeight: 445,
     },
   }));
 
@@ -26,7 +26,7 @@ export default function TrendingComs() {
                     </ListItemAvatar>
                     <ListItemText
                         primary={
-                            <Link href="https://www.google.com"  color="inherit">
+                            <Link href="#"  color="inherit">
                                 {'r/sharks'}
                             </Link>
                         }
@@ -52,7 +52,7 @@ export default function TrendingComs() {
                     </ListItemAvatar>
                     <ListItemText
                         primary={
-                            <Link href="https://www.google.com"  color="inherit">
+                            <Link href="#"  color="inherit">
                                 {'r/sharks'}
                             </Link>
                         }
@@ -78,7 +78,7 @@ export default function TrendingComs() {
                     </ListItemAvatar>
                     <ListItemText
                         primary={
-                            <Link href="https://www.google.com"  color="inherit">
+                            <Link href="#"  color="inherit">
                                 {'r/sharks'}
                             </Link>
                         }
@@ -104,7 +104,7 @@ export default function TrendingComs() {
                     </ListItemAvatar>
                     <ListItemText
                         primary={
-                            <Link href="https://www.google.com"  color="inherit">
+                            <Link href="#"  color="inherit">
                                 {'r/sharks'}
                             </Link>
                         }
@@ -130,7 +130,7 @@ export default function TrendingComs() {
                     </ListItemAvatar>
                     <ListItemText
                         primary={
-                            <Link href="https://www.google.com"  color="inherit">
+                            <Link href="#"  color="inherit">
                                 {'r/sharks'}
                             </Link>
                         }

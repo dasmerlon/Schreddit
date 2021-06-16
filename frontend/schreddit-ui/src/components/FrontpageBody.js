@@ -1,12 +1,14 @@
 import React from 'react';
 import {makeStyles} from "@material-ui/core/styles";
-import {Grid, Paper, Container, Hidden, CssBaseline} from "@material-ui/core";
+import {Grid, Container, Hidden, CssBaseline} from "@material-ui/core";
 import Post from "./Post";
 import SortByBar from "./SortByBar";
 import CreatePost from "./CreatePost";
 import TrendingComs from "./TrendingComs";
+import Premium from "./Premium";
 import CommunitiesByCategory from "./PopularComs";
 import Info from "./Info";
+import TopComs from "./TopComs";
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -16,12 +18,6 @@ const useStyles = makeStyles((theme) => ({
       width: '100%',
       margin: '0px',
     },
-    paper: {
-      padding: theme.spacing(20),
-      textAlign: 'center',
-      color: 'rgb(255,255,255,0.8)',
-      background: 'rgb(0,0,0,0.8)',
-    }
   }));
 
 //TODO: - Sticky funktionalität vom Contact Component ist hardcoded über die höhe der Seite..
@@ -62,16 +58,16 @@ export default function ForntpageBody() {
           <Grid item container spacing={3} direction='column' className={classes.grid} xs={1}>
             <Hidden smDown>
               <Grid item>
+                <TopComs />
+              </Grid>
+              <Grid item>
+                <Premium />
+              </Grid>
+              <Grid item>
                 <TrendingComs />
               </Grid>
               <Grid item>
                 <CommunitiesByCategory />
-              </Grid>
-              <Grid item>
-                <Paper className={classes.paper}>Top Communities (work in Progress)</Paper>
-              </Grid>
-              <Grid item>
-                <Paper className={classes.paper}>Premium (work in Progress)</Paper>
               </Grid>
               <Grid item>
                 <Info />
