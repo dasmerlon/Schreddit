@@ -118,8 +118,7 @@ export default function PrimarySearchAppBar(props) {
 
 
 
-
-
+    const [error, setError] = React.useState("");
     const [username, setUsername] = React.useState("");
     const [email, setEmail] = React.useState("");
     const [password, setPassword] = React.useState("");
@@ -251,6 +250,8 @@ export default function PrimarySearchAppBar(props) {
                             handleLogin={props.handleLogin}
                             handleLogout={props.handleLogout}
                             cookies={props.cookies}
+                            error={error}
+                            setError={setError}
                         />
 
                         <Register
@@ -261,6 +262,8 @@ export default function PrimarySearchAppBar(props) {
                             handleUsernameChange={handleUsernameChange}
                             handlePasswordChange={handlePasswordChange}
                             cookies={props.cookies}
+                            error={error}
+                            setError={setError}
                         />
 
                         <IconButton
