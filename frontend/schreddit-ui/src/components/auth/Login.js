@@ -14,6 +14,7 @@ export default function Login(props) {
     const [showLoginDialog, setShowLoginDialog] = React.useState(false);
 
     const openLoginDialog = () => {
+        props.setError({message: ""})
         setShowLoginDialog(true);
     };
 
@@ -31,6 +32,7 @@ export default function Login(props) {
                 handleLoginDialogClose();
             })
             .catch(error => {
+                props.setError({message: "Something went wrong, please try again later."});
                 console.log(error);
             });
     };
@@ -56,7 +58,7 @@ export default function Login(props) {
                             variant="outlined"
                             error={props.email.error}
                             fullWidth
-                            onInput={props.handleEmailChange}
+                            onChange={props.handleEmailChange}
                         />
                         <TextField
                             margin="dense"
@@ -67,6 +69,9 @@ export default function Login(props) {
                             fullWidth
                             onChange={props.handlePasswordChange}
                         />
+                        <p >
+                            { props.error.message }
+                        </p>
                     </DialogContent>
                     <DialogActions>
                         <Button onClick={handleLoginDialogClose} color="primary">

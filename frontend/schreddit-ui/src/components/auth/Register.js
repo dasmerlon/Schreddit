@@ -14,6 +14,7 @@ export default function Register(props) {
     const [showRegisterDialog, setShowRegisterDialog] = React.useState(false);
 
     const openRegisterDialog = () => {
+        props.setError({message: ""})
         setShowRegisterDialog(true);
     };
 
@@ -30,6 +31,7 @@ export default function Register(props) {
         }).then(response => {
             handleRegisterDialogClose();
         }).catch(error => {
+            props.setError({message: "Something went wrong, please try again later."});
             console.log(error);
         })
     };
@@ -75,6 +77,9 @@ export default function Register(props) {
                             fullWidth
                             onChange={props.handlePasswordChange}
                         />
+                        <p >
+                            { props.error.message }
+                        </p>
                     </DialogContent>
                     <DialogActions>
                         <Button onClick={handleRegisterDialogClose} color="primary">
