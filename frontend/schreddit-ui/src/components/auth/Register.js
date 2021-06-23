@@ -14,7 +14,7 @@ export default function Register(props) {
     const [showRegisterDialog, setShowRegisterDialog] = React.useState(false);
 
     const openRegisterDialog = () => {
-        props.setError({message: ""})
+        props.setError({ message: "" })
         setShowRegisterDialog(true);
     };
 
@@ -31,11 +31,11 @@ export default function Register(props) {
         }).then(response => {
             handleRegisterDialogClose();
         }).catch(error => {
-            props.setError({message: "Something went wrong, please try again later."});
+            props.setError({ message: "Something went wrong, please try again later." });
             console.log(error);
         })
     };
-    if(!props.cookies.loggedIn){
+    if (!props.cookies.loggedIn) {
         return (
             <div>
                 <Button variant="outlined" aria-label="register button" style={{ margin: '7px' }} color="inherit" styles="theme.spacing(1)" onClick={openRegisterDialog}>
@@ -55,7 +55,7 @@ export default function Register(props) {
                             type="email"
                             variant="outlined"
                             error={props.email.error}
-                            helperText={props.email.errorMessage}                            
+                            helperText={props.email.errorMessage}
                             fullWidth
                             onInput={props.handleEmailChange}
                         />
@@ -77,26 +77,26 @@ export default function Register(props) {
                             fullWidth
                             onChange={props.handlePasswordChange}
                         />
-                        <p >
-                            { props.error.message }
+                        <p>
+                            {props.error.message}
                         </p>
                     </DialogContent>
                     <DialogActions>
                         <Button onClick={handleRegisterDialogClose} color="primary">
                             Cancel
-                                    </Button>
+                        </Button>
                         <Button onClick={sendRegisterData} color="primary">
                             Register
-                                    </Button>
+                        </Button>
                     </DialogActions>
                 </Dialog>
 
             </div>
         )
     } else {
-        return(
+        return (
             <div>
-            
+
             </div>
         )
     }
