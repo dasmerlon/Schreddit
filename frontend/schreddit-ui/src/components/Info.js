@@ -1,11 +1,16 @@
 import React from 'react';
 import {makeStyles} from "@material-ui/core/styles";
-import {Card, List, ListItem, ListItemSecondaryAction, ListItemText, Link, CardContent, Typography} from "@material-ui/core"
+import { Button, Card, List, ListItem, ListItemSecondaryAction, ListItemText, Link, CardContent, Typography} from "@material-ui/core"
 
 const useStyles = makeStyles((theme) => ({
-    root: {
+    card: {
         position: "sticky",
         top: "1rem",
+        hight: "3000px",
+    },
+    button: {
+        position: "sticky",
+        top: "870px",
         hight: "3000px",
     }
     
@@ -17,7 +22,7 @@ export default function Info() {
     
     return (
         <>
-        <Card className={classes.root}>
+        <Card className={classes.card}>
             <CardContent>
                 <List dense>
                     <ListItem>
@@ -183,12 +188,14 @@ export default function Info() {
                 </Typography>
             </CardContent>
         </Card>
+        
+        <Button className={classes.button} variant="contained" color="primary">Back to Top</Button>
+
         <br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/>
         <br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/>
         <br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/>
         <br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/>
-        <br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/>
-        <br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/>
+        <br/><br/><br/><br/><br/><br/><br/><br/>
         </>
     );
   }
