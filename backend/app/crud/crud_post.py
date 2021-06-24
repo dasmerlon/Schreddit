@@ -1,7 +1,7 @@
 from neomodel import db
 
 from app.crud.base import CRUDBase
-from app.models import Post, User
+from app.models import Post, User, Subreddit
 from app.schemas import PostCreate, PostUpdate
 
 
@@ -22,7 +22,7 @@ class CRUDPost(CRUDBase[Post, PostCreate, PostUpdate]):
             text=obj_in.text,
             title=obj_in.title,
             type=obj_in.type.value,
-            url=obj_in.url,
+            url=obj_in.url
         )
         db_obj.save()
         return db_obj
@@ -32,5 +32,9 @@ class CRUDPost(CRUDBase[Post, PostCreate, PostUpdate]):
         db_obj.author.connect(author)
         return db_obj.author.single()
 
+    @db.write_transaction
+    def set_subreddit(self, *, db_obj: Post, subreddit: Subreddit) -> Subreddit:
+        db_obj.subreddit.connect(subreddit)
+        return db_obj.subreddit.single()
 
 post = CRUDPost(Post)

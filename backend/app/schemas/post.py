@@ -7,6 +7,7 @@ from pydantic import BaseModel, HttpUrl
 
 from app.core.config import settings
 from app.schemas.user import User
+from app.schemas.subreddit import Subreddit
 
 
 class PostType(str, Enum):
@@ -41,7 +42,7 @@ class Post(PostBase):
     created_at: Optional[datetime]
     updated_at: Optional[datetime]
     type: PostType
-    # sr: Subreddit TODO: uncomment when subreddit logic is implemented
+    sr: Subreddit
     author: User
 
     class Config:

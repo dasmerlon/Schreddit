@@ -22,5 +22,4 @@ class Post(StructuredNode):
 
     # Relationships
     author = RelationshipTo(".user.User", "AUTHORED_BY", cardinality=cardinality.One)
-    # TODO: uncomment when subreddit logic is implemented
-    # subreddit = RelationshipTo('.subreddit.Subreddit', 'POSTED_IN', cardinality=One)
+    subreddit = RelationshipTo(".subreddit.Subreddit", "POSTED_IN", cardinality=cardinality.One)
