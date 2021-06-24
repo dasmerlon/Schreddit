@@ -37,9 +37,7 @@ class PostGetterDict(GetterDict):
             if key in self._obj.__properties__:
                 return getattr(self._obj, key, default)
             elif key == "author":
-                return (
-                    self._obj.author.single() if self._obj.author else None
-                )
+                return self._obj.author.single() if self._obj.author else None
             elif key == "subreddit":
                 return self._obj.subreddit.single() if self._obj.subreddit else None
         else:

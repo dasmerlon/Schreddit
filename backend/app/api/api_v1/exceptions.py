@@ -27,7 +27,7 @@ class PostNotFoundException(HTTPException):
 class PostTypeRequestInvalidException(HTTPException):
     def __init__(self):
         super().__init__(
-            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            status_code=status.HTTP_400_BAD_REQUEST,
             detail="Posts must only include either 'text' or 'url', "
             "depending of the post type.",
         )

@@ -29,7 +29,7 @@ class PostSchemas:
         return schemas.PostCreate(
             nsfw=True if type == "link" else False,
             spoiler=False if type == "link" else True,
-            sr="testsr",
+            sr="",
             text="A text." if type != "link" or not valid else None,
             title="A Title",
             url="https://www.google.com/" if type == "link" or not valid else None,
@@ -44,4 +44,17 @@ class PostSchemas:
             text="An updated text." if type != "link" or not valid else None,
             title="An Updated Title",
             url="https://www.update.com/" if type == "link" or not valid else None,
+        )
+
+
+class SubredditSchemas:
+    """Subreddit schemas"""
+
+    @staticmethod
+    def get_create(*, type: str = "public"):
+        return schemas.SubredditCreate(
+            description="A subreddit description.",
+            sr="test",
+            title="A Subreddit Title",
+            type=type,
         )

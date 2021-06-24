@@ -6,7 +6,7 @@ from fastapi import status
 from fastapi.testclient import TestClient
 
 from app.core.config import settings
-from app.models import Post, User
+from app.models import Post, Subreddit, User
 from app.tests.utils.fake_payloads import PostPayloads
 
 
@@ -32,15 +32,19 @@ def test_submit_post(
     client: TestClient,
     fake_auth: User,
     payload: Dict,
+    subreddit_in_db: Subreddit,
     remove_posts: List,
 ) -> None:
+    payload["sr"] = subreddit_in_db.sr
     r = client.post(f"{settings.API_V1_STR}/posts", json=payload)
     created_post = r.json()
     remove_posts.append(created_post["uid"])
     assert r.status_code == status.HTTP_201_CREATED
 
     for key in payload:
-        if key != "sr":  # subreddit must be asserted separately
+        if key == "sr":
+            assert created_post["subreddit"][key] == payload[key]
+        else:
             assert created_post[key] == payload[key]
     assert created_post["author"]["email"] == fake_auth.email
     assert created_post["author"]["username"] == fake_auth.username
@@ -51,7 +55,9 @@ def test_submit_post(
     post = r.json()
     assert post
     for key in payload:
-        if key != "sr":
+        if key == "sr":
+            assert post["subreddit"][key] == payload[key]
+        else:
             assert post[key] == payload[key]
 
 
@@ -62,7 +68,10 @@ def test_submit_post(
         PostPayloads.get_create(type="self", valid=False),
     ],
 )
-def test_submit_post_fail(client: TestClient, fake_auth: User, payload: Dict) -> None:
+def test_submit_post_fail(
+    client: TestClient, fake_auth: User, payload: Dict, subreddit_in_db: Subreddit
+) -> None:
+    payload["sr"] = subreddit_in_db.sr
     r = client.post(f"{settings.API_V1_STR}/posts", json=payload)
     assert r.status_code == status.HTTP_400_BAD_REQUEST
     assert "detail" in r.json()

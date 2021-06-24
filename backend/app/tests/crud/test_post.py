@@ -19,7 +19,8 @@ def test_get_post_by_uid_fail() -> None:
 
 def test_create_post(test_user_in_db: User, remove_posts: List) -> None:
     obj_in = PostSchemas.get_create(type="link")
-    post = crud.post.create(obj_in, test_user_in_db)
+    post = crud.post.create(obj_in)
+    crud.post.set_author(post, test_user_in_db)
     author = post.author.single()
     remove_posts.append(post.uid)
     for key in obj_in.dict():

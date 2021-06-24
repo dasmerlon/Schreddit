@@ -2,8 +2,9 @@ import pytest
 from pydantic import UUID4
 
 from app import crud
-from app.models import Post, User
-from app.tests.utils.fake_schemas import PostSchemas, UserSchemas
+from app.models import Post, Subreddit, User
+from app.tests.utils.fake_schemas import (PostSchemas, SubredditSchemas,
+                                          UserSchemas)
 
 """
 Fixtures for the test user
@@ -18,17 +19,29 @@ def test_user_in_db() -> User:
 
 
 @pytest.fixture
-def post_link_in_db(test_user_in_db: User) -> Post:
-    post = crud.post.create(PostSchemas.get_create(type="link"), test_user_in_db)
+def post_link_in_db(test_user_in_db: User, subreddit_in_db: Subreddit) -> Post:
+    post = crud.post.create(PostSchemas.get_create(type="link"))
+    crud.post.set_author(post, test_user_in_db)
+    crud.post.set_subreddit(post, subreddit_in_db)
     yield post
     crud.post.remove(post.uid)
 
 
 @pytest.fixture
-def post_self_in_db(request, test_user_in_db: User) -> Post:
-    post = crud.post.create(PostSchemas.get_create(type="self"), test_user_in_db)
+def post_self_in_db(test_user_in_db: User, subreddit_in_db: Subreddit) -> Post:
+    post = crud.post.create(PostSchemas.get_create(type="self"))
+    crud.post.set_author(post, test_user_in_db)
+    crud.post.set_subreddit(post, subreddit_in_db)
     yield post
     crud.post.remove(post.uid)
+
+
+@pytest.fixture
+def subreddit_in_db(test_user_in_db: User) -> Subreddit:
+    sr = crud.subreddit.create(SubredditSchemas.get_create(type="public"))
+    crud.subreddit.set_admin(sr, test_user_in_db)
+    yield sr
+    crud.subreddit.remove(sr.uid)
 
 
 """

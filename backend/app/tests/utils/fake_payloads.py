@@ -35,7 +35,6 @@ class PostPayloads:
         return {
             "nsfw": True if type == "link" else False,
             "spoiler": False if type == "link" else True,
-            "sr": "testsr",
             "text": "A text." if type != "link" or not valid else None,
             "title": "A Title",
             "url": "https://www.google.com/" if type == "link" or not valid else None,
