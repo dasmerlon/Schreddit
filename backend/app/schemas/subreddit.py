@@ -9,9 +9,9 @@ from app.schemas.user import User
 
 class SubredditType(str, Enum):
     archived = "archived"
-    #employees_only = "employees_only"
-    #gold_only = "gold_only"
-    #gold_restricted = "gold_restricted"
+    # employees_only = "employees_only"
+    # gold_only = "gold_only"
+    # gold_restricted = "gold_restricted"
     private = "private"
     public = "public"
     restricted = "restricted"
@@ -20,19 +20,19 @@ class SubredditType(str, Enum):
 
 class SubredditBase(BaseModel):
     description: Optional[str] = None
-    #over_18: Optional[bool] = None
-    #public_description: Optional[bool] = None
-    #spoilers_enable: Optional[bool] = None
+    # over_18: Optional[bool] = None
+    # public_description: Optional[bool] = None
+    # spoilers_enable: Optional[bool] = None
     sr: Optional[str] = None
-    #submit_link_label: Optional[str] = None
-    #submit_text_label: Optional[str] = None
-    #welcome_message_enabled: Optional[bool] = None
-    #welcome_message_text: Optional[str] = None
+    # submit_link_label: Optional[str] = None
+    # submit_text_label: Optional[str] = None
+    # welcome_message_enabled: Optional[bool] = None
+    # welcome_message_text: Optional[str] = None
 
 
 class SubredditCreate(SubredditBase):
     sr: str
-    #submit_text: str
+    # submit_text: str
     title: str
     type: SubredditType
 

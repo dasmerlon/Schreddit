@@ -2,7 +2,7 @@ from neomodel import NodeSet, UniqueIdProperty, db
 from pydantic import UUID4
 
 from app.crud.base import CRUDBase
-from app.models import Post, User, Subreddit
+from app.models import Post, User
 from app.schemas import PostCreate, PostSort, PostUpdate
 
 

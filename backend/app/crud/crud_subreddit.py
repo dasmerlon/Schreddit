@@ -3,7 +3,7 @@ from typing import Optional
 from neomodel import db
 
 from app.crud.base import CRUDBase
-from app.models import Post, User, Subreddit
+from app.models import Subreddit, User
 from app.schemas import SubredditCreate, SubredditUpdate
 
 
@@ -40,5 +40,6 @@ class CRUDSubreddit(CRUDBase[Subreddit, SubredditCreate, SubredditUpdate]):
         :return: the subreddit, if it exists, else `None`
         """
         return Subreddit.nodes.get_or_none(sr=sr)
+
 
 subreddit = CRUDSubreddit(Subreddit)

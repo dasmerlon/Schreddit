@@ -1,7 +1,6 @@
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, status
 
 from app import crud, models, schemas
-from app.models import User
 from app.api import deps
 
 router = APIRouter()
@@ -14,7 +13,8 @@ router = APIRouter()
     status_code=status.HTTP_201_CREATED,
 )
 def create_subreddit(
-        subreddit: schemas.SubredditCreate, current_user: models.User = Depends(deps.get_current_user)
+    subreddit: schemas.SubredditCreate,
+    current_user: models.User = Depends(deps.get_current_user),
 ):
     """
     Create a new Subreddit `sr` with the title `title`.

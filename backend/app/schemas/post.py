@@ -7,8 +7,8 @@ from pydantic import UUID4, BaseModel, HttpUrl
 
 from app.core.config import settings
 from app.schemas.base import Pagination, PostGetterDict
-from app.schemas.user import User
 from app.schemas.subreddit import Subreddit
+from app.schemas.user import User
 
 
 class PostSort(str, Enum):

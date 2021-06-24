@@ -23,4 +23,6 @@ class Post(StructuredNode):
     author = RelationshipTo(
         ".user.User", "AUTHORED_BY", cardinality=cardinality.ZeroOrOne
     )
-    subreddit = RelationshipTo(".subreddit.Subreddit", "POSTED_IN", cardinality=cardinality.One)
+    subreddit = RelationshipTo(
+        ".subreddit.Subreddit", "POSTED_IN", cardinality=cardinality.One
+    )
