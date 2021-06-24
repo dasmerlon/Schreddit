@@ -4,6 +4,7 @@ from typing import Optional
 
 from pydantic import BaseModel
 
+from app.schemas.base import SubredditGetterDict
 from app.schemas.user import User
 
 
@@ -36,6 +37,9 @@ class SubredditCreate(SubredditBase):
     title: str
     type: SubredditType
 
+    class Config:
+        use_enum_values = True
+
 
 class SubredditUpdate(SubredditBase):
     pass
@@ -47,3 +51,4 @@ class Subreddit(SubredditCreate):
 
     class Config:
         orm_mode = True
+        getter_dict = SubredditGetterDict

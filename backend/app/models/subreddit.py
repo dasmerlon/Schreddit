@@ -2,7 +2,6 @@ from neomodel import (DateTimeProperty, RelationshipFrom, RelationshipTo,
                       StringProperty, StructuredNode, UniqueIdProperty,
                       cardinality)
 
-# Relationships
 
 # Nodes
 class Subreddit(StructuredNode):

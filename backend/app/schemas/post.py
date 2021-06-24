@@ -53,9 +53,9 @@ class Post(PostBase):
     created_at: Optional[datetime]
     updated_at: Optional[datetime]
     type: PostType
-    sr: Subreddit
     uid: UUID4
     author: Optional[User] = None
+    subreddit: Subreddit
 
     class Config:
         orm_mode = True
@@ -63,5 +63,5 @@ class Post(PostBase):
 
 
 class PostList(BaseModel):
-    pagination: Pagination
-    results: List[Post]
+    links: Pagination
+    data: List[Post]

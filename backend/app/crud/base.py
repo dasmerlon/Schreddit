@@ -41,6 +41,7 @@ class CRUDBase(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
         """
         return self.model.nodes
 
+    @db.write_transaction
     def create(self, obj_in: CreateSchemaType) -> ModelType:
         """
         Create a new node.

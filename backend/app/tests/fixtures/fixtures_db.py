@@ -6,7 +6,7 @@ from app.models import Post, User
 from app.tests.utils.fake_schemas import PostSchemas, UserSchemas
 
 """
-Fixtures for a random user
+Fixtures for the test user
 """
 
 

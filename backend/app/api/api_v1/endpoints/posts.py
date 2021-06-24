@@ -1,10 +1,15 @@
 from typing import Optional
 
-from fastapi import APIRouter, Depends, HTTPException, Query, Response, status
+from fastapi import APIRouter, Depends, Query, Request, Response, status
 from pydantic import UUID4
 
 from app import crud, models, schemas
 from app.api import deps
+from app.api.api_v1.exceptions import (PaginationAfterAndBeforeException,
+                                       PaginationInvalidCursorException,
+                                       PostNotFoundException,
+                                       PostTypeRequestInvalidException,
+                                       SubredditNotFoundException)
 
 router = APIRouter()
 
@@ -16,28 +21,35 @@ router = APIRouter()
     status_code=status.HTTP_200_OK,
 )
 def get_posts(
+    request: Request,
     after: Optional[UUID4] = None,
     before: Optional[UUID4] = None,
     sort: Optional[schemas.PostSort] = schemas.PostSort.new,
-    limit: Optional[int] = Query(25, gt=0, le=100),
+    size: Optional[int] = Query(25, gt=0, le=100),
 ):
-    if after is not None and before is not None:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="The parameters 'after' and 'before' should not be specified both.",
-        )
-    if (after is not None and crud.post.get(after.hex) is None) or (
-        before is not None and crud.post.get(before.hex) is None
-    ):
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="The cursor does not reference an existing post.",
-        )
-    results = crud.post.get_selection(after, before, sort, limit)
-    new_after, new_before = crud.post.get_new_cursors(results, sort)
+    # act depending on which cursor is passed
+    if after and before:
+        raise PaginationAfterAndBeforeException
+    elif not after and not before:
+        results = crud.post.get_posts_after(None, sort, size)
+    elif after:
+        cursor = crud.post.get(after)
+        if cursor is None:
+            raise PaginationInvalidCursorException
+        results = crud.post.get_posts_after(cursor, sort, size)
+    elif before:
+        cursor = crud.post.get(before)
+        if cursor is None:
+            raise PaginationInvalidCursorException
+        results = crud.post.get_posts_before(cursor, sort, size)
+
+    basepath = f"{request.url.path}?sort={sort}"
+    next = f"{basepath}&after={results[-1].uid}" if results else None
+    prev = f"{basepath}&before={results[0].uid}" if results else None
+
     # set pagination
-    pagination = schemas.Pagination(after=new_after, before=new_before, limit=limit)
-    return schemas.PostList(pagination=pagination, results=results)
+    links = schemas.Pagination(next=next, prev=prev)
+    return schemas.PostList(links=links, data=results)
 
 
 @router.get(
@@ -49,9 +61,7 @@ def get_posts(
 def get_post(post_uid: UUID4):
     post = crud.post.get(post_uid)
     if post is None:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail="The post was not found."
-        )
+        raise PostNotFoundException
     return post
 
 
@@ -77,24 +87,21 @@ def submit_post(
     - `type` : one of `link`, `self`, `image`, `video`, `videogif`)
     - `url` : a valid URL
     """
-    if post.type == schemas.PostType.link and (
-        post.url is None or post.text is not None
-    ):
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Posts of type 'link' must include a 'url' parameter"
-            "and must not include a 'text' parameter.",
-        )
+    if post.type == schemas.PostType.link and (not post.url or post.text):
+        raise PostTypeRequestInvalidException
     elif post.type != schemas.PostType.link and (not post.text or post.url):
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Posts of type other than 'link' must include a 'text' parameter"
-            "and must not include a 'url' parameter.",
-        )
-    # TODO: throw exception if subreddit does not exist
-    created_post = crud.post.create(post, current_user)
-    # TODO: uncomment when subreddit logic is implemented
-    # subreddit = crud.post.set_subreddit(created_post, subreddit)
+        raise PostTypeRequestInvalidException
+
+    # check if subreddit exists
+    sr = crud.subreddit.get_by_sr(post.sr)
+    if sr is None:
+        raise SubredditNotFoundException
+
+    # create post
+    created_post = crud.post.create(post)
+    crud.post.set_author(created_post, current_user)
+    crud.post.set_subreddit(created_post, sr)
+
     return created_post
 
 
@@ -121,20 +128,9 @@ def update_post(
     """
     old_post = crud.post.get(post_uid)
     if old_post is None:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="The post you want to update does not exist.",
-        )
+        raise PostNotFoundException
     if old_post.type == schemas.PostType.link.value and post.text is not None:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Posts of type 'link' must include a 'url' parameter"
-            "and must not include a 'text' parameter.",
-        )
+        raise PostTypeRequestInvalidException
     elif old_post.type != schemas.PostType.link.value and post.url is not None:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Posts of type other than 'link' must include a 'text' parameter"
-            "and must not include a 'url' parameter.",
-        )
+        raise PostTypeRequestInvalidException
     crud.post.update(old_post, post)

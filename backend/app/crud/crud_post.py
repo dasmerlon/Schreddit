@@ -1,46 +1,35 @@
-from neomodel import NodeSet, UniqueIdProperty, db
-from pydantic import UUID4
+from typing import Optional
+
+from neomodel import NodeSet, db
 
 from app.crud.base import CRUDBase
-from app.models import Post, User
+from app.models import Post, Subreddit, User
 from app.schemas import PostCreate, PostSort, PostUpdate
 
 
 class CRUDPost(CRUDBase[Post, PostCreate, PostUpdate]):
     """Post class for CRUD operations"""
 
-    def get_selection(
-        self, after: UUID4, before: UUID4, sort: PostSort, limit: int
+    @db.read_transaction
+    def get_posts_after(
+        self, after: Optional[Post], sort: PostSort, limit: int
     ) -> NodeSet:
         """
-        Get a selection of posts.
-        :param after: get posts that were created after this post given by his uid
-        :param before: get posts that were created before this post given by his uid
+        Get the posts after the cursor.
+
+        :param after: get posts after this cursor according to the sorting   order,
+        or get first posts if no cursor is specified
+        :param sort: sorting order
         :param limit: number of posts to get
         :return: a list of posts
         """
-        if after is not None:
-            cursor = self.get(after.hex)
-        elif before is not None:
-            cursor = self.get(before.hex)
-        else:
-            cursor = None
-
         if sort.new:
-            if cursor is None:  # no cursor specified, start from the top
-                cursor = self.model.nodes.order_by("-created_at").first_or_none()
-            if cursor is None:  # queried nodeset is empty
-                return []
-
-            if before is not None:  # posts newer than or equal to cursor
-                result = self.model.nodes.order_by("created_at").filter(
-                    created_at__gte=cursor.created_at
-                )
-            else:  # posts older than or equal to cursor
+            if after is None:
+                result = self.model.nodes.order_by("-created_at")
+            else:
                 result = self.model.nodes.order_by("-created_at").filter(
-                    created_at__lte=cursor.created_at
+                    created_at__lt=after.created_at
                 )
-            return result[:limit]
         elif sort.hot:  # TODO: implement other sorting orders
             pass
         elif sort.top:
@@ -48,40 +37,40 @@ class CRUDPost(CRUDBase[Post, PostCreate, PostUpdate]):
         elif sort.best:
             pass
 
+        return result[:limit]
+
     @db.read_transaction
-    def get_new_cursors(
-        self, nodes: NodeSet, sort: PostSort
-    ) -> (UniqueIdProperty, UniqueIdProperty):
+    def get_posts_before(self, before: Post, sort: PostSort, limit: int) -> NodeSet:
         """
-        Get new cursors for navigation.
-        :param nodes: the nodeset that the cursors should be retrieved for
-        :param sort: the sorting that was used for the nodeset
-        :return:
+        Get the posts before the cursor.
+
+        :param before: get posts before this cursor according to the sorting order
+        :param sort: sorting order
+        :param limit: number of posts to get
+        :return: a list of posts
         """
         if sort.new:
-            after = (
-                self.model.nodes.order_by("-created_at")
-                .filter(created_at__lt=nodes[-1].created_at)
-                .first_or_none()
+            result = self.model.nodes.order_by("created_at").filter(
+                created_at__gt=before.created_at
             )
-            before = (
-                self.model.nodes.order_by("created_at")
-                .filter(created_at__gt=nodes[0].created_at)
-                .first_or_none()
-            )
-            return (after.uid if after else None, before.uid if before else None)
+        elif sort.hot:  # TODO: implement other sorting orders
+            pass
+        elif sort.top:
+            pass
+        elif sort.best:
+            pass
+
+        return result[:limit]
 
     @db.write_transaction
-    def create(self, obj_in: PostCreate, author: User) -> Post:
-        """
-        Create a new post.
-        :param obj_in: the `UserCreate` schema
-        :param author: the author of the post
-        :return: the `Post` model of the created post
-        """
-        db_obj = super().create(obj_in)
-        db_obj.author.connect(author)
-        return db_obj
+    def set_author(self, db_obj: Post, author: User) -> User:
+        post_author = db_obj.author.connect(author)
+        return post_author
+
+    @db.write_transaction
+    def set_subreddit(self, db_obj: Post, subreddit: Subreddit) -> Subreddit:
+        post_subreddit = db_obj.subreddit.connect(subreddit)
+        return post_subreddit
 
 
 post = CRUDPost(Post)
