@@ -8,6 +8,7 @@ from pydantic import UUID4, BaseModel, HttpUrl
 from app.core.config import settings
 from app.schemas.base import Pagination, PostGetterDict
 from app.schemas.user import User
+from app.schemas.subreddit import Subreddit
 
 
 class PostSort(str, Enum):
@@ -52,7 +53,7 @@ class Post(PostBase):
     created_at: Optional[datetime]
     updated_at: Optional[datetime]
     type: PostType
-    # sr: Subreddit TODO: uncomment when subreddit logic is implemented
+    sr: Subreddit
     uid: UUID4
     author: Optional[User] = None
 
