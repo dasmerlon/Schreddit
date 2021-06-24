@@ -1,8 +1,10 @@
+from datetime import datetime, timezone
 from typing import Any, Dict, Generic, Optional, Type, TypeVar, Union
+from uuid import UUID
 
 from fastapi.encoders import jsonable_encoder
-from neomodel import NodeSet, StructuredNode, UniqueIdProperty, db
-from pydantic import BaseModel
+from neomodel import NodeSet, StructuredNode, db
+from pydantic import UUID4, BaseModel
 
 ModelType = TypeVar("ModelType", bound=StructuredNode)
 CreateSchemaType = TypeVar("CreateSchemaType", bound=BaseModel)
@@ -20,13 +22,16 @@ class CRUDBase(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
         self.model = model
 
     @db.read_transaction
-    def get(self, uid: UniqueIdProperty) -> Optional[ModelType]:
+    def get(self, uid: Union[str, UUID4]) -> Optional[ModelType]:
         """
         Get one node from the model class.
         :param uid: the unique identifier of the node to get
         :return: the requested node if it exists, else None
         """
-        return self.model.nodes.get_or_none(uid=uid)
+        if isinstance(uid, UUID):
+            return self.model.nodes.get_or_none(uid=uid.hex)
+        else:
+            return self.model.nodes.get_or_none(uid=uid)
 
     @db.read_transaction
     def get_all(self) -> NodeSet:
@@ -44,7 +49,7 @@ class CRUDBase(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
         :return: the database model of the created node
         """
         obj_in_data = jsonable_encoder(obj_in)
-        db_obj = self.model(**obj_in_data)  # type: ignore
+        db_obj = self.model(**obj_in_data)
         db_obj.save()
         return db_obj
 
@@ -58,24 +63,30 @@ class CRUDBase(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
         :param obj_in: the UpdateSchema of the node to be updated
         :return: the updated database model
         """
-        obj_data = jsonable_encoder(db_obj)
         if isinstance(obj_in, dict):
             update_data = obj_in
         else:
             update_data = obj_in.dict(exclude_unset=True)
-        for field in obj_data:
+        for field in db_obj.__properties__:
             if field in update_data:
                 setattr(db_obj, field, update_data[field])
+        if hasattr(db_obj, "updated_at"):
+            setattr(db_obj, "updated_at", datetime.now(timezone.utc))
         db_obj.save()
         return db_obj
 
     @db.write_transaction
-    def remove(self, uid: UniqueIdProperty) -> Optional[ModelType]:
+    def remove(self, uid: Union[str, UUID4]) -> Optional[ModelType]:
         """
         Remove a node.
         :param uid: the unique identifier of the node to be removed
         :return: the removed node
         """
-        obj = self.model.nodes.get_or_none(uid=uid)
-        obj.delete()
+        if isinstance(uid, UUID):
+            obj = self.model.nodes.get_or_none(uid=uid.hex)
+        else:
+            obj = self.model.nodes.get_or_none(uid=uid)
+
+        if obj is not None:
+            obj.delete()
         return obj

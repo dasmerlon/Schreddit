@@ -1,3 +1,5 @@
+from typing import Dict, List
+
 import pytest
 from fastapi import status
 from fastapi.testclient import TestClient
@@ -6,51 +8,42 @@ from app import crud
 from app.core.config import settings
 from app.core.security import verify_password
 from app.models import User
+from app.tests.utils.fake_payloads import UserPayloads
 
 
-def register_user(client, email, username, password):
-    payload = {"email": email, "username": username, "password": password}
-    return client.post(f"{settings.API_V1_STR}/users/register", json=payload)
-
-
-def test_register_user(client: TestClient) -> None:
-    email = "test@example.com"
-    username = "test"
-    password = "password"
-    r = register_user(client, email, username, password)
-    assert r.status_code == status.HTTP_201_CREATED
+def test_register_user(client: TestClient, remove_users: List) -> None:
+    payload = UserPayloads.get_create()
+    r = client.post(f"{settings.API_V1_STR}/users/register", json=payload)
     registered_user = r.json()
+    remove_users.append(registered_user["uid"])
+    assert r.status_code == status.HTTP_201_CREATED
+    assert registered_user["uid"] is not None
+    assert registered_user["email"] == payload["email"]
+    assert registered_user["username"] == payload["username"]
 
-    assert registered_user["email"] == email
-    assert registered_user["username"] == username
 
-
-def test_register_existing_email(client: TestClient) -> None:
-    email = "dup@example.com"
-    username1 = "dup1"
-    username2 = "dup2"
-    password = "password"
-    register_user(client, email, username1, password)
-    r = register_user(client, email, username2, password)
+def test_register_existing_email(client: TestClient, test_user_in_db: User) -> None:
+    payload = UserPayloads.get_create()
+    payload["username"] = "newuser-samemail"
+    r = client.post(f"{settings.API_V1_STR}/users/register", json=payload)
     assert r.status_code == status.HTTP_403_FORBIDDEN
     assert "detail" in r.json()
 
 
-def test_register_existing_username(client: TestClient) -> None:
-    email1 = "dup1@example.com"
-    email2 = "dup2@example.com"
-    username = "dup"
-    password = "password"
-    register_user(client, email1, username, password)
-    r = register_user(client, email2, username, password)
+def test_register_existing_username(client: TestClient, test_user_in_db: User) -> None:
+    payload = UserPayloads.get_create()
+    payload["email"] = "newmail@sameuser.com"
+    r = client.post(f"{settings.API_V1_STR}/users/register", json=payload)
     assert r.status_code == status.HTTP_403_FORBIDDEN
     assert "detail" in r.json()
 
 
-def test_get_user(client: TestClient, fake_user: User) -> None:
-    payload = client.get(f"{settings.API_V1_STR}/users/{fake_user.username}").json()
-    assert payload["email"] == fake_user.email
-    assert payload["username"] == fake_user.username
+def test_get_user(client: TestClient, test_user_in_db: User) -> None:
+    payload = client.get(
+        f"{settings.API_V1_STR}/users/{test_user_in_db.username}"
+    ).json()
+    assert payload["email"] == test_user_in_db.email
+    assert payload["username"] == test_user_in_db.username
 
 
 def test_get_not_existing_user(client: TestClient) -> None:
@@ -67,7 +60,7 @@ def test_get_not_existing_user(client: TestClient) -> None:
         {"password": "hunter2"},
     ],
 )
-def test_update_user(client: TestClient, fake_auth, payload: dict) -> None:
+def test_update_user(client: TestClient, fake_auth: User, payload: Dict) -> None:
     response = client.put(f"{settings.API_V1_STR}/users/settings", json=payload)
     assert response.status_code == status.HTTP_204_NO_CONTENT
 
@@ -90,6 +83,8 @@ def test_update_user(client: TestClient, fake_auth, payload: dict) -> None:
         {},
     ],
 )
-def test_update_user_not_modified(client: TestClient, fake_auth, payload: dict) -> None:
+def test_update_user_not_modified(
+    client: TestClient, fake_auth: User, payload: Dict
+) -> None:
     response = client.put(f"{settings.API_V1_STR}/users/settings", json=payload)
     assert response.status_code == status.HTTP_304_NOT_MODIFIED

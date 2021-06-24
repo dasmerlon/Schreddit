@@ -1,40 +1,76 @@
-from neomodel import db
+from typing import Optional
+
+from neomodel import NodeSet, db
 
 from app.crud.base import CRUDBase
-from app.models import Post, User, Subreddit
-from app.schemas import PostCreate, PostUpdate
+from app.models import Post, Subreddit, User
+from app.schemas import PostCreate, PostSort, PostUpdate
 
 
 class CRUDPost(CRUDBase[Post, PostCreate, PostUpdate]):
     """Post class for CRUD operations"""
 
-    @db.write_transaction
-    def create(self, obj_in: PostCreate) -> Post:
+    @db.read_transaction
+    def get_posts_after(
+        self, after: Optional[Post], sort: PostSort, limit: int
+    ) -> NodeSet:
         """
-        Create a new post.
-        :param obj_in: the `UserCreate` schema
-        :param author: the author of the post
-        :return: the `Post` model of the created post
+        Get the posts after the cursor.
+
+        :param after: get posts after this cursor according to the sorting   order,
+        or get first posts if no cursor is specified
+        :param sort: sorting order
+        :param limit: number of posts to get
+        :return: a list of posts
         """
-        db_obj = Post(
-            nsfw=obj_in.nsfw,
-            spoiler=obj_in.spoiler,
-            text=obj_in.text,
-            title=obj_in.title,
-            type=obj_in.type.value,
-            url=obj_in.url
-        )
-        db_obj.save()
-        return db_obj
+        if sort.new:
+            if after is None:
+                result = self.model.nodes.order_by("-created_at")
+            else:
+                result = self.model.nodes.order_by("-created_at").filter(
+                    created_at__lt=after.created_at
+                )
+        elif sort.hot:  # TODO: implement other sorting orders
+            pass
+        elif sort.top:
+            pass
+        elif sort.best:
+            pass
+
+        return result[:limit]
+
+    @db.read_transaction
+    def get_posts_before(self, before: Post, sort: PostSort, limit: int) -> NodeSet:
+        """
+        Get the posts before the cursor.
+
+        :param before: get posts before this cursor according to the sorting order
+        :param sort: sorting order
+        :param limit: number of posts to get
+        :return: a list of posts
+        """
+        if sort.new:
+            result = self.model.nodes.order_by("created_at").filter(
+                created_at__gt=before.created_at
+            )
+        elif sort.hot:  # TODO: implement other sorting orders
+            pass
+        elif sort.top:
+            pass
+        elif sort.best:
+            pass
+
+        return result[:limit]
 
     @db.write_transaction
     def set_author(self, db_obj: Post, author: User) -> User:
-        db_obj.author.connect(author)
-        return db_obj.author.single()
+        post_author = db_obj.author.connect(author)
+        return post_author
 
     @db.write_transaction
-    def set_subreddit(self, *, db_obj: Post, subreddit: Subreddit) -> Subreddit:
-        db_obj.subreddit.connect(subreddit)
-        return db_obj.subreddit.single()
+    def set_subreddit(self, db_obj: Post, subreddit: Subreddit) -> Subreddit:
+        post_subreddit = db_obj.subreddit.connect(subreddit)
+        return post_subreddit
+
 
 post = CRUDPost(Post)
