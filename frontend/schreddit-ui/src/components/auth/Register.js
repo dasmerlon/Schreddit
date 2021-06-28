@@ -58,6 +58,7 @@ export default function Register(props) {
                             helperText={props.email.errorMessage}
                             fullWidth
                             onInput={props.handleEmailChange}
+                            onBlur={props.handleEmailChange}
                         />
                         <TextField
                             margin="dense"
