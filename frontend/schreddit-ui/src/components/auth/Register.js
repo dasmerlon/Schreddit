@@ -31,8 +31,14 @@ export default function Register(props) {
         }).then(response => {
             handleRegisterDialogClose();
         }).catch(error => {
-            props.setError({ message: "Something went wrong, please try again later." });
-            console.log(error);
+            if (error.response.status === 422) {
+                props.setError({ message: "Please check your input. Something is not valid." });
+            }
+            else {
+                props.setError({ message: "Something went wrong, please try again later." });
+            }
+
+            console.log(error.response);
         })
     };
     if (!props.cookies.loggedIn) {
