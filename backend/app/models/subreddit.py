@@ -24,4 +24,4 @@ class Subreddit(StructuredNode):
 
     # Relationships
     admin = RelationshipTo(".user.User", "CREATED_BY", cardinality=cardinality.One)
-    post = RelationshipFrom(".post.Post", "POSTED_IN")
+    post = RelationshipFrom(".post_meta.PostMeta", "POSTED_IN")

@@ -4,7 +4,7 @@ from neomodel import (BooleanProperty, DateTimeProperty, RelationshipTo,
 
 
 # Nodes
-class Post(StructuredNode):
+class PostMeta(StructuredNode):
     # Properties
     uid = UniqueIdProperty()
     nsfw = BooleanProperty()

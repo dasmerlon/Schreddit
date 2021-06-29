@@ -2,7 +2,7 @@ import pytest
 from pydantic import UUID4
 
 from app import crud
-from app.models import Post, Subreddit, User
+from app.models import PostMeta, Subreddit, User
 from app.tests.utils.fake_schemas import (PostSchemas, SubredditSchemas,
                                           UserSchemas)
 
@@ -19,26 +19,26 @@ def test_user_in_db() -> User:
 
 
 @pytest.fixture
-def post_link_in_db(test_user_in_db: User, subreddit_in_db: Subreddit) -> Post:
+def post_link_in_db(test_user_in_db: User, subreddit_in_db: Subreddit) -> PostMeta:
     schema = PostSchemas.get_create(type="link")
-    post_meta = crud.post.create(schema.metadata)
+    post_meta = crud.post_meta.create(schema.metadata)
     post_content = crud.post_content.create(post_meta.uid, schema.content)
-    crud.post.set_author(post_meta, test_user_in_db)
-    crud.post.set_subreddit(post_meta, subreddit_in_db)
+    crud.post_meta.set_author(post_meta, test_user_in_db)
+    crud.post_meta.set_subreddit(post_meta, subreddit_in_db)
     yield post_meta, post_content
-    crud.post.remove(post_meta.uid)
+    crud.post_meta.remove(post_meta.uid)
     crud.post_content.remove(post_meta.uid)
 
 
 @pytest.fixture
-def post_self_in_db(test_user_in_db: User, subreddit_in_db: Subreddit) -> Post:
+def post_self_in_db(test_user_in_db: User, subreddit_in_db: Subreddit) -> PostMeta:
     schema = PostSchemas.get_create(type="self")
-    post_meta = crud.post.create(schema.metadata)
+    post_meta = crud.post_meta.create(schema.metadata)
     post_content = crud.post_content.create(post_meta.uid, schema.content)
-    crud.post.set_author(post_meta, test_user_in_db)
-    crud.post.set_subreddit(post_meta, subreddit_in_db)
+    crud.post_meta.set_author(post_meta, test_user_in_db)
+    crud.post_meta.set_subreddit(post_meta, subreddit_in_db)
     yield post_meta, post_content
-    crud.post.remove(post_meta.uid)
+    crud.post_meta.remove(post_meta.uid)
     crud.post_content.remove(post_meta.uid)
 
 
@@ -69,7 +69,7 @@ def remove_posts():
     uids = []
     yield uids
     for uid in uids:
-        if crud.post.get(UUID4(uid)) is not None:
-            crud.post.remove(UUID4(uid))
+        if crud.post_meta.get(UUID4(uid)) is not None:
+            crud.post_meta.remove(UUID4(uid))
         if crud.post_content.get(UUID4(uid)) is not None:
             crud.post_content.remove(UUID4(uid))

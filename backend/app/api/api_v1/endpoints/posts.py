@@ -43,17 +43,17 @@ def get_posts(
     if after and before:
         raise PaginationAfterAndBeforeException
     elif not after and not before:
-        results = crud.post.get_posts_after(None, sort, size)
+        results = crud.post_meta.get_posts_after(None, sort, size)
     elif after:
-        cursor = crud.post.get(after)
+        cursor = crud.post_meta.get(after)
         if cursor is None:
             raise PaginationInvalidCursorException
-        results = crud.post.get_posts_after(cursor, sort, size)
+        results = crud.post_meta.get_posts_after(cursor, sort, size)
     elif before:
-        cursor = crud.post.get(before)
+        cursor = crud.post_meta.get(before)
         if cursor is None:
             raise PaginationInvalidCursorException
-        results = crud.post.get_posts_before(cursor, sort, size)
+        results = crud.post_meta.get_posts_before(cursor, sort, size)
 
     basepath = f"{request.url.path}?sort={sort}"
     next = f"{basepath}&after={results[-1].uid}" if results else None
@@ -84,7 +84,7 @@ def get_post(uid: UUID4):
 
     - `uid` : the UUID of the post to return
     """
-    post_meta = crud.post.get(uid)
+    post_meta = crud.post_meta.get(uid)
     post_content = crud.post_content.get(uid)
     if not post_meta or not post_content:
         raise PostNotFoundException
@@ -129,10 +129,10 @@ def submit_post(
         raise SubredditNotFoundException
 
     # create post
-    created_post_meta = crud.post.create(post.metadata)
+    created_post_meta = crud.post_meta.create(post.metadata)
     created_post_content = crud.post_content.create(created_post_meta.uid, post.content)
-    crud.post.set_author(created_post_meta, current_user)
-    crud.post.set_subreddit(created_post_meta, sr)
+    crud.post_meta.set_author(created_post_meta, current_user)
+    crud.post_meta.set_subreddit(created_post_meta, sr)
 
     return schemas.Post(metadata=created_post_meta, content=created_post_content)
 
@@ -158,7 +158,7 @@ def update_post(
     - `uid` : the unique ID of the post to be updated
     - `url` : a valid URL
     """
-    old_post_meta = crud.post.get(post_uid)
+    old_post_meta = crud.post_meta.get(post_uid)
     old_post_content = crud.post_content.get(post_uid)
     if not old_post_meta or not old_post_content:
         raise PostNotFoundException
@@ -167,5 +167,5 @@ def update_post(
     elif old_post_meta.type != schemas.PostType.link.value and post.content.url:
         raise PostTypeRequestInvalidException
 
-    crud.post.update(old_post_meta, post.metadata)
+    crud.post_meta.update(old_post_meta, post.metadata)
     crud.post_content.update(old_post_content, post.content)

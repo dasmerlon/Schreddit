@@ -6,11 +6,11 @@ from fastapi import status
 from fastapi.testclient import TestClient
 
 from app.core.config import settings
-from app.models import Post, PostContent, Subreddit, User
+from app.models import PostContent, PostMeta, Subreddit, User
 from app.tests.utils.fake_payloads import PostPayloads
 
 
-def test_get_post(client: TestClient, post_self_in_db: (Post, PostContent)) -> None:
+def test_get_post(client: TestClient, post_self_in_db: (PostMeta, PostContent)) -> None:
     metadata = post_self_in_db[0]
     r = client.get(f"{settings.API_V1_STR}/posts/{metadata.uid}")
     assert r.status_code == status.HTTP_200_OK
@@ -19,7 +19,9 @@ def test_get_post(client: TestClient, post_self_in_db: (Post, PostContent)) -> N
     assert post["metadata"]["uid"].replace("-", "") == metadata.uid
 
 
-def test_get_post_fail(client: TestClient, post_self_in_db: Post) -> None:
+def test_get_post_fail(
+    client: TestClient, post_self_in_db: (PostMeta, PostContent)
+) -> None:
     r = client.get(f"{settings.API_V1_STR}/posts/{uuid4().hex}")
     assert r.status_code == status.HTTP_404_NOT_FOUND
     assert "detail" in r.json()
@@ -92,7 +94,7 @@ def test_submit_post_fail(
 def test_update_post_type_self(
     client: TestClient,
     fake_auth: User,
-    post_self_in_db: (Post, PostContent),
+    post_self_in_db: (PostMeta, PostContent),
 ) -> None:
     metadata = post_self_in_db[0]
     payload = PostPayloads.get_update(type="self")
@@ -120,7 +122,7 @@ def test_update_post_type_self(
 def test_update_post_type_self_fail(
     client: TestClient,
     fake_auth: User,
-    post_self_in_db: (Post, PostContent),
+    post_self_in_db: (PostMeta, PostContent),
 ) -> None:
     payload = PostPayloads.get_update(type="self")
     r = client.put(f"{settings.API_V1_STR}/posts/{uuid4().hex}", json=payload)
@@ -131,7 +133,7 @@ def test_update_post_type_self_fail(
 def test_update_post_type_self_fail_url(
     client: TestClient,
     fake_auth: User,
-    post_self_in_db: (Post, PostContent),
+    post_self_in_db: (PostMeta, PostContent),
 ) -> None:
     metadata = post_self_in_db[0]
     payload = PostPayloads.get_update(type="self", valid=False)
@@ -143,7 +145,7 @@ def test_update_post_type_self_fail_url(
 def test_update_post_type_link(
     client: TestClient,
     fake_auth: User,
-    post_link_in_db: (Post, PostContent),
+    post_link_in_db: (PostMeta, PostContent),
 ) -> None:
     metadata = post_link_in_db[0]
     payload = PostPayloads.get_update(type="link")
@@ -171,7 +173,7 @@ def test_update_post_type_link(
 def test_update_post_type_link_fail_text(
     client: TestClient,
     fake_auth: User,
-    post_link_in_db: (Post, PostContent),
+    post_link_in_db: (PostMeta, PostContent),
 ) -> None:
     metadata = post_link_in_db[0]
     payload = PostPayloads.get_update(type="link", valid=False)

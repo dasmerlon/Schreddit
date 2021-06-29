@@ -4,7 +4,7 @@ from neomodel import StructuredNode
 from pydantic import BaseModel
 from pydantic.utils import GetterDict
 
-from app.models import Post, Subreddit
+from app.models import PostMeta, Subreddit
 
 
 class Pagination(BaseModel):
@@ -33,7 +33,7 @@ class PostGetterDict(GetterDict):
     """
 
     def get(self, key: Any, default: Any = None) -> Any:
-        if isinstance(self._obj, Post):
+        if isinstance(self._obj, PostMeta):
             if key in self._obj.__properties__:
                 return getattr(self._obj, key, default)
             elif key == "author":
