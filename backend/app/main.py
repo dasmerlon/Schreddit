@@ -6,7 +6,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from app.api.api_v1.main import router
 from app.core.config import settings
-from app.db.init_db import init_neo4j
+from app.db.init_db import init_mongodb, init_neo4j
 
 app = FastAPI(
     title="Reddit-Klon",
@@ -23,7 +23,8 @@ app.add_middleware(
 )
 
 if __name__ == "__main__":
-    # initialize DB
+    # initialize DBs
+    init_mongodb()
     init_neo4j()
 
     # run server

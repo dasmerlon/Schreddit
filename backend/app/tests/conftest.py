@@ -2,6 +2,7 @@ from typing import Generator
 
 import pytest
 from fastapi.testclient import TestClient
+from mongoengine import connect, disconnect
 from neomodel import config
 
 from app import crud
@@ -15,6 +16,13 @@ pytest_plugins = ["app.tests.fixtures.fixtures_db"]
 @pytest.fixture(autouse=True, scope="session")
 def database():
     config.DATABASE_URL = settings.NEO4J_TEST_BOLT_URL
+
+
+@pytest.fixture(autouse=True, scope="session")
+def mongodb():
+    connect(host=settings.MONGODB_TEST_URI)
+    yield
+    disconnect()
 
 
 @pytest.fixture(scope="module")

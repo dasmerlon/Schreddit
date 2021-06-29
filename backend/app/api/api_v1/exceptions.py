@@ -37,7 +37,7 @@ class SubredditNotFoundException(HTTPException):
     def __init__(self):
         super().__init__(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail="This subreddit subreddit does not exist.",
+            detail="This subreddit does not exist.",
         )
 
 

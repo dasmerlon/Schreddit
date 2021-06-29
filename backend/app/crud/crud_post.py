@@ -4,10 +4,10 @@ from neomodel import NodeSet, db
 
 from app.crud.base import CRUDBase
 from app.models import Post, Subreddit, User
-from app.schemas import PostCreate, PostSort, PostUpdate
+from app.schemas import PostMetaCreate, PostMetaUpdate, PostSort
 
 
-class CRUDPost(CRUDBase[Post, PostCreate, PostUpdate]):
+class CRUDPostMeta(CRUDBase[Post, PostMetaCreate, PostMetaUpdate]):
     """Post class for CRUD operations"""
 
     @db.read_transaction
@@ -73,4 +73,4 @@ class CRUDPost(CRUDBase[Post, PostCreate, PostUpdate]):
         return post_subreddit
 
 
-post = CRUDPost(Post)
+post = CRUDPostMeta(Post)

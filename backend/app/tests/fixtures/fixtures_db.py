@@ -20,20 +20,26 @@ def test_user_in_db() -> User:
 
 @pytest.fixture
 def post_link_in_db(test_user_in_db: User, subreddit_in_db: Subreddit) -> Post:
-    post = crud.post.create(PostSchemas.get_create(type="link"))
-    crud.post.set_author(post, test_user_in_db)
-    crud.post.set_subreddit(post, subreddit_in_db)
-    yield post
-    crud.post.remove(post.uid)
+    schema = PostSchemas.get_create(type="link")
+    post_meta = crud.post.create(schema.metadata)
+    post_content = crud.post_content.create(post_meta.uid, schema.content)
+    crud.post.set_author(post_meta, test_user_in_db)
+    crud.post.set_subreddit(post_meta, subreddit_in_db)
+    yield post_meta, post_content
+    crud.post.remove(post_meta.uid)
+    crud.post_content.remove(post_meta.uid)
 
 
 @pytest.fixture
 def post_self_in_db(test_user_in_db: User, subreddit_in_db: Subreddit) -> Post:
-    post = crud.post.create(PostSchemas.get_create(type="self"))
-    crud.post.set_author(post, test_user_in_db)
-    crud.post.set_subreddit(post, subreddit_in_db)
-    yield post
-    crud.post.remove(post.uid)
+    schema = PostSchemas.get_create(type="self")
+    post_meta = crud.post.create(schema.metadata)
+    post_content = crud.post_content.create(post_meta.uid, schema.content)
+    crud.post.set_author(post_meta, test_user_in_db)
+    crud.post.set_subreddit(post_meta, subreddit_in_db)
+    yield post_meta, post_content
+    crud.post.remove(post_meta.uid)
+    crud.post_content.remove(post_meta.uid)
 
 
 @pytest.fixture
@@ -65,3 +71,5 @@ def remove_posts():
     for uid in uids:
         if crud.post.get(UUID4(uid)) is not None:
             crud.post.remove(UUID4(uid))
+        if crud.post_content.get(UUID4(uid)) is not None:
+            crud.post_content.remove(UUID4(uid))

@@ -8,6 +8,8 @@ class Settings(BaseSettings):
     API_V1_STR: str = "/api/v1"
     NEO4J_BOLT_URL: str
     NEO4J_TEST_BOLT_URL: str
+    MONGODB_URI: str
+    MONGODB_TEST_URI: str
     JWT_SECRET_KEY: str
     JWT_ALGORITHM: str = "HS256"
     SUB_PREFIX: str = "uid:"
