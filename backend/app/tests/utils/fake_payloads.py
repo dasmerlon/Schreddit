@@ -13,13 +13,6 @@ class UserPayloads:
         }
 
     @staticmethod
-    def get_update():
-        return {
-            "email": "new@mail.com",
-            "password": "newpassword",
-        }
-
-    @staticmethod
     def get_auth_by_email():
         return {
             "username": settings.TEST_USER_EMAIL,
