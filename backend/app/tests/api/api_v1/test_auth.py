@@ -18,14 +18,15 @@ def test_get_access_token_by_email(client: TestClient, test_user_in_db: User) ->
     # Ensure that the access token has been returned and is properly saved in Redis.
     access_token = response.json().get("access_token")
     assert access_token
-    assert redis.get(access_token).decode('utf-8')
+    assert redis.get(access_token).decode("utf-8")
 
     # Make sure that we can actually use the JWT token to access routes with
     # restricted access via a valid Authentication header.
     response = client.put(
         f"{settings.API_V1_STR}/users/settings",
         json={"password": "hunter3"},
-        headers={"Authorization": f"Bearer {access_token}"})
+        headers={"Authorization": f"Bearer {access_token}"},
+    )
     assert response.status_code == status.HTTP_204_NO_CONTENT
 
 
@@ -39,7 +40,7 @@ def test_get_access_token_by_username(
     # Ensure that the access token has been returned and is properly saved in Redis.
     access_token = response.json().get("access_token")
     assert access_token
-    assert redis.get(access_token).decode('utf-8')
+    assert redis.get(access_token).decode("utf-8")
 
 
 def test_disallow_login_with_invalid_jwt(client: TestClient) -> None:
@@ -47,7 +48,8 @@ def test_disallow_login_with_invalid_jwt(client: TestClient) -> None:
     response = client.put(
         f"{settings.API_V1_STR}/users/settings",
         json={"password": "hunter3"},
-        headers={"Authorization": "Bearer wrongtoken"})
+        headers={"Authorization": "Bearer wrongtoken"},
+    )
     assert response.status_code == status.HTTP_401_UNAUTHORIZED
 
 

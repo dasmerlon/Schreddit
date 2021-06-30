@@ -27,7 +27,7 @@ def get_current_user(token: str = Depends(oauth2_scheme)) -> models.User:
     if user_uuid is None:
         user_uuid = get_user_id_from_jwt(token)
     else:
-        user_uuid = user_uuid.decode('utf-8')
+        user_uuid = user_uuid.decode("utf-8")
 
     user = crud.user.get(user_uuid)
     if user is None:
