@@ -14,18 +14,23 @@ router = APIRouter()
 @router.post("/login", response_model=schemas.Token)
 def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends()):
     """
-    Users can login via email+password.
+    Users can login via email+password or username+password.
     If everything succeeds, a new JWT will be created and returned.
     On top of that, we also save all JWTs in a Redis cache for faster lookup.
     """
     # Check if the user can login with the current email-password combination.
-    user = crud.user.authenticate(form_data.username, form_data.password)
+    try:
+        user = crud.user.authenticate_by_email(form_data.username, form_data.password)
+    except BaseException:
+        user = crud.user.authenticate_by_username(
+            form_data.username, form_data.password
+        )
 
     if not user:
         # The user credentials were invalid, return an error
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Incorrect username or password",
+            detail="Incorrect username/email or password",
             headers={"WWW-Authenticate": "Bearer"},
         )
 
