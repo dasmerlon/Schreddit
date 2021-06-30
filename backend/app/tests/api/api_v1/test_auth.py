@@ -6,6 +6,7 @@ from fastapi.testclient import TestClient
 
 from app.core.config import settings
 from app.models import User
+from app.sessions import redis
 from app.tests.utils.fake_payloads import UserPayloads
 
 
@@ -14,8 +15,18 @@ def test_get_access_token_by_email(client: TestClient, test_user_in_db: User) ->
     response = client.post(f"{settings.API_V1_STR}/auth/login", data=payload)
     assert response.status_code == status.HTTP_200_OK
 
+    # Ensure that the access token has been returned and is properly saved in Redis.
     access_token = response.json().get("access_token")
     assert access_token
+    assert redis.get(access_token).decode('utf-8')
+
+    # Make sure that we can actually use the JWT token to access routes with
+    # restricted access via a valid Authentication header.
+    response = client.put(
+        f"{settings.API_V1_STR}/users/settings",
+        json={"password": "hunter3"},
+        headers={"Authorization": f"Bearer {access_token}"})
+    assert response.status_code == status.HTTP_204_NO_CONTENT
 
 
 def test_get_access_token_by_username(
@@ -25,8 +36,19 @@ def test_get_access_token_by_username(
     response = client.post(f"{settings.API_V1_STR}/auth/login", data=payload)
     assert response.status_code == status.HTTP_200_OK
 
+    # Ensure that the access token has been returned and is properly saved in Redis.
     access_token = response.json().get("access_token")
     assert access_token
+    assert redis.get(access_token).decode('utf-8')
+
+
+def test_disallow_login_with_invalid_jwt(client: TestClient) -> None:
+    # Make sure that we can't use an incorrect JWT token.
+    response = client.put(
+        f"{settings.API_V1_STR}/users/settings",
+        json={"password": "hunter3"},
+        headers={"Authorization": "Bearer wrongtoken"})
+    assert response.status_code == status.HTTP_401_UNAUTHORIZED
 
 
 @pytest.mark.parametrize(

@@ -2,6 +2,7 @@ from datetime import timedelta
 
 from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordRequestForm
+from neomodel import DeflateError
 
 from app import crud, schemas
 from app.core import security
@@ -21,7 +22,7 @@ def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends()):
     # Check if the user can login with the current email-password combination.
     try:
         user = crud.user.authenticate_by_email(form_data.username, form_data.password)
-    except BaseException:
+    except DeflateError:
         user = crud.user.authenticate_by_username(
             form_data.username, form_data.password
         )
