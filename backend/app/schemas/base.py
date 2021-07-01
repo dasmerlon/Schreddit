@@ -4,7 +4,7 @@ from neomodel import StructuredNode
 from pydantic import BaseModel
 from pydantic.utils import GetterDict
 
-from app.models import PostMeta, Subreddit
+from app.models import CommentMeta, PostMeta, Subreddit
 
 
 class Pagination(BaseModel):
@@ -40,6 +40,23 @@ class PostGetterDict(GetterDict):
                 return self._obj.author.single()
             elif key == "subreddit" and hasattr(self._obj, "subreddit"):
                 return self._obj.subreddit.single()
+        else:
+            return super().get(key, default)
+
+
+class CommentGetterDict(GetterDict):
+    """
+    Correctly transform the Comment neomodel to the Comment schema
+    """
+
+    def get(self, key: Any, default: Any = None) -> Any:
+        if isinstance(self._obj, CommentMeta):
+            if key in self._obj.__properties__:
+                return getattr(self._obj, key, default)
+            elif key == "author":
+                return self._obj.author.single() if self._obj.author else None
+            elif key == "parent":
+                return self._obj.parent.single() if self._obj.parent else None
         else:
             return super().get(key, default)
 

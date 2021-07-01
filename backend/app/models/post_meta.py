@@ -1,23 +1,18 @@
-from neomodel import (BooleanProperty, DateTimeProperty, RelationshipTo,
-                      StringProperty, StructuredNode, UniqueIdProperty,
-                      cardinality)
+from neomodel import (BooleanProperty, RelationshipFrom, RelationshipTo,
+                      StringProperty, cardinality)
+
+from app.models.base import Thing
 
 
 # Nodes
-class PostMeta(StructuredNode):
+class PostMeta(Thing):
     # Properties
-    uid = UniqueIdProperty()
     nsfw = BooleanProperty()
     spoiler = BooleanProperty()
     type = StringProperty()
 
-    created_at = DateTimeProperty(default_now=True)
-    updated_at = DateTimeProperty(default_now=True)
-
     # Relationships
-    author = RelationshipTo(
-        ".user.User", "AUTHORED_BY", cardinality=cardinality.ZeroOrOne
-    )
     subreddit = RelationshipTo(
         ".subreddit.Subreddit", "POSTED_IN", cardinality=cardinality.One
     )
+    child = RelationshipFrom(".comment_meta.CommentMeta", "PARENT")
