@@ -1,3 +1,4 @@
+from .base import Thing
 from .comment_content import CommentContent
 from .comment_meta import CommentMeta
 from .post_content import PostContent
