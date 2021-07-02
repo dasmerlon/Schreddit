@@ -1,5 +1,5 @@
-from neomodel import (DateTimeProperty, RelationshipTo, StructuredNode,
-                      UniqueIdProperty, cardinality)
+from neomodel import (DateTimeProperty, RelationshipFrom, RelationshipTo,
+                      StructuredNode, UniqueIdProperty, cardinality)
 
 
 class Thing(StructuredNode):
@@ -12,3 +12,4 @@ class Thing(StructuredNode):
     author = RelationshipTo(
         ".user.User", "AUTHORED_BY", cardinality=cardinality.ZeroOrOne
     )
+    child = RelationshipFrom(".comment_meta.CommentMeta", "PARENT")

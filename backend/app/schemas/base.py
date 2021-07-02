@@ -56,7 +56,7 @@ class CommentGetterDict(GetterDict):
             elif key == "author":
                 return self._obj.author.single() if self._obj.author else None
             elif key == "parent":
-                return self._obj.parent.single() if self._obj.parent else None
+                return self._obj.parent.single().uid if self._obj.parent else None
         else:
             return super().get(key, default)
 

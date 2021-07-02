@@ -1,4 +1,5 @@
 from datetime import datetime
+from enum import Enum
 from typing import Optional
 
 from pydantic import UUID4, BaseModel
@@ -7,19 +8,12 @@ from app.schemas.base import CommentGetterDict
 from app.schemas.user import User
 
 
-class CommentMetaBase(BaseModel):
-    pass
+class CommentParentType(str, Enum):
+    post = "post"
+    comment = "comment"
 
 
-class CommentMetaCreate(CommentMetaBase):
-    parent: UUID4
-
-
-class CommentMetaUpdate(CommentMetaBase):
-    pass
-
-
-class CommentMeta(CommentMetaBase):
+class CommentMeta(BaseModel):
     created_at: Optional[datetime]
     updated_at: Optional[datetime]
     uid: UUID4
