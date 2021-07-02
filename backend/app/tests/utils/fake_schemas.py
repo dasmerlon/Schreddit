@@ -61,6 +61,16 @@ class PostSchemas:
         return schemas.PostUpdate(metadata=metadata, content=content)
 
 
+class CommentSchemas:
+    @staticmethod
+    def get_create():
+        return schemas.CommentCreate(text="A comment.")
+
+    @staticmethod
+    def get_update():
+        return schemas.CommentUpdate(text="An updated comment.")
+
+
 class SubredditSchemas:
     """Subreddit schemas"""
 

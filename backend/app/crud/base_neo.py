@@ -50,11 +50,12 @@ class CRUDBaseNeo(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
         :param obj_in: the CreateSchema of the node to create
         :return: the database model of the created node
         """
-        if isinstance(obj_in, CreateSchemaType):
+        if obj_in is None:
+            db_obj = self.model()
+        else:
             obj_in_data = jsonable_encoder(obj_in)
             db_obj = self.model(**obj_in_data)
-        else:
-            db_obj = self.model()
+
         db_obj.save()
         return db_obj
 

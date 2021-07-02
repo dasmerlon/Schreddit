@@ -62,3 +62,15 @@ class PostPayloads:
                 else None,
             },
         }
+
+
+class CommentPayloads:
+    """Comment payloads"""
+
+    @staticmethod
+    def get_create():
+        return {"text": "A comment."}
+
+    @staticmethod
+    def get_update():
+        return {"text": "An updated comment."}

@@ -2,9 +2,10 @@ import pytest
 from pydantic import UUID4
 
 from app import crud
-from app.models import PostMeta, Subreddit, User
-from app.tests.utils.fake_schemas import (PostSchemas, SubredditSchemas,
-                                          UserSchemas)
+from app.models import (CommentContent, CommentMeta, PostContent, PostMeta,
+                        Subreddit, User)
+from app.tests.utils.fake_schemas import (CommentSchemas, PostSchemas,
+                                          SubredditSchemas, UserSchemas)
 
 """
 Fixtures for the test user
@@ -26,7 +27,9 @@ def other_user_in_db() -> User:
 
 
 @pytest.fixture
-def post_link_in_db(test_user_in_db: User, subreddit_in_db: Subreddit) -> PostMeta:
+def post_link_in_db(
+    test_user_in_db: User, subreddit_in_db: Subreddit
+) -> (PostMeta, PostContent):
     schema = PostSchemas.get_create(type="link")
     post_meta = crud.post_meta.create(schema.metadata)
     post_content = crud.post_content.create(post_meta.uid, schema.content)
@@ -38,7 +41,9 @@ def post_link_in_db(test_user_in_db: User, subreddit_in_db: Subreddit) -> PostMe
 
 
 @pytest.fixture
-def post_self_in_db(test_user_in_db: User, subreddit_in_db: Subreddit) -> PostMeta:
+def post_self_in_db(
+    test_user_in_db: User, subreddit_in_db: Subreddit
+) -> (PostMeta, PostContent):
     schema = PostSchemas.get_create(type="self")
     post_meta = crud.post_meta.create(schema.metadata)
     post_content = crud.post_content.create(post_meta.uid, schema.content)
@@ -61,6 +66,20 @@ def post_self_in_db_other_user(
     yield post_meta, post_content
     crud.post_meta.remove(post_meta.uid)
     crud.post_content.remove(post_meta.uid)
+
+
+@pytest.fixture
+def comment_in_db(
+    test_user_in_db: User, post_self_in_db: (PostMeta, PostContent)
+) -> (CommentMeta, CommentContent):
+    schema = CommentSchemas.get_create()
+    comment_meta = crud.comment_meta.create(None)
+    comment_content = crud.comment_content.create(comment_meta.uid, schema)
+    crud.comment_meta.set_author(comment_meta, test_user_in_db)
+    crud.comment_meta.set_parent(comment_meta, post_self_in_db[0])
+    yield comment_meta, comment_content
+    crud.comment_meta.remove(comment_meta.uid)
+    crud.comment_content.remove(comment_meta.uid)
 
 
 @pytest.fixture
@@ -94,3 +113,15 @@ def remove_posts():
             crud.post_meta.remove(UUID4(uid))
         if crud.post_content.get(UUID4(uid)) is not None:
             crud.post_content.remove(UUID4(uid))
+
+
+@pytest.fixture
+def remove_comments():
+    """Add UUIDs of comments to this list that should be deleted after the test."""
+    uids = []
+    yield uids
+    for uid in uids:
+        if crud.comment_meta.get(uid) is not None:
+            crud.comment_meta.remove(uid)
+        if crud.comment_content.get(uid) is not None:
+            crud.comment_content.remove(uid)
