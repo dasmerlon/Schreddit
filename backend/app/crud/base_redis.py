@@ -22,5 +22,4 @@ class CRUDBaseRedis:
         self.redis.delete(key)
 
 
-# crud_session.py
 session = CRUDBaseRedis()

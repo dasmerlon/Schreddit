@@ -1,3 +1,4 @@
+from .base_redis import session as redis
 from .crud_post import post
 from .crud_subreddit import subreddit
 from .crud_user import user
