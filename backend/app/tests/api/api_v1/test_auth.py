@@ -29,6 +29,15 @@ def test_get_access_token_by_email(client: TestClient, test_user_in_db: User) ->
     )
     assert response.status_code == status.HTTP_204_NO_CONTENT
 
+    # Make sure that we can use the JWT token when it's not cached in Redis.
+    redis.delete(access_token)
+    response = client.put(
+        f"{settings.API_V1_STR}/users/settings",
+        json={"password": "hunter4"},
+        headers={"Authorization": f"Bearer {access_token}"},
+    )
+    assert response.status_code == status.HTTP_204_NO_CONTENT
+
 
 def test_get_access_token_by_username(
     client: TestClient, test_user_in_db: User
