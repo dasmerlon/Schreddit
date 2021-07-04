@@ -1,18 +1,13 @@
-from fastapi import Depends, HTTPException, status
+from fastapi import Depends
 from fastapi.security import OAuth2PasswordBearer
 from jose import jwt
 
 from app import crud, models, schemas
+from app.api.api_v1.exceptions import InvalidCredentialsException
 from app.core.config import settings
 from app.crud.base_redis import session as redis
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl=f"{settings.API_V1_STR}/auth/login")
-
-credentials_exception = HTTPException(
-    status_code=status.HTTP_401_UNAUTHORIZED,
-    detail="Could not validate credentials",
-    headers={"WWW-Authenticate": "Bearer"},
-)
 
 
 def get_current_user(token: str = Depends(oauth2_scheme)) -> models.User:
@@ -31,7 +26,7 @@ def get_current_user(token: str = Depends(oauth2_scheme)) -> models.User:
 
     user = crud.user.get(user_uuid)
     if user is None:
-        raise credentials_exception
+        raise InvalidCredentialsException()
     return user
 
 
@@ -45,12 +40,11 @@ def get_user_id_from_jwt(token: str) -> str:
             token, settings.JWT_SECRET_KEY, algorithms=[settings.JWT_ALGORITHM]
         )
     except jwt.JWTError:
-        raise credentials_exception
+        raise InvalidCredentialsException()
 
     if payload.get("sub") is None:
-        raise credentials_exception
+        raise InvalidCredentialsException()
 
     # Get the decrypted token_data and extract the user uuid
     token_data = schemas.TokenPayload(**payload)
     return token_data.sub.replace(settings.SUB_PREFIX, "", 1)
-
