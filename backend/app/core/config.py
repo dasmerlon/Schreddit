@@ -13,6 +13,10 @@ class Settings(BaseSettings):
     SUB_PREFIX: str = "uid:"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
 
+    REDIS_HOST: str = "localhost"
+    REDIS_PORT: int = 6379
+    REDIS_DB: int = 0
+
     MAX_TITLE_LENGTH = 300
 
     TEST_USER_USERNAME: str
