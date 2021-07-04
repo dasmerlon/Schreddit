@@ -17,8 +17,8 @@ def test_create_user(remove_users: List) -> None:
     assert hasattr(user, "hashed_password")
 
 
-def test_authenticate_user(test_user_in_db: User) -> None:
-    user = crud.user.authenticate(
+def test_authenticate_by_email(test_user_in_db: User) -> None:
+    user = crud.user.authenticate_by_email(
         email=settings.TEST_USER_EMAIL, password=settings.TEST_USER_PASSWORD
     )
     assert user
@@ -26,10 +26,26 @@ def test_authenticate_user(test_user_in_db: User) -> None:
     assert user.username == settings.TEST_USER_USERNAME
 
 
-def test_authentication_fail() -> None:
+def test_authentication_by_email_fail() -> None:
     email = "noauth@example.com"
     password = "1"
-    user = crud.user.authenticate(email, password)
+    user = crud.user.authenticate_by_email(email, password)
+    assert user is None
+
+
+def test_authenticate_by_username(test_user_in_db: User) -> None:
+    user = crud.user.authenticate_by_username(
+        username=settings.TEST_USER_USERNAME, password=settings.TEST_USER_PASSWORD
+    )
+    assert user
+    assert user.email == settings.TEST_USER_EMAIL
+    assert user.username == settings.TEST_USER_USERNAME
+
+
+def test_authentication_by_username_fail() -> None:
+    username = "noauth"
+    password = "1"
+    user = crud.user.authenticate_by_username(username, password)
     assert user is None
 
 
