@@ -8,9 +8,7 @@ from app.core.config import settings
 
 class CRUDBaseRedis:
     def __init__(self):
-        self.redis = Redis(
-            host=settings.REDIS_HOST, port=settings.REDIS_PORT, db=settings.REDIS_DB
-        )
+        self.redis = Redis.from_url(settings.REDIS_DSN)
 
     def get(self, key: str) -> Optional[bytes]:
         return self.redis.get(key)
