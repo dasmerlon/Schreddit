@@ -7,7 +7,6 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.api.api_v1.main import router
 from app.core.config import settings
 from app.db.init_db import init_neo4j
-from app.sessions import redis  # noqa
 
 app = FastAPI(
     title="Reddit-Klon",

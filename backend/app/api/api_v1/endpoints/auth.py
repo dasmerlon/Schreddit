@@ -7,7 +7,7 @@ from neomodel import DeflateError
 from app import crud, schemas
 from app.core import security
 from app.core.config import settings
-from app.sessions import redis
+from app.crud.base_redis import session as redis
 
 router = APIRouter()
 
@@ -42,5 +42,5 @@ def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends()):
     )
 
     # Save the access token with the linked user id in redis and return it to the user.
-    redis.set(access_token, user.uid, ex=settings.ACCESS_TOKEN_EXPIRE_MINUTES * 60)
+    redis.set(access_token, user.uid)
     return {"access_token": access_token, "token_type": "bearer"}

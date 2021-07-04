@@ -6,8 +6,8 @@ from fastapi.testclient import TestClient
 
 from app.core.config import settings
 from app.models import User
-from app.sessions import redis
 from app.tests.utils.fake_payloads import UserPayloads
+from app.crud.base_redis import session as redis
 
 
 def test_get_access_token_by_email(client: TestClient, test_user_in_db: User) -> None:
