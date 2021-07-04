@@ -4,8 +4,8 @@ import pytest
 from fastapi import status
 from fastapi.testclient import TestClient
 
+from app import crud
 from app.core.config import settings
-from app.crud.base_redis import session as redis
 from app.models import User
 from app.tests.utils.fake_payloads import UserPayloads
 
@@ -18,7 +18,7 @@ def test_get_access_token_by_email(client: TestClient, test_user_in_db: User) ->
     # Ensure that the access token has been returned and is properly saved in Redis.
     access_token = response.json().get("access_token")
     assert access_token
-    assert redis.get(access_token).decode("utf-8")
+    assert crud.redis.get(access_token).decode("utf-8")
 
     # Make sure that we can actually use the JWT token to access routes with
     # restricted access via a valid Authentication header.
@@ -30,7 +30,7 @@ def test_get_access_token_by_email(client: TestClient, test_user_in_db: User) ->
     assert response.status_code == status.HTTP_204_NO_CONTENT
 
     # Make sure that we can use the JWT token when it's not cached in Redis.
-    redis.delete(access_token)
+    crud.redis.delete(access_token)
     response = client.put(
         f"{settings.API_V1_STR}/users/settings",
         json={"password": "hunter4"},
@@ -49,7 +49,7 @@ def test_get_access_token_by_username(
     # Ensure that the access token has been returned and is properly saved in Redis.
     access_token = response.json().get("access_token")
     assert access_token
-    assert redis.get(access_token).decode("utf-8")
+    assert crud.redis.get(access_token).decode("utf-8")
 
 
 def test_disallow_login_with_invalid_jwt(client: TestClient) -> None:

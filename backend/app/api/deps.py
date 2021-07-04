@@ -5,7 +5,6 @@ from jose import jwt
 from app import crud, models, schemas
 from app.api.api_v1.exceptions import InvalidCredentialsException
 from app.core.config import settings
-from app.crud.base_redis import session as redis
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl=f"{settings.API_V1_STR}/auth/login")
 
@@ -18,7 +17,7 @@ def get_current_user(token: str = Depends(oauth2_scheme)) -> models.User:
 
     If the credentials aren't valid, an unauthorized exception is thrown.
     """
-    user_uuid = redis.get(token)
+    user_uuid = crud.redis.get(token)
     if user_uuid is None:
         user_uuid = get_user_id_from_jwt(token)
     else:
