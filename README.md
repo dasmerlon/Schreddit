@@ -19,8 +19,9 @@ Run `scripts/test.sh` to run all tests including a coverage report.
 
 # Develop
 ### Backend
-
 To resolve the modules correctly in your IDE, the `backend` directory needs to be in your `PYTHONPATH` (e.g. [instructions for PyCharm](https://www.jetbrains.com/help/pycharm/installing-uninstalling-and-reloading-interpreter-paths.html)).
+
+For logging Cypher queries, set environment variable `NEOMODEL_CYPHER_DEBUG=1`.
 
 For code linting run `scripts/lint.sh` from the `backend` directory.
 

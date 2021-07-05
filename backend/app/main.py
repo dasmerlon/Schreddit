@@ -1,4 +1,6 @@
 #!/usr/bin/env python
+import logging
+import os
 
 import uvicorn
 from fastapi import FastAPI
@@ -26,6 +28,11 @@ if __name__ == "__main__":
     # initialize DBs
     init_mongodb()
     init_neo4j()
+
+    if os.environ.get("NEOMODEL_CYPHER_DEBUG", False):
+        uvicorn.config.logger
+        logging.basicConfig()
+        logging.getLogger("neomodel").setLevel(logging.DEBUG)
 
     # run server
     uvicorn.run(app)
