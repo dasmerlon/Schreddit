@@ -11,6 +11,10 @@ Copy the contents of the `dot_env_example` to a new file called `.env` in the sa
 
 To run, execute `poetry run app/main.py` from the `backend` directory.
 
+To fill the database with dummy data, call the `fill` function from `scripts/dummy_data.py`.
+Override default values as desired.
+To clear the database, call `clear` from the same file.
+
 # Test
 ### Backend
 Adjust credentials for testing DB in `.env`. 
@@ -23,7 +27,7 @@ To resolve the modules correctly in your IDE, the `backend` directory needs to b
 
 For logging Cypher queries, set environment variable `NEOMODEL_CYPHER_DEBUG=1`.
 
-For code linting run `scripts/lint.sh` from the `backend` directory.
+For code linting, run `scripts/lint.sh` from the `backend` directory.
 
 Before commiting, run `scripts/format.sh` from the `backend` directory.
 It performs automatic code formatting, import sorting and removes unused imports.
