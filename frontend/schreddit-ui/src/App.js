@@ -29,6 +29,7 @@ const App = () => {
   };
 
   return (
+<<<<<<< HEAD
     <Router>
       <Header cookies={cookies} handleLogin={handleLogin} handleLogout={handleLogout} />
       <Switch>
@@ -38,6 +39,12 @@ const App = () => {
           <Redirect to="/404" />
       </Switch>
     </Router>
+=======
+    <div className="container">
+      <Header cookies={cookies} handleLogin={handleLogin} handleLogout={handleLogout} logo={logo} />
+      <FrontpageBody />
+    </div>
+>>>>>>> 306f0f44e77b6df7b4781ca8e0b8ef46b3d6c941
   );
 }
 
