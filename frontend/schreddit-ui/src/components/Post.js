@@ -33,26 +33,12 @@ const tutorialSteps = [
 ];
 
 const useStyles = makeStyles({
-    root: {
-      //minWidth: 300,
-      //maxWidth: 650,
+    root: { 
       display: "flex",
-      
     },
     media: {
       height: 0,
       paddingTop: '50%', // 16:9 56.25%
-    },
-    bullet: {
-      display: 'inline-block',
-      margin: '0 2px',
-      transform: 'scale(0.8)',
-    },
-    title: {
-      fontSize: 14,
-    },
-    pos: {
-      marginBottom: 12,
     },
     avatar: {
       backgroundColor: "rgb(0,180,200)",
@@ -131,21 +117,21 @@ export default function Posts() {
           }
         />
 
-        <CardActionArea href="http://localhost:3000/">
-        <CardContent>
-          <Typography variant="h5" component="h2">
-            How does Shutter, ISO & Apature effect your pictures? 
-            <Chip label="Informative 👨‍🎓" color="secondary" href="http://localhost:3000/" clickable />
-          </Typography>
-        </CardContent>
+        <CardActionArea href="http://localhost:3000/r/HowToPictures">
+          <CardContent>
+            <Typography variant="h5" component="h2">
+              How does Shutter, ISO & Apature effect your pictures? 
+              <Chip label="Informative 👨‍🎓" color="secondary" href="http://localhost:3000/" clickable />
+            </Typography>
+          </CardContent>
 
-        { !show_multiple_img && !show_vid ? 
-          <img className={classes.img} src={tutorialSteps[activeStep].imgPath} />
-        : null }
+          { !show_multiple_img && !show_vid ? 
+            <img className={classes.img} src={tutorialSteps[activeStep].imgPath} />
+          : null }
 
-        { show_multiple_img && !show_vid ? 
-          <img className={classes.img} src={tutorialSteps[activeStep].imgPath} /> 
-        : null }
+          { show_multiple_img && !show_vid ? 
+            <img className={classes.img} src={tutorialSteps[activeStep].imgPath} /> 
+          : null }
         </CardActionArea>
 
         { show_multiple_img && !show_vid ? 
@@ -169,10 +155,10 @@ export default function Posts() {
           /> 
         : null}
         
-        <CardActionArea href="http://localhost:3000/">
-        {show_vid && !show_multiple_img ? 
-          <video className={classes.img} controls src={vid} type={'video/mp4'} id="myVideo"/> 
-        : null}
+        <CardActionArea href="http://localhost:3000/r/HowToPictures">
+          {show_vid && !show_multiple_img ? 
+            <video className={classes.img} controls src={vid} type={'video/mp4'} id="myVideo"/> 
+          : null}
         </CardActionArea>
         <CardActions>
           <Button size="small" title="Comments" startIcon={<SvgIcon ><path d={mdiCommentOutline} /></SvgIcon>} onClick={()=>{alert('Go to comments') }} >Comments</Button>

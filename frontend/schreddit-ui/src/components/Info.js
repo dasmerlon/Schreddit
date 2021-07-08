@@ -5,7 +5,7 @@ import { Button, Card, List, ListItem, ListItemSecondaryAction, ListItemText, Li
 const useStyles = makeStyles((theme) => ({
     card: {
         position: "sticky",
-        top: "1rem",
+        top: "16px",
         hight: "3000px",
     },
     button: {
@@ -195,7 +195,7 @@ export default function Info() {
         <br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/>
         <br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/>
         <br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/>
-        <br/><br/><br/><br/><br/><br/><br/><br/>
+        <br/><br/><br/><br/><br/><br/><br/><br/><br/><br/>
         </>
     );
   }

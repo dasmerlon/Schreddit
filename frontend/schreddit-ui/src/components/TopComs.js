@@ -97,7 +97,7 @@ export default function RecipeReviewCard() {
                                     />
                                 </TableCell>
                                 <TableCell component="th" scope="row">
-                                    <Link href="#"  color="inherit">
+                                    <Link href="http://localhost:3000/r/space"  color="inherit">
                                         {'r/space'}
                                     </Link>
                                 </TableCell>
@@ -115,7 +115,7 @@ export default function RecipeReviewCard() {
                                     />
                                 </TableCell>
                                 <TableCell component="th" scope="row">
-                                    <Link href="#"  color="inherit">
+                                    <Link href="http://localhost:3000/r/askscience"  color="inherit">
                                         {'r/askscience'}
                                     </Link>
                                 </TableCell>
@@ -133,7 +133,7 @@ export default function RecipeReviewCard() {
                                     />
                                 </TableCell>
                                 <TableCell component="th" scope="row">
-                                    <Link href="#"  color="inherit">
+                                    <Link href="http://localhost:3000/r/psychology"  color="inherit">
                                         {'r/psychology'}
                                     </Link>
                                 </TableCell>
@@ -143,7 +143,7 @@ export default function RecipeReviewCard() {
                                     4.
                                 </TableCell>
                                 <TableCell component="th" scope="row">
-                                    <ArrowUp />
+                                    <ArrowUp className={classes.arrowUp}/>
                                 </TableCell> <TableCell component="th" scope="row">
                                     <Avatar
                                         alt={`Avatar`}
@@ -161,7 +161,7 @@ export default function RecipeReviewCard() {
                                     5.
                                 </TableCell>
                                 <TableCell component="th" scope="row">
-                                    <ArrowUp />
+                                    <ArrowUp className={classes.arrowUp}/>
                                 </TableCell> <TableCell component="th" scope="row">
                                     <Avatar
                                         alt={`Avatar`}

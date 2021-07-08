@@ -6,7 +6,11 @@ This project was bootstrapped with [Create React App](https://github.com/faceboo
 
 In the project directory, you can run:
 
-### npm install @mdi/js
+### `npm install react-router-dom`
+
+This lets you use the Router-Package, so that the React app can swtich between diffrent pages.
+
+### `npm install @mdi/js`
 
 Installs a Icon Library, that is needed to display some Icons.
 

@@ -1,6 +1,6 @@
 import React from 'react';
 import {makeStyles} from "@material-ui/core/styles";
-import {Grid, Container, Hidden, CssBaseline} from "@material-ui/core";
+import {Grid, Container, Hidden, CssBaseline, Paper} from "@material-ui/core";
 import Post from "./Post";
 import SortByBar from "./SortByBar";
 import CreatePost from "./CreatePost";
@@ -19,6 +19,9 @@ const useStyles = makeStyles((theme) => ({
       width: '100%',
       margin: '0px',
     },
+    paper: {
+      height: '150px',
+    }
   }));
 
 //TODO: - Sticky funktionalität vom Contact Component ist hardcoded über die höhe der Seite..
@@ -31,16 +34,11 @@ export default function ForntpageBody() {
     <Header />
     <React.Fragment>
       <CssBaseline />
+      <Paper variant="outlined" elevation={0} className={classes.paper} />
 
       <Container fixed >
         <Grid container spacing={2} direction='row' className={classes.grid}>
           <Grid item container spacing={3} direction='column' className={classes.grid} xs={12} md={7}>
-            <Grid item>
-              <CreatePost />
-            </Grid>
-            <Grid item>
-              <SortByBar />
-            </Grid>
             <Grid item>
               <Post />
             </Grid>
