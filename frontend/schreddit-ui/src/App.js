@@ -1,11 +1,17 @@
+import './App.css';
+import { BrowserRouter as Router, Route, Switch, Link, Redirect} from 'react-router-dom';
+// We use this Router-Package: https://reactrouter.com/
 import React from 'react';
 import './App.css';
 import Header from './components/Header';
 import { useCookies } from 'react-cookie';
+
+
+
+// Pages
 import FrontpageBody from './components/FrontpageBody';
-
-
-
+import Subredit from './components/Subredit';
+import ErrorPage from './components/ErrorPage';
 
 const App = () => {
   const [cookies, setCookie, removeCookie] = useCookies(["token", "loggedIn"]);
@@ -22,10 +28,15 @@ const App = () => {
   };
 
   return (
-    <div className="container">
+    <Router>
       <Header cookies={cookies} handleLogin={handleLogin} handleLogout={handleLogout} />
-      <FrontpageBody />
-    </div>
+      <Switch>
+        <Route exact path={"/"} component={FrontpageBody} />
+        <Route path={"/r/"} component={Subredit} />
+        <Route exact path={"/404"} component={ErrorPage} />
+          <Redirect to="/404" />
+      </Switch>
+    </Router>
   );
 }
 

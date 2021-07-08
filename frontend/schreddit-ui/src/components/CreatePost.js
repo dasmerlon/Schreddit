@@ -13,7 +13,7 @@ const useStyles = makeStyles({
     },
 });
 
-export default function NewPost() {
+export default function CreatePost() {
     const classes = useStyles();
     
     return (
