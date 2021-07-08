@@ -14,8 +14,9 @@ import AccountCircle from '@material-ui/icons/AccountCircle';
 import MailIcon from '@material-ui/icons/Mail';
 import NotificationsIcon from '@material-ui/icons/Notifications';
 import MoreIcon from '@material-ui/icons/MoreVert';
-import Login from './auth/Login'
-import Register from './auth/Register'
+import Login from './Login'
+import Register from './Register'
+import Dropdown from './SubredditSelector'
 
 const useStyles = makeStyles((theme) => ({
     grow: {
@@ -36,6 +37,10 @@ const useStyles = makeStyles((theme) => ({
             display: 'block',
         },
     },
+    schredditIcon: {
+        width: '3%',
+        paddingRight: '10px'
+    },
     search: {
         position: 'relative',
         borderRadius: theme.shape.borderRadius,
@@ -48,7 +53,9 @@ const useStyles = makeStyles((theme) => ({
         width: '100%',
         [theme.breakpoints.up('sm')]: {
             marginLeft: theme.spacing(3),
-            width: '60%',
+            width: '40%',
+            borderStyle: 'solid',
+            border: '2px   '
         },
     },
     searchIcon: {
@@ -216,17 +223,13 @@ export default function PrimarySearchAppBar(props) {
         <div className={classes.grow}>
             <AppBar position="static" className={classes.appBar}>
                 <Toolbar>
-                    <IconButton
-                        edge="start"
-                        className={classes.menuButton}
-                        color="inherit"
-                        aria-label="open drawer"
-                    >
-                        <MenuIcon />
-                    </IconButton>
+                    <img src={props.logo} className={classes.schredditIcon} />
                     <Typography className={classes.title} variant="h6" noWrap>
                         Schreddit
                     </Typography>
+                    <Dropdown
+                        cookies={props.cookies}
+                    />
                     <div className={classes.search}>
                         <div className={classes.searchIcon}>
                             <SearchIcon />
