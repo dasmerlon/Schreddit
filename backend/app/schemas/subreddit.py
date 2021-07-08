@@ -2,8 +2,10 @@ from datetime import datetime
 from enum import Enum
 from typing import Optional
 
+from fastapi import Query
 from pydantic import BaseModel
 
+from app.core.config import settings
 from app.schemas.base import SubredditGetterDict
 from app.schemas.user import User
 
@@ -24,9 +26,11 @@ class SubredditBase(BaseModel):
     # over_18: Optional[bool] = None
     # public_description: Optional[bool] = None
     # spoilers_enable: Optional[bool] = None
-    sr: Optional[str] = None
+    # sr: Optional[str] = None
     # submit_link_label: Optional[str] = None
     # submit_text_label: Optional[str] = None
+    title: Optional[str] = Query(..., max_length=settings.MAX_TITLE_LENGTH)
+    type: Optional[SubredditType] = None
     # welcome_message_enabled: Optional[bool] = None
     # welcome_message_text: Optional[str] = None
 
@@ -34,7 +38,7 @@ class SubredditBase(BaseModel):
 class SubredditCreate(SubredditBase):
     sr: str
     # submit_text: str
-    title: str
+    title: str = Query(..., max_length=settings.MAX_TITLE_LENGTH)
     type: SubredditType
 
     class Config:
