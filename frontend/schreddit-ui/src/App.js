@@ -3,7 +3,8 @@ import { BrowserRouter as Router, Route, Switch, Link, Redirect} from 'react-rou
 // We use this Router-Package: https://reactrouter.com/
 import React from 'react';
 import './App.css';
-import Header from './components/Header';
+import logo from './images/schreddit.svg';
+import Header from './components/header/Header';
 import { useCookies } from 'react-cookie';
 
 
