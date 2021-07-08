@@ -1,15 +1,29 @@
-import logo from './logo.svg';
+import React from 'react';
 import './App.css';
 import Header from './components/Header';
+import { useCookies } from 'react-cookie';
 import FrontpageBody from './components/FrontpageBody';
 
 
 
 
 const App = () => {
+  const [cookies, setCookie, removeCookie] = useCookies(["token", "loggedIn"]);
+
+  const handleLogin = token => {
+    setCookie("token", token, { path: '/' });
+    setCookie("loggedIn", true, { path: '/' });
+  };
+
+  const handleLogout = () => {
+    removeCookie("token");
+    removeCookie("loggedIn")
+    window.location.reload();
+  };
+
   return (
     <div className="container">
-      <Header />
+      <Header cookies={cookies} handleLogin={handleLogin} handleLogout={handleLogout} />
       <FrontpageBody />
     </div>
   );
