@@ -21,6 +21,9 @@ export default function Dropdown(props) {
     const [subreddit, setSubreddit] = React.useState('');
 
     const handleChange = (event) => {
+        if(event.target.value === "create-subreddit"){
+            
+        }
         setSubreddit(event.target.value);
     };
 
