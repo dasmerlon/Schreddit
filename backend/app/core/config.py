@@ -1,6 +1,7 @@
 from pathlib import Path
+from typing import Set
 
-from pydantic import BaseSettings
+from pydantic import BaseSettings, RedisDsn
 
 
 class Settings(BaseSettings):
@@ -12,11 +13,15 @@ class Settings(BaseSettings):
     SUB_PREFIX: str = "uid:"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
 
+    REDIS_DSN: RedisDsn = "redis://localhost:6379/0"
+
     MAX_TITLE_LENGTH = 300
 
     TEST_USER_USERNAME: str
     TEST_USER_EMAIL: str
     TEST_USER_PASSWORD: str
+
+    FRONTEND_ORIGINS: Set[str] = {"http://localhost:3000"}
 
     class Config:
         case_sensitive = True

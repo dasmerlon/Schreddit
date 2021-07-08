@@ -1,26 +1,24 @@
-from fastapi.encoders import jsonable_encoder
+from typing import List
 
 from app import crud
 from app.core.config import settings
 from app.core.security import verify_password
 from app.models import User
-from app.schemas import UserCreate, UserUpdate
+from app.tests.utils.fake_schemas import UserSchemas
 
 
-def test_create_user() -> None:
-    email = "create@example.com"
-    username = "create"
-    password = "password"
-    user_in = UserCreate(email=email, username=username, password=password)
-    user = crud.user.create(obj_in=user_in)
+def test_create_user(remove_users: List) -> None:
+    obj_in = UserSchemas.get_create()
+    user = crud.user.create(obj_in)
+    remove_users.append(user.uid)
     assert user
-    assert user.email == email
-    assert user.username == username
+    assert user.email == obj_in.email
+    assert user.username == obj_in.username
     assert hasattr(user, "hashed_password")
 
 
-def test_authenticate_user(fake_user: User) -> None:
-    user = crud.user.authenticate(
+def test_authenticate_by_email(test_user_in_db: User) -> None:
+    user = crud.user.authenticate_by_email(
         email=settings.TEST_USER_EMAIL, password=settings.TEST_USER_PASSWORD
     )
     assert user
@@ -28,43 +26,51 @@ def test_authenticate_user(fake_user: User) -> None:
     assert user.username == settings.TEST_USER_USERNAME
 
 
-def test_authentication_fail() -> None:
+def test_authentication_by_email_fail() -> None:
     email = "noauth@example.com"
     password = "1"
-    user = crud.user.authenticate(email=email, password=password)
+    user = crud.user.authenticate_by_email(email, password)
     assert user is None
 
 
-def test_get_user_by_email(fake_user: User) -> None:
-    user = crud.user.get_by_email(settings.TEST_USER_EMAIL)
+def test_authenticate_by_username(test_user_in_db: User) -> None:
+    user = crud.user.authenticate_by_username(
+        username=settings.TEST_USER_USERNAME, password=settings.TEST_USER_PASSWORD
+    )
     assert user
     assert user.email == settings.TEST_USER_EMAIL
     assert user.username == settings.TEST_USER_USERNAME
 
 
-def test_update_user() -> None:
-    email = "unsure@example.com"
-    username = "unsure"
-    password = "pleasechangeme"
-    user_in = UserCreate(email=email, username=username, password=password)
-    user = crud.user.create(obj_in=user_in)
+def test_authentication_by_username_fail() -> None:
+    username = "noauth"
+    password = "1"
+    user = crud.user.authenticate_by_username(username, password)
+    assert user is None
 
-    new_password = "ithinkthisisbetter"
-    user_in_update = UserUpdate(password=new_password)
-    crud.user.update(db_obj=user, obj_in=user_in_update)
-    updated_user = crud.user.get(user.uid)
-    assert updated_user
-    assert user.email == updated_user.email
-    assert user.username == updated_user.username
-    assert verify_password(new_password, updated_user.hashed_password)
 
-    new_password = "thisisdefinitelybetter"
-    user_in_update = UserUpdate(password=new_password)
-    print(user_in_update)
-    obj_in_data = jsonable_encoder(user_in_update)
-    crud.user.update(db_obj=user, obj_in=obj_in_data)
-    updated_user = crud.user.get(user.uid)
+def test_get_user_by_email(test_user_in_db: User) -> None:
+    user = crud.user.get_by_email(test_user_in_db.email)
+    assert user
+    assert user.email == test_user_in_db.email
+    assert user.username == test_user_in_db.username
+
+
+def test_update_user_schema(test_user_in_db: User) -> None:
+    obj_in = UserSchemas.get_update()
+    crud.user.update(test_user_in_db, obj_in)
+    updated_user = crud.user.get(test_user_in_db.uid)
     assert updated_user
-    assert user.email == updated_user.email
-    assert user.username == updated_user.username
-    assert verify_password(new_password, updated_user.hashed_password)
+    assert test_user_in_db.username == updated_user.username
+    assert obj_in.email == updated_user.email
+    assert verify_password(obj_in.password, updated_user.hashed_password)
+
+
+def test_update_user_schema_dict(test_user_in_db: User) -> None:
+    obj_in = UserSchemas.get_update()
+    crud.user.update(test_user_in_db, obj_in.dict())
+    updated_user = crud.user.get(test_user_in_db.uid)
+    assert updated_user
+    assert test_user_in_db.username == updated_user.username
+    assert obj_in.email == updated_user.email
+    assert verify_password(obj_in.password, updated_user.hashed_password)

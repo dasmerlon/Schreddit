@@ -31,7 +31,6 @@ export default function ForntpageBody() {
 
     return (
     <div className={classes.root}> 
-    <Header />
     <React.Fragment>
       <CssBaseline />
       <Paper variant="outlined" elevation={0} className={classes.paper} />

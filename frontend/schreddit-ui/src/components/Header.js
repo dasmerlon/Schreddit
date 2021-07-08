@@ -1,5 +1,4 @@
 import React from 'react';
-import axios from 'axios';
 import { fade, makeStyles } from '@material-ui/core/styles';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
@@ -13,15 +12,10 @@ import MenuIcon from '@material-ui/icons/Menu';
 import SearchIcon from '@material-ui/icons/Search';
 import AccountCircle from '@material-ui/icons/AccountCircle';
 import MailIcon from '@material-ui/icons/Mail';
-import Button from '@material-ui/core/Button'
 import NotificationsIcon from '@material-ui/icons/Notifications';
 import MoreIcon from '@material-ui/icons/MoreVert';
-import TextField from '@material-ui/core/TextField';
-import Dialog from '@material-ui/core/Dialog';
-import DialogActions from '@material-ui/core/DialogActions';
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogContentText from '@material-ui/core/DialogContentText';
-import DialogTitle from '@material-ui/core/DialogTitle';
+import Login from './auth/Login'
+import Register from './auth/Register'
 
 const useStyles = makeStyles((theme) => ({
     grow: {
@@ -96,7 +90,7 @@ const useStyles = makeStyles((theme) => ({
 
 
 
-export default function PrimarySearchAppBar() {
+export default function PrimarySearchAppBar(props) {
     const classes = useStyles();
     const [anchorEl, setAnchorEl] = React.useState(null);
     const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = React.useState(null);
@@ -121,23 +115,29 @@ export default function PrimarySearchAppBar() {
         setMobileMoreAnchorEl(event.currentTarget);
     };
 
-    const [open, setOpenRegisterForm] = React.useState(false);
 
-    const openRegisterForm = () => {
-        setOpenRegisterForm(true);
-    };
 
-    const handleClose = () => {
-        setOpenRegisterForm(false);
-    };
+
+    const [error, setError] = React.useState("");
     const [username, setUsername] = React.useState("");
     const [email, setEmail] = React.useState("");
     const [password, setPassword] = React.useState("");
 
     const handleEmailChange = event => {
-        setEmail({
-            email: event.target.value
-        })
+        if (/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email.email)) {
+            setEmail({
+                email: event.target.value,
+                errorMessage: "",
+                error: false
+            });
+
+        } else {
+            setEmail({
+                email: event.target.value,
+                errorMessage: "The email is not valid",
+                error: true
+            });
+        }
     }
 
     const handleUsernameChange = event => {
@@ -152,17 +152,7 @@ export default function PrimarySearchAppBar() {
         })
     }
 
-    const sendRegisterData = async () => {
-        const user = JSON.stringify({
-            username,
-            email,
-            password
 
-        })
-        const response = await axios.post("https://jsonplaceholder.typicode.com/users", { user })
-        console.log(user)
-        console.log(response.data)
-    };
 
 
     const menuId = 'primary-search-account-menu';
@@ -236,7 +226,7 @@ export default function PrimarySearchAppBar() {
                     </IconButton>
                     <Typography className={classes.title} variant="h6" noWrap>
                         Schreddit
-          </Typography>
+                    </Typography>
                     <div className={classes.search}>
                         <div className={classes.searchIcon}>
                             <SearchIcon />
@@ -252,55 +242,29 @@ export default function PrimarySearchAppBar() {
                     </div>
                     <div className={classes.grow} />
                     <div className={classes.sectionDesktop}>
-                        <Button variant="outlined" aria-label="login button" style={{ margin: '7px' }} color="inherit">
-                            Login
-                        </Button>
+                        <Login
+                            email={email}
+                            password={password}
+                            handleEmailChange={handleEmailChange}
+                            handlePasswordChange={handlePasswordChange}
+                            handleLogin={props.handleLogin}
+                            handleLogout={props.handleLogout}
+                            cookies={props.cookies}
+                            error={error}
+                            setError={setError}
+                        />
 
-
-                        <Button variant="outlined" aria-label="register button" style={{ margin: '7px' }} color="inherit" styles="theme.spacing(1)" onClick={openRegisterForm}>
-                            Register
-                            </Button>
-                        <Dialog open={open} onClose={handleClose} aria-labelledby="regiter-form">
-                            <DialogTitle id="form-dialog-title">Register</DialogTitle>
-                            <DialogContent>
-                                <DialogContentText>
-                                    To register to schreddit please enter the following information:
-                                </DialogContentText>
-                                <TextField
-                                    autoFocus
-                                    margin="dense"
-                                    id="name"
-                                    label="Email Address"
-                                    type="email"
-                                    fullWidth
-                                    onChange={handleEmailChange}
-                                />
-                                <TextField
-                                    margin="dense"
-                                    id="username"
-                                    label="Username"
-                                    type="text"
-                                    fullWidth
-                                    onChange={handleUsernameChange}
-                                />
-                                <TextField
-                                    margin="dense"
-                                    id="password"
-                                    label="Password"
-                                    type="password"
-                                    fullWidth
-                                    onChange={handlePasswordChange}
-                                />
-                            </DialogContent>
-                            <DialogActions>
-                                <Button onClick={handleClose} color="primary">
-                                    Cancel
-                                </Button>
-                                <Button onClick={sendRegisterData} color="primary">
-                                    Register
-                                </Button>
-                            </DialogActions>
-                        </Dialog>
+                        <Register
+                            email={email}
+                            username={username}
+                            password={password}
+                            handleEmailChange={handleEmailChange}
+                            handleUsernameChange={handleUsernameChange}
+                            handlePasswordChange={handlePasswordChange}
+                            cookies={props.cookies}
+                            error={error}
+                            setError={setError}
+                        />
 
                         <IconButton
                             edge="end"

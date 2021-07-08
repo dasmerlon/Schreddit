@@ -28,7 +28,7 @@ export default function ForntpageBody() {
 
     return (
     <div className={classes.root}> 
-    <Header />
+    {/* <Header /> */}
     <React.Fragment>
       <CssBaseline />
 

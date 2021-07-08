@@ -4,7 +4,6 @@ from neomodel import (BooleanProperty, DateTimeProperty, RelationshipTo,
 
 from app.core.config import settings
 
-# Relationships
 
 # Nodes
 class Post(StructuredNode):
@@ -21,6 +20,9 @@ class Post(StructuredNode):
     updated_at = DateTimeProperty(default_now=True)
 
     # Relationships
-    author = RelationshipTo(".user.User", "AUTHORED_BY", cardinality=cardinality.One)
-    # TODO: uncomment when subreddit logic is implemented
-    # subreddit = RelationshipTo('.subreddit.Subreddit', 'POSTED_IN', cardinality=One)
+    author = RelationshipTo(
+        ".user.User", "AUTHORED_BY", cardinality=cardinality.ZeroOrOne
+    )
+    subreddit = RelationshipTo(
+        ".subreddit.Subreddit", "POSTED_IN", cardinality=cardinality.One
+    )

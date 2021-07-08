@@ -1,11 +1,12 @@
 from typing import Optional
 
-from pydantic import BaseModel, EmailStr
+from pydantic import UUID4, BaseModel, EmailStr
+
+from app.schemas.base import PostGetterDict
 
 
 class UserBase(BaseModel):
     email: Optional[EmailStr] = None
-    username: Optional[str] = None
 
 
 class UserCreate(UserBase):
@@ -19,5 +20,9 @@ class UserUpdate(UserBase):
 
 
 class User(UserBase):
+    uid: UUID4
+    username: str
+
     class Config:
         orm_mode = True
+        getter_dict = PostGetterDict

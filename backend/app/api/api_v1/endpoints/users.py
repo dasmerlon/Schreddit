@@ -1,6 +1,8 @@
-from fastapi import APIRouter, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, Response, status
 
-from app import crud, schemas
+from app import crud, models, schemas
+from app.api import deps
+from app.core.security import verify_password
 
 router = APIRouter()
 
@@ -29,3 +31,55 @@ def register(user: schemas.UserCreate):
         )
     registered_user = crud.user.create(user)
     return registered_user
+
+
+@router.get(
+    "/{username}",
+    name="Get User Data",
+    response_model=schemas.User,
+    status_code=status.HTTP_200_OK,
+)
+def get_user(username: str):
+    """
+    Get user data from an existing user.
+    """
+    user = crud.user.get_by_username(username)
+    if user is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="User doesn't exist.",
+        )
+    return user
+
+
+@router.put(
+    "/settings",
+    name="Update User Data",
+    status_code=status.HTTP_204_NO_CONTENT,
+)
+def update_user(
+    user_update: schemas.UserUpdate,
+    current_user: models.User = Depends(deps.get_current_user),
+):
+    """
+    Update a user's data.
+    """
+    to_update = {}
+
+    # Check if we got a new and different email.
+    if user_update.email is not None and user_update.email != current_user.email:
+        to_update["email"] = user_update.email
+
+    # Check if the password changed.
+    if user_update.password and not verify_password(
+        user_update.password, current_user.hashed_password
+    ):
+        to_update["password"] = user_update.password
+
+    if not bool(to_update):
+        raise HTTPException(
+            status_code=status.HTTP_304_NOT_MODIFIED,
+        )
+
+    crud.user.update(current_user, to_update)
+    return Response(status_code=status.HTTP_204_NO_CONTENT)
