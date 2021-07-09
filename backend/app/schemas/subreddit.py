@@ -29,7 +29,7 @@ class SubredditBase(BaseModel):
     # sr: Optional[str] = None
     # submit_link_label: Optional[str] = None
     # submit_text_label: Optional[str] = None
-    title: Optional[str] = Query(..., max_length=settings.MAX_TITLE_LENGTH)
+    title: Optional[str] = Query(None, max_length=settings.MAX_TITLE_LENGTH)
     type: Optional[SubredditType] = None
     # welcome_message_enabled: Optional[bool] = None
     # welcome_message_text: Optional[str] = None
