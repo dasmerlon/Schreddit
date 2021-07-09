@@ -13,23 +13,12 @@ To resolve the modules correctly in your IDE, the `backend` directory needs to b
 
 # Test
 ### Backend
-#### Linux:
-Run `scripts/linux/test.sh` to run all tests including a coverage report.
-
-#### Windows:
-Run `scripts/win/test.bat` to run all tests including a coverage report.
+Run `scripts/test.{bat, sh}` to run all tests including a coverage report.
 
 
 # Develop
 ### Backend
-#### Linux:
-For code linting run `scripts/linux/lint.sh` from the `backend` directory.
+For code linting run `scripts/lint.{bat, sh}` from the `backend` directory.
 
-Before commiting, run `scripts/linux/format.sh` from the `backend` directory
-It does automatic code formatting, import sorting, and removes unused imports.
-
-#### Windows:
-For code linting run `scripts/win/lint.bat` from the `backend` directory.
-
-Before commiting, run `scripts/win/format.bat` from the `backend` directory
+Before commiting, run `scripts/format.{bat, sh}` from the `backend` directory
 It does automatic code formatting, import sorting, and removes unused imports.
