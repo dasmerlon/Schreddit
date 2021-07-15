@@ -1,15 +1,11 @@
 import React from 'react';
 import {makeStyles} from "@material-ui/core/styles";
-import {Grid, Container, Hidden, CssBaseline, Paper} from "@material-ui/core";
+import {Card, CardHeader, Box, Grid, Container, Hidden, CssBaseline, Paper, CardContent, Button, Avatar, Link, Typography} from "@material-ui/core";
 import Post from "./Post";
 import SortByBar from "./SortByBar";
-import CreatePost from "./CreatePost";
-import TrendingComs from "./TrendingComs";
-import Premium from "./Premium";
-import CommunitiesByCategory from "./PopularComs";
-import Info from "./Info";
-import TopComs from "./TopComs";
-import Header from "./Header";
+import Rules from "./Rules";
+import Moderators from "./Moderators";
+import AboutCom from "./AboutCom";
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -19,9 +15,22 @@ const useStyles = makeStyles((theme) => ({
       width: '100%',
       margin: '0px',
     },
-    paper: {
+    headerBackground: {
       height: '150px',
+    },
+    header: {
+      height: "80px",
+    },
+    cardHeader: {
+      backgroundColor: "rgb(100, 174, 217)",
+    },
+    cardA: {
+      maxHeight: 170,
+    },
+    cardB: {
+      maxHeight: 150,
     }
+
   }));
 
 //TODO: - Sticky funktionalität vom Contact Component ist hardcoded über die höhe der Seite..
@@ -33,11 +42,40 @@ export default function ForntpageBody() {
     <div className={classes.root}> 
     <React.Fragment>
       <CssBaseline />
-      <Paper variant="outlined" elevation={0} className={classes.paper} />
+      <Paper variant="outlined" elevation={0} className={classes.headerBackground} />
+      <Paper variant="outlined" elevation={0} className={classes.paper}>
+          <CardContent className={classes.header}>
+            <Container fixed>
+              <Grid container alignItems="center" justify="flex-start" spacing={2}>
+                <Grid item>
+                  <Avatar className={classes.avatar}>
+                    E  
+                  </Avatar>
+                </Grid>
+
+                <Grid item>
+                  <Typography component="h2">
+                    Catchphrase
+                  </Typography>            
+                  <Typography component="h2">
+                    r/shortCatchphrase
+                  </Typography>
+                </Grid>
+                <Grid item>
+                  <Button variant="contained" color="inherint">Join</Button>
+                </Grid>
+              </Grid>
+            </Container>
+          </CardContent>
+      </Paper>
+
 
       <Container fixed >
         <Grid container spacing={2} direction='row' className={classes.grid}>
           <Grid item container spacing={3} direction='column' className={classes.grid} xs={12} md={7}>
+            <Grid item>
+             <SortByBar />
+            </Grid>
             <Grid item>
               <Post />
             </Grid>
@@ -57,19 +95,42 @@ export default function ForntpageBody() {
           <Grid item container spacing={3} direction='column' className={classes.grid} xs={1}>
             <Hidden smDown>
               <Grid item>
-                <TopComs />
+                <AboutCom />
               </Grid>
               <Grid item>
-                <Premium />
+                <Rules />
               </Grid>
               <Grid item>
-                <TrendingComs />
+                <Box className={classes.cardA}>
+                <Card >
+                  <CardHeader className={classes.cardHeader}
+                    title={
+                      <Typography variant="h5" component="h2">
+                        Report
+                      </Typography>
+                    }
+                  />
+                  <CardContent>
+                    If you see any posts that violate any of the rules, please report the post and message the mods a link to it.
+                  </CardContent>
+                </Card></Box>
               </Grid>
               <Grid item>
-                <CommunitiesByCategory />
+              <Card className={classes.cardB}>
+                  <CardHeader className={classes.cardHeader}
+                    title={
+                      <Typography variant="h5" component="h2">
+                        Remember
+                      </Typography>
+                    }
+                  />
+                  <CardContent>
+                    Moderators reserve the right to remove content they deem harmful to the subreddit.
+                  </CardContent>
+                </Card>
               </Grid>
               <Grid item>
-                <Info />
+                <Moderators />
               </Grid>
             </Hidden>
           </Grid>
