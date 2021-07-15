@@ -9,7 +9,6 @@ import Premium from "./Premium";
 import CommunitiesByCategory from "./PopularComs";
 import Info from "./Info";
 import TopComs from "./TopComs";
-import Header from "./Header";
 
 const useStyles = makeStyles((theme) => ({
     root: {

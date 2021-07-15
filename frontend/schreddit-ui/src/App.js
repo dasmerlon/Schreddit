@@ -12,6 +12,7 @@ import { useCookies } from 'react-cookie';
 // Pages
 import FrontpageBody from './components/FrontpageBody';
 import Subredit from './components/Subredit';
+import CreateSubreddit from './components/subreddit/CreateSubreddit'
 import ErrorPage from './components/ErrorPage';
 
 const App = () => {
@@ -29,22 +30,16 @@ const App = () => {
   };
 
   return (
-<<<<<<< HEAD
     <Router>
       <Header cookies={cookies} handleLogin={handleLogin} handleLogout={handleLogout} />
       <Switch>
         <Route exact path={"/"} component={FrontpageBody} />
         <Route path={"/r/"} component={Subredit} />
+        <Route path={"/createSubreddit"} component={CreateSubreddit} />
         <Route exact path={"/404"} component={ErrorPage} />
           <Redirect to="/404" />
       </Switch>
     </Router>
-=======
-    <div className="container">
-      <Header cookies={cookies} handleLogin={handleLogin} handleLogout={handleLogout} logo={logo} />
-      <FrontpageBody />
-    </div>
->>>>>>> 306f0f44e77b6df7b4781ca8e0b8ef46b3d6c941
   );
 }
 

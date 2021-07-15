@@ -1,33 +1,79 @@
 import React from 'react';
-import { makeStyles } from '@material-ui/core/styles';
-import InputLabel from '@material-ui/core/InputLabel';
+import { useHistory } from "react-router-dom"
+import { withStyles } from '@material-ui/core/styles';
+import Button from '@material-ui/core/Button';
+import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
-import FormHelperText from '@material-ui/core/FormHelperText';
-import FormControl from '@material-ui/core/FormControl';
-import Select from '@material-ui/core/Select';
+import ListItemIcon from '@material-ui/core/ListItemIcon';
+import ListItemText from '@material-ui/core/ListItemText';
+import AddIcon from '@material-ui/icons/Add';
+import ImageIcon from '@material-ui/icons/Image';
+import HomeIcon from '@material-ui/icons/Home';
 
-const useStyles = makeStyles((theme) => ({
-    formControl: {
-        margin: theme.spacing(1),
-        minWidth: 120,
+const StyledButton = withStyles({
+    contained: {
+        backgroundColor: 'white',
+        color: 'grey',
+        border: '2px solid grey',
+        boxShadow: 'none',
+        marginLeft: '15px',
+        height: '39px'
     },
-    selectEmpty: {
-        marginTop: theme.spacing(2),
+})(Button);
+
+const StyledMenu = withStyles({
+    paper: {
+        border: '1px solid #d3d4d5',
     },
-}));
+})((props) => (
+    <Menu
+        elevation={0}
+        getContentAnchorEl={null}
+        anchorOrigin={{
+            vertical: 'bottom',
+            horizontal: 'center',
+        }}
+        transformOrigin={{
+            vertical: 'top',
+            horizontal: 'center',
+        }}
+        {...props}
+    />
+));
+
+const StyledMenuItem = withStyles((theme) => ({
+    root: {
+        '&:focus': {
+            backgroundColor: theme.palette.common.grey,
+            '& .MuiListItemIcon-root, & .MuiListItemText-primary': {
+                color: theme.palette.common.grey,
+            },
+        },
+    },
+}))(MenuItem);
+
 
 export default function Dropdown(props) {
-    const classes = useStyles();
-    const [subreddit, setSubreddit] = React.useState('');
+    const [anchorEl, setAnchorEl] = React.useState(null);
 
+    const handleClick = (event) => {
+        setAnchorEl(event.currentTarget);
+        console.log(event.currentTarget);
+    };
+
+    const handleClose = () => {
+        setAnchorEl(null);
+    };
+
+    const [subreddit, setSubreddit] = React.useState('Open Menu');
+
+    let history = useHistory();
     const handleChange = (event) => {
-<<<<<<< HEAD
-        if(event.target.value === "create-subreddit"){
-            
+        if (event.target.innerText === "Create Subreddit") {
+            history.push("CreateSubreddit")
         }
-=======
->>>>>>> 306f0f44e77b6df7b4781ca8e0b8ef46b3d6c941
-        setSubreddit(event.target.value);
+        setSubreddit(event.target.innerText);
+        console.log(event.target.innerText);
     };
 
 
@@ -41,22 +87,41 @@ export default function Dropdown(props) {
     else {
         return (
             <div>
-                <FormControl variant="outlined" className={classes.formControl}>
-                    <InputLabel id="subreddit-selector-label">Home</InputLabel>
-                    <Select
-                        labelId="subreddit-selector-label"
-                        id="subreddit-selector"
-                        value={subreddit}
-                        onChange={handleChange}
-                        label="Subreddits"
-                    >
-                        <MenuItem value="create-subreddit">Create Subreddit</MenuItem>
-                        <MenuItem value={10}>Dummy01</MenuItem>
-                        <MenuItem value={20}>Dummy02</MenuItem>
-                        <MenuItem value={30}>Dummy03</MenuItem>
-                    </Select>
-                </FormControl>
+                <StyledButton
+                    aria-controls="customized-menu"
+                    aria-haspopup="true"
+                    variant="contained"
+                    onClick={handleClick}
+                >
+                    {subreddit}
+                </StyledButton>
+                <StyledMenu
+                    id="customized-menu"
+                    anchorEl={anchorEl}
+                    keepMounted
+                    open={Boolean(anchorEl)}
+                    onClose={handleClose}
+                >
+                    <StyledMenuItem onClick={handleChange}>
+                        <ListItemIcon>
+                            <HomeIcon fontSize="small" />
+                        </ListItemIcon>
+                        <ListItemText primary="Home" />
+                    </StyledMenuItem>
+                     <StyledMenuItem onClick={handleChange}>
+                        <ListItemIcon>
+                            <AddIcon fontSize="small" />
+                        </ListItemIcon>
+                        <ListItemText primary="Create Subreddit" />
+                    </StyledMenuItem>
+                    <StyledMenuItem onClick={handleChange}>
+                        <ListItemIcon>
+                            <ImageIcon fontSize="small" />
+                        </ListItemIcon>
+                        <ListItemText primary="Subreddit1" />
+                    </StyledMenuItem>
+                </StyledMenu>
             </div>
-        )
+        );
     }
 }
