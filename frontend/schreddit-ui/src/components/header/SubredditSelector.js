@@ -9,6 +9,7 @@ import ListItemText from '@material-ui/core/ListItemText';
 import AddIcon from '@material-ui/icons/Add';
 import ImageIcon from '@material-ui/icons/Image';
 import HomeIcon from '@material-ui/icons/Home';
+import DropDownArrowIcon from '@material-ui/icons/ArrowDropDown'
 
 const StyledButton = withStyles({
     contained: {
@@ -70,8 +71,12 @@ export default function Dropdown(props) {
     let history = useHistory();
     const handleChange = (event) => {
         if (event.target.innerText === "Create Subreddit") {
-            history.push("CreateSubreddit")
+            history.push("/CreateSubreddit");
         }
+        else if (event.target.innerText === "Home") {
+            history.push("/");
+        }
+        handleClose()
         setSubreddit(event.target.innerText);
         console.log(event.target.innerText);
     };
@@ -94,6 +99,7 @@ export default function Dropdown(props) {
                     onClick={handleClick}
                 >
                     {subreddit}
+                    <DropDownArrowIcon />
                 </StyledButton>
                 <StyledMenu
                     id="customized-menu"
@@ -108,7 +114,7 @@ export default function Dropdown(props) {
                         </ListItemIcon>
                         <ListItemText primary="Home" />
                     </StyledMenuItem>
-                     <StyledMenuItem onClick={handleChange}>
+                    <StyledMenuItem onClick={handleChange}>
                         <ListItemIcon>
                             <AddIcon fontSize="small" />
                         </ListItemIcon>

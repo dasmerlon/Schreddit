@@ -35,7 +35,7 @@ const App = () => {
       <Switch>
         <Route exact path={"/"} component={FrontpageBody} />
         <Route path={"/r/"} component={Subredit} />
-        <Route path={"/createSubreddit"} component={CreateSubreddit} />
+        <Route path={"/createSubreddit"} component={() => <CreateSubreddit cookies={cookies}/>}/>
         <Route exact path={"/404"} component={ErrorPage} />
           <Redirect to="/404" />
       </Switch>
