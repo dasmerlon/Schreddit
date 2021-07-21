@@ -24,6 +24,14 @@ const useStyles = makeStyles((theme) => ({
     },
     formControl: {
         width: '100%'
+    },
+    submitButton:  {
+        backgroundColor: 'white',
+        color: 'grey',
+        border: '1px solid grey',
+        boxShadow: 'none',
+        marginTop: '10px',
+        height: '39px'
     }
 }));
 
@@ -82,21 +90,21 @@ export default function CreateSubreddit(props) {
             description: subreddit.description,
             type: subreddit.type
         },
-        {
-            headers: {
-                Authorization: `Bearer ${props.cookies.token}`
-            }
-        }).then(response => {
-            history.push("/r/" + subreddit.name);
-        }).catch(error => {
-            if (error.response.status === 422) {
-                setError({ message: "Please check your input. Something is not valid." });
-            }
-            else {
-                setError({ message: "Something went wrong, please try again later." });
-            }
-            console.log(error.response);
-        })
+            {
+                headers: {
+                    Authorization: `Bearer ${props.cookies.token}`
+                }
+            }).then(response => {
+                history.push("/r/" + subreddit.name);
+            }).catch(error => {
+                if (error.response.status === 422) {
+                    setError({ message: "Please check your input. Something is not valid." });
+                }
+                else {
+                    setError({ message: "Something went wrong, please try again later." });
+                }
+                console.log(error.response);
+            })
     };
 
     return (
@@ -141,20 +149,20 @@ export default function CreateSubreddit(props) {
                 <FormControl variant="outlined" className={classes.formControl}>
                     <InputLabel id="subreddit-type-dropdown-label">Type</InputLabel>
                     <Select
-                    required
-                    labelId="subreddit-type-dropdown-label"
-                    id="subreddit-type-dropdown"
-                    onChange={handleSubredditTypeChange}
-                    label="Type"
+                        required
+                        labelId="subreddit-type-dropdown-label"
+                        id="subreddit-type-dropdown"
+                        onChange={handleSubredditTypeChange}
+                        label="Type"
                     >
-                    <MenuItem value={'public'}>Public</MenuItem>
-                    <MenuItem value={'private'}>Private</MenuItem>
-                    <MenuItem value={'restricted'}>Restricted</MenuItem>
+                        <MenuItem value={'public'}>Public</MenuItem>
+                        <MenuItem value={'private'}>Private</MenuItem>
+                        <MenuItem value={'restricted'}>Restricted</MenuItem>
                     </Select>
                 </FormControl>
-                <label style={{color: 'red'}}>{error.message}</label>
-                <br/>
-                <Button type="submit">
+                <label style={{ color: 'red' }}>{error.message}</label>
+                <br />
+                <Button type="submit" className={classes.submitButton}>
                     Create Subreddit
                 </Button>
             </form>

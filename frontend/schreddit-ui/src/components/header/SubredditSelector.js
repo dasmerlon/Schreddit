@@ -76,7 +76,7 @@ export default function Dropdown(props) {
         else if (event.target.innerText === "Home") {
             history.push("/");
         }
-        handleClose()
+        handleClose();
         setSubreddit(event.target.innerText);
         console.log(event.target.innerText);
     };
