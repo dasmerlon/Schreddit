@@ -2,6 +2,7 @@ import React from 'react';
 import {makeStyles} from "@material-ui/core/styles";
 import {Card, CardHeader, Box, Grid, Container, Hidden, CssBaseline, Paper, CardContent, Button, Avatar, Link, Typography} from "@material-ui/core";
 import Post from "./Post";
+import CreatePost from "./CreatePost";
 import SortByBar from "./SortByBar";
 import Rules from "./Rules";
 import Moderators from "./Moderators";
@@ -15,8 +16,13 @@ const useStyles = makeStyles((theme) => ({
       width: '100%',
       margin: '0px',
     },
+    avatarSizeLarg: {
+      width: theme.spacing(7),
+      height: theme.spacing(7),
+    },
     headerBackground: {
-      height: '150px',
+      height: '100px',
+      backgroundColor: 'rgb(100,174,217)'
     },
     header: {
       height: "80px",
@@ -35,7 +41,7 @@ const useStyles = makeStyles((theme) => ({
 
 //TODO: - Sticky funktionalität vom Contact Component ist hardcoded über die höhe der Seite..
 //      - Infinit Scrolling einbauen
-export default function ForntpageBody() {
+export default function SubreditBody() {
     const classes = useStyles();
 
     return (
@@ -48,7 +54,7 @@ export default function ForntpageBody() {
             <Container fixed>
               <Grid container alignItems="center" justify="flex-start" spacing={2}>
                 <Grid item>
-                  <Avatar className={classes.avatar}>
+                  <Avatar className={classes.avatarSizeLarg}>
                     E  
                   </Avatar>
                 </Grid>
@@ -73,6 +79,9 @@ export default function ForntpageBody() {
       <Container fixed >
         <Grid container spacing={2} direction='row' className={classes.grid}>
           <Grid item container spacing={3} direction='column' className={classes.grid} xs={12} md={7}>
+            <Grid item>
+             <CreatePost />
+            </Grid>
             <Grid item>
              <SortByBar />
             </Grid>

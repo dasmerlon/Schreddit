@@ -61,7 +61,8 @@ export default function Rules() {
   const classes = useStyles();
 
   const [expanded, setExpanded] = React.useState('panel1');
-
+  const titles = ["1. Abc", "2. Abc", "3. Abc", "4. Abc", "5. Abc", "6. Abc", "7. Abc",]
+  
   const handleChange = (panel) => (event, newExpanded) => {
     setExpanded(newExpanded ? panel : false);
   };

@@ -6,7 +6,6 @@ import CardContent from '@material-ui/core/CardContent';
 import IconButton from '@material-ui/core/IconButton';
 import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
-import CardMedia from '@material-ui/core/CardMedia';
 import imA from '../images/a.png'; //import vom Bild
 import imB from '../images/e.jpg'; //import vom Bild
 import vid from '../images/a.mp4'; //import vom Bild

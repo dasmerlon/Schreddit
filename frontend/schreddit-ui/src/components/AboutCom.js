@@ -1,10 +1,7 @@
 import React from 'react';
 import {makeStyles, useTheme} from "@material-ui/core/styles";
 import {Card, CardHeader, Divider, SvgIcon, Grid, Box} from "@material-ui/core";
-import CardActions from '@material-ui/core/CardActions';
 import CardContent from '@material-ui/core/CardContent';
-import IconButton from '@material-ui/core/IconButton';
-import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
 
 // Source: https://materialdesignicons.com/
