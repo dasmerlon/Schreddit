@@ -87,11 +87,6 @@ export default function CreatePostBody() {
       setSubredit(event.target.value);
     };
 
-    const handleChangeSwitchNavigation = (event) => {
-      setNavigationFokus(event.target.label);
-      alert(event.label);
-    };
-
     return (
     <div className={classes.root}> 
         <React.Fragment>

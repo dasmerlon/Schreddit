@@ -125,11 +125,11 @@ export default function Posts() {
           </CardContent>
 
           { !show_multiple_img && !show_vid ? 
-            <img className={classes.img} src={tutorialSteps[activeStep].imgPath} />
+            <img alt="" className={classes.img} src={tutorialSteps[activeStep].imgPath} />
           : null }
 
           { show_multiple_img && !show_vid ? 
-            <img className={classes.img} src={tutorialSteps[activeStep].imgPath} /> 
+            <img alt="" className={classes.img} src={tutorialSteps[activeStep].imgPath} /> 
           : null }
         </CardActionArea>
 

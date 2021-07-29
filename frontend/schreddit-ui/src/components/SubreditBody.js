@@ -1,6 +1,6 @@
 import React from 'react';
 import {makeStyles} from "@material-ui/core/styles";
-import {Card, CardHeader, Box, Grid, Container, Hidden, CssBaseline, Paper, CardContent, Button, Avatar, Link, Typography} from "@material-ui/core";
+import {Card, CardHeader, Box, Grid, Container, Hidden, CssBaseline, Paper, CardContent, Button, Avatar, Typography} from "@material-ui/core";
 import Post from "./Post";
 import CreatePost from "./CreatePost";
 import SortByBar from "./SortByBar";

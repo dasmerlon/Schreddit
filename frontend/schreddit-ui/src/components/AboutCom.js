@@ -1,5 +1,5 @@
 import React from 'react';
-import {makeStyles, useTheme} from "@material-ui/core/styles";
+import {makeStyles} from "@material-ui/core/styles";
 import {Card, CardHeader, Divider, SvgIcon, Grid, Box} from "@material-ui/core";
 import CardContent from '@material-ui/core/CardContent';
 import Typography from '@material-ui/core/Typography';
