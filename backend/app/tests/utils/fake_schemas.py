@@ -6,11 +6,19 @@ class UserSchemas:
     """User schemas"""
 
     @staticmethod
-    def get_create():
+    def get_create_test_user():
         return schemas.UserCreate(
             email=settings.TEST_USER_EMAIL,
             username=settings.TEST_USER_USERNAME,
             password=settings.TEST_USER_PASSWORD,
+        )
+
+    @staticmethod
+    def get_create_other_user():
+        return schemas.UserCreate(
+            email="other@user.com",
+            username="other",
+            password="password",
         )
 
     @staticmethod

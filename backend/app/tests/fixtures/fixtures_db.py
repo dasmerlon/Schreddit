@@ -13,7 +13,14 @@ Fixtures for the test user
 
 @pytest.fixture
 def test_user_in_db() -> User:
-    user = crud.user.create(UserSchemas.get_create())
+    user = crud.user.create(UserSchemas.get_create_test_user())
+    yield user
+    crud.user.remove(user.uid)
+
+
+@pytest.fixture
+def other_user_in_db() -> User:
+    user = crud.user.create(UserSchemas.get_create_other_user())
     yield user
     crud.user.remove(user.uid)
 
@@ -36,6 +43,20 @@ def post_self_in_db(test_user_in_db: User, subreddit_in_db: Subreddit) -> PostMe
     post_meta = crud.post_meta.create(schema.metadata)
     post_content = crud.post_content.create(post_meta.uid, schema.content)
     crud.post_meta.set_author(post_meta, test_user_in_db)
+    crud.post_meta.set_subreddit(post_meta, subreddit_in_db)
+    yield post_meta, post_content
+    crud.post_meta.remove(post_meta.uid)
+    crud.post_content.remove(post_meta.uid)
+
+
+@pytest.fixture
+def post_self_in_db_other_user(
+    other_user_in_db: User, subreddit_in_db: Subreddit
+) -> PostMeta:
+    schema = PostSchemas.get_create(type="self")
+    post_meta = crud.post_meta.create(schema.metadata)
+    post_content = crud.post_content.create(post_meta.uid, schema.content)
+    crud.post_meta.set_author(post_meta, other_user_in_db)
     crud.post_meta.set_subreddit(post_meta, subreddit_in_db)
     yield post_meta, post_content
     crud.post_meta.remove(post_meta.uid)

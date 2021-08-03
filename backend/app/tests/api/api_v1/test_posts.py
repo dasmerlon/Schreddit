@@ -180,3 +180,15 @@ def test_update_post_type_link_fail_text(
     r = client.put(f"{settings.API_V1_STR}/posts/{metadata.uid}", json=payload)
     assert r.status_code == status.HTTP_400_BAD_REQUEST
     assert "detail" in r.json()
+
+
+def test_update_post_from_other_user_fail(
+    client: TestClient,
+    fake_auth: User,
+    post_self_in_db_other_user: (PostMeta, PostContent),
+) -> None:
+    metadata = post_self_in_db_other_user[0]
+    payload = PostPayloads.get_update(type="self")
+    r = client.put(f"{settings.API_V1_STR}/posts/{metadata.uid}", json=payload)
+    assert r.status_code == status.HTTP_401_UNAUTHORIZED
+    assert "detail" in r.json()
