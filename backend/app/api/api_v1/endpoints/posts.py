@@ -9,7 +9,8 @@ from app.api.api_v1.exceptions import (PaginationAfterAndBeforeException,
                                        PaginationInvalidCursorException,
                                        PostNotFoundException,
                                        PostTypeRequestInvalidException,
-                                       SubredditNotFoundException)
+                                       SubredditNotFoundException,
+                                       UnauthorizedUpdateException)
 
 router = APIRouter()
 
@@ -162,6 +163,8 @@ def update_post(
     old_post_content = crud.post_content.get(post_uid)
     if not old_post_meta or not old_post_content:
         raise PostNotFoundException
+    if crud.post_meta.get_author(old_post_meta) != current_user:
+        raise UnauthorizedUpdateException
     if old_post_meta.type == schemas.PostType.link.value and post.content.text:
         raise PostTypeRequestInvalidException
     elif old_post_meta.type != schemas.PostType.link.value and post.content.url:

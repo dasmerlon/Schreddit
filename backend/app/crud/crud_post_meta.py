@@ -72,5 +72,9 @@ class CRUDPostMeta(CRUDBaseNeo[PostMeta, PostMetaCreate, PostMetaUpdate]):
         post_subreddit = db_obj.subreddit.connect(subreddit)
         return post_subreddit
 
+    @db.read_transaction
+    def get_author(self, db_obj: PostMeta) -> User:
+        return db_obj.author.single()
+
 
 post_meta = CRUDPostMeta(PostMeta)
