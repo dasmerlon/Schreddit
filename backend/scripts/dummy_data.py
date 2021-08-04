@@ -1,3 +1,6 @@
+#!/usr/bin/env python3
+
+import argparse
 from typing import List, Union
 
 from faker import Faker
@@ -70,17 +73,17 @@ def create_posts(
     """
     posts = []
     for _ in range(count):
-        type = fake.random_element(schemas.PostType)
+        post_type = fake.random_element(schemas.PostType)
         metadata = schemas.PostMetaCreate(
             nsfw=fake.boolean(),
             spoiler=fake.boolean(),
             sr=fake.random_element([sr.sr for sr in subreddits]),
-            type=type,
+            type=post_type,
         )
         content = schemas.PostContentCreate(
-            text=fake.paragraph() if type == schemas.PostType.self else None,
+            text=fake.paragraph() if post_type == schemas.PostType.self else None,
             title=fake.sentence(),
-            url=fake.url() if type != schemas.PostType.self else None,
+            url=fake.url() if post_type != schemas.PostType.self else None,
         )
         post = crud.post_meta.create(metadata)
         crud.post_content.create(post.uid, content)
@@ -116,14 +119,7 @@ def create_comments(
     return comments
 
 
-def fill(
-    *,
-    users: int = 10,
-    subreddits: int = 10,
-    posts: int = 10,
-    comments: int = 10,
-    comments_depth_level: int = 3,
-):
+def fill(users: int, subreddits: int, posts: int, comments: int, depth: int):
     """
     Fill the databases with random fake data.
 
@@ -131,20 +127,20 @@ def fill(
     :param subreddits: number of subreddits to create
     :param posts: number of posts to create
     :param comments: number of comments to create per level
-    :param comments_max_depth: maximum depth of comment tree
+    :param depth: maximum depth of comment tree
     """
     init_dbs()
     fake_users = create_users(users)
     fake_subreddits = create_subreddits(subreddits, fake_users)
     fake_posts = create_posts(posts, fake_users, fake_subreddits)
     fake_comments = create_comments(comments, fake_users, fake_posts)
-    for _ in range(comments_depth_level - 1):
+    for _ in range(depth - 1):
         fake_comments = create_comments(comments, fake_users, fake_comments)
 
 
 def clear():
     """Clear the databases."""
-    i = input("Are you sure you want to clear the databases? (y/N)")
+    i = input("Are you sure you want to clear the databases? (y/N) ")
     if i == "y":
         init_dbs()
         clear_neo4j_database(db)
@@ -153,3 +149,29 @@ def clear():
         print("Cleared the databases.")
     else:
         print("Not removing anything")
+
+
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser(
+        description='Fill the databases with dummy data or clear all data.',
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter
+    )
+    parser.add_argument('action', choices=["fill", "clear"],
+                        help="either fill or clear the databases")
+    parser.add_argument('-u', '--users', default=10,
+                        help="number of users to create", type=int)
+    parser.add_argument('-s', '--subreddits', default=10,
+                        help="number of subreddits to create", type=int)
+    parser.add_argument('-p', '--posts', default=10,
+                        help="number of posts to create", type=int)
+    parser.add_argument('-c', '--comments', default=10,
+                        help="number of comments to create for each depth level",
+                        type=int)
+    parser.add_argument('-d', '--depth', default=3,
+                        help="maximum depth of the comment tree", type=int)
+
+    args = parser.parse_args()
+    if args.action == "fill":
+        fill(args.users, args.subreddits, args.posts, args.comments, args.depth)
+    elif args.action == "clear":
+        clear()

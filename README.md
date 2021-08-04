@@ -11,9 +11,7 @@ Copy the contents of the `dot_env_example` to a new file called `.env` in the sa
 
 To run, execute `poetry run app/main.py` from the `backend` directory.
 
-To fill the database with dummy data, call the `fill` function from `scripts/dummy_data.py`.
-Override default values as desired.
-To clear the database, call `clear` from the same file.
+From the `backend` directory, run `poetry run scripts/dummy_data.py` with the `fill` argument to fill the databases with dummy data, with the `clear` argument to clear all data, or with `-h` for more information.
 
 # Test
 ### Backend
