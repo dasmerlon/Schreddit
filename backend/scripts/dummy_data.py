@@ -46,7 +46,7 @@ def create_subreddits(count, users: List[models.User]) -> List[models.Subreddit]
     subreddits = []
     for _ in range(count):
         schema = schemas.SubredditCreate(
-            sr="".join(fake.unique.words()),
+            sr=fake.unique.word(),
             title=" ".join(fake.words()),
             type=fake.random_element(schemas.SubredditType),
         )
