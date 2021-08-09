@@ -4,7 +4,8 @@ from pydantic import UUID4
 from app import crud, models, schemas
 from app.api import deps
 from app.api.api_v1.exceptions import (CommentNotFoundException,
-                                       ParentNotFoundException)
+                                       ParentNotFoundException,
+                                       UnauthorizedUpdateException)
 
 router = APIRouter()
 
@@ -84,6 +85,8 @@ def update_comment(
     old_comment_content = crud.comment_content.get(comment_uid)
     if not old_comment_meta or not old_comment_content:
         raise CommentNotFoundException
+    if crud.comment_meta.get_author(old_comment_meta) != current_user:
+        raise UnauthorizedUpdateException
 
     crud.comment_meta.update(old_comment_meta, None)
     crud.comment_content.update(old_comment_content, comment)
