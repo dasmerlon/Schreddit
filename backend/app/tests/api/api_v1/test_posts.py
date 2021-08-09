@@ -82,12 +82,26 @@ def test_submit_post(
         PostPayloads.get_create(type="self", valid=False),
     ],
 )
-def test_submit_post_fail(
+def test_submit_post_wrong_format(
     client: TestClient, fake_auth: User, payload: Dict, subreddit_in_db: Subreddit
 ) -> None:
     payload["metadata"]["sr"] = subreddit_in_db.sr
     r = client.post(f"{settings.API_V1_STR}/posts", json=payload)
-    assert r.status_code == status.HTTP_400_BAD_REQUEST
+    assert r.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
+    assert "detail" in r.json()
+
+
+@pytest.mark.parametrize(
+    "payload",
+    [PostPayloads.get_create(type="link"), PostPayloads.get_create(type="self")],
+)
+def test_submit_post_empty_title(
+    client: TestClient, fake_auth: User, payload: Dict, subreddit_in_db: Subreddit
+) -> None:
+    payload["metadata"]["sr"] = subreddit_in_db.sr
+    payload["content"]["title"] = "  "
+    r = client.post(f"{settings.API_V1_STR}/posts", json=payload)
+    assert r.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
     assert "detail" in r.json()
 
 
@@ -191,4 +205,21 @@ def test_update_post_from_other_user_fail(
     payload = PostPayloads.get_update(type="self")
     r = client.put(f"{settings.API_V1_STR}/posts/{metadata.uid}", json=payload)
     assert r.status_code == status.HTTP_401_UNAUTHORIZED
+    assert "detail" in r.json()
+
+
+@pytest.mark.parametrize(
+    "payload",
+    [PostPayloads.get_update(type="link"), PostPayloads.get_update(type="self")],
+)
+def test_update_post_empty_title(
+    client: TestClient,
+    fake_auth: User,
+    payload: Dict,
+    post_link_in_db: (PostMeta, PostContent),
+) -> None:
+    metadata = post_link_in_db[0]
+    payload["content"]["title"] = "  "
+    r = client.put(f"{settings.API_V1_STR}/posts/{metadata.uid}", json=payload)
+    assert r.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
     assert "detail" in r.json()

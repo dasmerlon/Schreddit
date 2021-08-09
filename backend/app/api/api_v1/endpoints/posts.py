@@ -115,15 +115,6 @@ def submit_post(
     - `type` : one of `link`, `self`, `image`, `video`, `videogif`)
     - `url` : a valid URL
     """
-    if post.metadata.type == schemas.PostType.link and (
-        not post.content.url or post.content.text
-    ):
-        raise PostTypeRequestInvalidException
-    elif post.metadata.type != schemas.PostType.link and (
-        not post.content.text or post.content.url
-    ):
-        raise PostTypeRequestInvalidException
-
     # check if subreddit exists
     sr = crud.subreddit.get_by_sr(post.metadata.sr)
     if sr is None:
@@ -165,9 +156,13 @@ def update_post(
         raise PostNotFoundException
     if crud.post_meta.get_author(old_post_meta) != current_user:
         raise UnauthorizedUpdateException
-    if old_post_meta.type == schemas.PostType.link.value and post.content.text:
+    if old_post_meta.type == schemas.PostType.link.value and (
+            post.content.text is not None or post.content.url is None
+    ):
         raise PostTypeRequestInvalidException
-    elif old_post_meta.type != schemas.PostType.link.value and post.content.url:
+    elif old_post_meta.type != schemas.PostType.link.value and (
+            post.content.text is None or post.content.url is not None
+    ):
         raise PostTypeRequestInvalidException
 
     crud.post_meta.update(old_post_meta, post.metadata)

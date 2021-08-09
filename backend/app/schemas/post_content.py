@@ -1,20 +1,32 @@
 from datetime import datetime
 from typing import Optional
 
-from fastapi import Query
-from pydantic import BaseModel, HttpUrl
+from pydantic import BaseModel, HttpUrl, constr, validator
 
 from app.core.config import settings
 
 
 class PostContentBase(BaseModel):
-    text: Optional[str] = None
-    title: Optional[str] = Query(..., max_length=settings.MAX_TITLE_LENGTH)
+    text: Optional[constr(min_length=1, strip_whitespace=True)] = None
+    title: Optional[
+        constr(
+            min_length=1, max_length=settings.MAX_TITLE_LENGTH, strip_whitespace=True
+        )
+    ]
     url: Optional[HttpUrl] = None
+
+    @validator("title")
+    def title_must_not_be_none(cls, v):
+        if v is None:
+            raise ValueError("title must not be None")
+        else:
+            return v
 
 
 class PostContentCreate(PostContentBase):
-    title: str = Query(..., max_length=settings.MAX_TITLE_LENGTH)
+    title: constr(
+        min_length=1, max_length=settings.MAX_TITLE_LENGTH, strip_whitespace=True
+    )
 
 
 class PostContentUpdate(PostContentBase):
