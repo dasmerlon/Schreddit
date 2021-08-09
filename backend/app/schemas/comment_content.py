@@ -4,7 +4,7 @@ from pydantic import BaseModel
 
 
 class CommentContentBase(BaseModel):
-    text: Optional[str] = None
+    text: Optional[constr(min_length=1, strip_whitespace=True)] = None
 
 
 class CommentContentCreate(CommentContentBase):
