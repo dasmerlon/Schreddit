@@ -57,7 +57,7 @@ def post_self_in_db(
 @pytest.fixture
 def post_self_in_db_other_user(
     other_user_in_db: User, subreddit_in_db: Subreddit
-) -> PostMeta:
+) -> (PostMeta, PostContent):
     schema = PostSchemas.get_create(type="self")
     post_meta = crud.post_meta.create(schema.metadata)
     post_content = crud.post_content.create(post_meta.uid, schema.content)
@@ -76,6 +76,20 @@ def comment_in_db(
     comment_meta = crud.comment_meta.create(None)
     comment_content = crud.comment_content.create(comment_meta.uid, schema)
     crud.comment_meta.set_author(comment_meta, test_user_in_db)
+    crud.comment_meta.set_parent(comment_meta, post_self_in_db[0])
+    yield comment_meta, comment_content
+    crud.comment_meta.remove(comment_meta.uid)
+    crud.comment_content.remove(comment_meta.uid)
+
+
+@pytest.fixture
+def comment_in_db_other_user(
+    other_user_in_db: User, post_self_in_db: (PostMeta, PostContent)
+) -> (CommentMeta, CommentContent):
+    schema = CommentSchemas.get_create()
+    comment_meta = crud.comment_meta.create(None)
+    comment_content = crud.comment_content.create(comment_meta.uid, schema)
+    crud.comment_meta.set_author(comment_meta, other_user_in_db)
     crud.comment_meta.set_parent(comment_meta, post_self_in_db[0])
     yield comment_meta, comment_content
     crud.comment_meta.remove(comment_meta.uid)

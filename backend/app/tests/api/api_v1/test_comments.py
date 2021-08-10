@@ -147,3 +147,15 @@ def test_update_comment_wrong_format(
     r = client.put(f"{settings.API_V1_STR}/comments/{metadata.uid}", json=payload)
     assert r.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
     assert "detail" in r.json()
+
+
+def test_update_comment_from_other_user(
+    client: TestClient,
+    fake_auth: User,
+    comment_in_db_other_user: (CommentMeta, CommentContent),
+) -> None:
+    metadata = comment_in_db_other_user[0]
+    payload = CommentPayloads.get_update()
+    r = client.put(f"{settings.API_V1_STR}/comments/{metadata.uid}", json=payload)
+    assert r.status_code == status.HTTP_401_UNAUTHORIZED
+    assert "detail" in r.json()
