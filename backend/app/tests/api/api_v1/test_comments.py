@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Union
 from uuid import uuid4
 
 import pytest
@@ -74,7 +74,7 @@ def test_submit_comment(
 
 
 @pytest.mark.parametrize("type", ["post", "comment"])
-def test_submit_comment_fail(
+def test_submit_comment_nonexisting_parent(
     client: TestClient, fake_auth: User, type: str, subreddit_in_db: Subreddit
 ) -> None:
     payload = CommentPayloads.get_create()
@@ -82,6 +82,20 @@ def test_submit_comment_fail(
         f"{settings.API_V1_STR}/comments/{type}/{uuid4().hex}", json=payload
     )
     assert r.status_code == status.HTTP_404_NOT_FOUND
+    assert "detail" in r.json()
+
+
+@pytest.mark.parametrize("text", ["  ", None])
+def test_submit_comment_wrong_format(
+    client: TestClient, fake_auth: User, text: Union[str, None], post_self_in_db: (PostMeta, PostContent)
+) -> None:
+    payload = CommentPayloads.get_create()
+    payload["text"] = text
+    parent = post_self_in_db[0]
+    r = client.post(
+        f"{settings.API_V1_STR}/comments/post/{parent.uid}", json=payload
+    )
+    assert r.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
     assert "detail" in r.json()
 
 
@@ -108,7 +122,7 @@ def test_update_comment(
     assert retrieved_comment["content"]["text"] == payload["text"]
 
 
-def test_update_comment_fail(
+def test_update_comment_nonexisting_parent(
     client: TestClient,
     fake_auth: User,
     comment_in_db: (CommentMeta, CommentContent),
@@ -116,4 +130,19 @@ def test_update_comment_fail(
     payload = CommentPayloads.get_update()
     r = client.put(f"{settings.API_V1_STR}/comments/{uuid4().hex}", json=payload)
     assert r.status_code == status.HTTP_404_NOT_FOUND
+    assert "detail" in r.json()
+
+
+@pytest.mark.parametrize("text", ["  ", None])
+def test_update_comment_wrong_format(
+    client: TestClient,
+    fake_auth: User,
+    text: Union[str, None],
+    comment_in_db: (CommentMeta, CommentContent),
+) -> None:
+    metadata = comment_in_db[0]
+    payload = CommentPayloads.get_update()
+    payload["text"] = text
+    r = client.put(f"{settings.API_V1_STR}/comments/{metadata.uid}", json=payload)
+    assert r.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
     assert "detail" in r.json()
