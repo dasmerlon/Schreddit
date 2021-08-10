@@ -157,11 +157,11 @@ def update_post(
     if crud.post_meta.get_author(old_post_meta) != current_user:
         raise UnauthorizedUpdateException
     if old_post_meta.type == schemas.PostType.link.value and (
-            post.content.text is not None or post.content.url is None
+        post.content.text is not None or post.content.url is None
     ):
         raise PostTypeRequestInvalidException
     elif old_post_meta.type != schemas.PostType.link.value and (
-            post.content.text is None or post.content.url is not None
+        post.content.text is None or post.content.url is not None
     ):
         raise PostTypeRequestInvalidException
 

@@ -87,14 +87,15 @@ def test_submit_comment_nonexisting_parent(
 
 @pytest.mark.parametrize("text", ["  ", None])
 def test_submit_comment_wrong_format(
-    client: TestClient, fake_auth: User, text: Union[str, None], post_self_in_db: (PostMeta, PostContent)
+    client: TestClient,
+    fake_auth: User,
+    text: Union[str, None],
+    post_self_in_db: (PostMeta, PostContent),
 ) -> None:
     payload = CommentPayloads.get_create()
     payload["text"] = text
     parent = post_self_in_db[0]
-    r = client.post(
-        f"{settings.API_V1_STR}/comments/post/{parent.uid}", json=payload
-    )
+    r = client.post(f"{settings.API_V1_STR}/comments/post/{parent.uid}", json=payload)
     assert r.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
     assert "detail" in r.json()
 
