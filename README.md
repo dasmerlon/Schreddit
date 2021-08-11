@@ -15,7 +15,7 @@ To run, execute `poetry run app/main.py` from the `backend` directory.
 ### Backend
 Adjust credentials for testing DB in `.env`. 
 
-Run `scripts/test.sh{bat, sh}` to run all tests including a coverage report.
+Run `scripts/test.sh` to run all tests including a coverage report.
 
 # Develop
 ### Backend
@@ -23,7 +23,7 @@ To resolve the modules correctly in your IDE, the `backend` directory needs to b
 
 For logging Cypher queries, set environment variable `NEOMODEL_CYPHER_DEBUG=1`.
 
-For code linting run `scripts/lint.sh{bat, sh}` from the `backend` directory.
+For code linting run `scripts/lint.sh` from the `backend` directory.
 
-Before commiting, run `scripts/format.sh{bat, sh}` from the `backend` directory.
+Before commiting, run `scripts/format.sh` from the `backend` directory.
 It performs automatic code formatting, import sorting and removes unused imports.
