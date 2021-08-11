@@ -32,17 +32,13 @@ const useStyles = makeStyles((theme) => ({
     dropDown: {
       backgroundColor: "white"
     },
-    margin: {
-      minWidth: 470,
-      maxWidth: 470
-    },
     button: {
       '& > *': {
         margin: theme.spacing(-1.9),
       },
     },
     toolbar: {  
-      width: 'fit-content',
+      width: '100%',
       border: `1px solid ${theme.palette.divider}`,
       borderRadius: theme.shape.borderRadius,
       backgroundColor: theme.palette.background.paper,
@@ -77,15 +73,36 @@ export default function CreatePostBody() {
     const [chipValue2, setChipValue2] = React.useState(false);
     const [value, setValue] = React.useState(0);
     const [subredit, setSubredit] = React.useState("r/AnimalsBeingBros");
-    const [textValue, setTextValue] = React.useState('');
+    const [titleValue, setTitleValue] = React.useState('');
+    
+    const [textLink, makeTextLink] = React.useState(false);
+    const [textValue, setTextFieldValue] = React.useState('');
 
-    const handleTextFieldChange = (event) => {
-      setTextValue(event.target.value);
+
+    const handleTitleChange = (event) => {
+      setTitleValue(event.target.value);
     };
 
     const handleChange = (event) => {
       setSubredit(event.target.value);
     };
+
+    const handleTextfieldChange = (event) => {
+      { textValue.slice(-9, 0) === 'undefine' ? setTextFieldValue(' ') : setTextFieldValue(textValue + event.target.value[event.target.value.length-1])}
+    };
+
+    const handleBold = (event) => {
+      setTextFieldValue(textValue + '**bold**');
+    }
+    const handleItalic = (event) => {
+      setTextFieldValue(textValue + '*italics*');
+    }
+    const handleLinkText = (event) => {
+      makeTextLink(!textLink);
+      { textLink ? setTextFieldValue(textValue + '[') : setTextFieldValue(textValue + '](' +  ')')};
+    }
+
+
 
     return (
     <div className={classes.root}> 
@@ -138,8 +155,8 @@ export default function CreatePostBody() {
                                 <OutlinedInput
                                   id="outlined-adornment-password"
                                   type={'text' }
-                                  onChange={handleTextFieldChange}
-                                  endAdornment={<InputAdornment position="end">{textValue.length}/300</InputAdornment>}
+                                  onChange={handleTitleChange}
+                                  endAdornment={<InputAdornment position="end">{titleValue.length}/300</InputAdornment>}
                                   
                                   labelWidth={70}
                                 />
@@ -148,10 +165,10 @@ export default function CreatePostBody() {
                               { navigationFokus=== "Post" ? 
                             <Grid item>
                               <Grid container alignItems="center" className={classes.toolbar}>
-                                <IconButton className={classes.button}>
+                                <IconButton className={classes.button} onClick={handleBold}>
                                   <FormatBoldIcon />
                                 </IconButton>
-                                <IconButton className={classes.button}>
+                                <IconButton className={classes.button} onClick={handleItalic}>
                                   <FormatItalicIcon />
                                 </IconButton>
                                 <IconButton className={classes.button}>
@@ -160,7 +177,7 @@ export default function CreatePostBody() {
                                 <IconButton className={classes.button}>
                                   <SvgIcon ><path d={mdiFormatStrikethroughVariant} /></SvgIcon>
                                 </IconButton>
-                                <IconButton className={classes.button}>
+                                <IconButton className={classes.button} onClick={console.log(textValue)}>
                                   <SvgIcon ><path d={mdiCodeBraces} /></SvgIcon>
                                 </IconButton>
                                 <IconButton className={classes.button}>
@@ -187,7 +204,7 @@ export default function CreatePostBody() {
                               : null }
                               { navigationFokus=== "Post" ? 
                             <Grid item>
-                              <TextareaAutosize className={classes.margin} rowsMin={10} placeholder="Text (optional)" />
+                              <TextareaAutosize className={classes.grid} rowsMin={10} placeholder=" Text (optional)" onChange={handleTextfieldChange}/>
                             </Grid> 
                               : navigationFokus==="Image & Video" ? 
                             <Grid item>
@@ -199,7 +216,7 @@ export default function CreatePostBody() {
                             </Grid>
                             : 
                             <Grid item>
-                              <TextareaAutosize className={classes.margin} rowsMin={4} placeholder="Url" />
+                              <TextareaAutosize className={classes.grid} rowsMin={4} placeholder=" Url" />
                             </Grid> 
                             }
                             <Grid item>

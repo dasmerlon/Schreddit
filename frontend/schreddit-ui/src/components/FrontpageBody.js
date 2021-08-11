@@ -47,13 +47,13 @@ export default function ForntpageBody() {
               <Post />
             </Grid>
             <Grid item>
-            <Post />
+              <Post />
             </Grid>
             <Grid item>
-            <Post />
+              <Post />
             </Grid>
             <Grid item>
-            <Post />
+              <Post />
             </Grid>
           </Grid>
           <Grid item container spacing={3} direction='column' className={classes.grid} xs={1}>

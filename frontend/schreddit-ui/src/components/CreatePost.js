@@ -13,7 +13,7 @@ const useStyles = makeStyles({
         margin: 4,
     },
     link: {
-        width: "100%",
+        width: "100%",  // entspricht "fullWidth"
     }
 });
 

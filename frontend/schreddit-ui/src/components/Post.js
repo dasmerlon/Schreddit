@@ -60,7 +60,7 @@ export default function Posts() {
   const classes = useStyles();
 
   const show_vid = false; 
-  const show_multiple_img = true;
+  const show_multiple_img = false;
 
   // Alles hier runter ist dafür Zuständig, um bei mehreren Bildern durch alle durch zu blättern:
   const theme = useTheme();
