@@ -1,5 +1,6 @@
 import React from 'react';
-import {Avatar, Card, IconButton, makeStyles, SvgIcon, TextField} from "@material-ui/core";
+import {Button, Avatar, Card, IconButton, makeStyles, SvgIcon, TextField} from "@material-ui/core";
+import { Link } from "react-router-dom";
 import CardActions from '@material-ui/core/CardActions';
 //Symbols: (Source: https://materialdesignicons.com/)
 import { mdiLinkVariant, mdiImageMultipleOutline } from '@mdi/js';
@@ -11,22 +12,32 @@ const useStyles = makeStyles({
     textField: {
         margin: 4,
     },
+    link: {
+        width: "100%",  // entspricht "fullWidth"
+    }
 });
 
 export default function CreatePost() {
     const classes = useStyles();
-    
+
+    // Diese Funktion ist nötig um die OnClick Funktionalität des Textfeldes zu erreichen.
+    const handleClick = () => {
+        <Link to={{ pathname:'http://localhost:3000/submit', state: [{id: 1, name: 'Ford', color: 'red'}] }}></Link>
+    };
+
     return (
         <Card>
             <CardActions>
                 <Avatar className={classes.avatar}>
                     P
                 </Avatar>
-                <TextField id="outlined-basic" label="Create Post" variant="outlined" fullWidth className={classes.textField} />
-                <IconButton size="small" title="More" onClick={()=>{alert('More') }}> 
+                <Link className={classes.link} to={{ pathname:'/submit', state: [{id: 1, name: 'Ford', color: 'red'}] }}>
+                    <TextField id="outlined-basic" label="Create Post" variant="outlined" fullWidth className={classes.textField} />
+                </Link>
+                <IconButton size="small" title="More" href="http://localhost:3000/submit"> 
                     <SvgIcon ><path d={mdiImageMultipleOutline} /></SvgIcon>
                 </IconButton>
-                <IconButton size="small" title="More" onClick={()=>{alert('More') }}> 
+                <IconButton size="small" title="More" href="http://localhost:3000/submit"> 
                     <SvgIcon ><path d={mdiLinkVariant} /></SvgIcon>
                 </IconButton>
             </CardActions>

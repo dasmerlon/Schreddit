@@ -1,5 +1,5 @@
 import './App.css';
-import { BrowserRouter as Router, Route, Switch, Link, Redirect} from 'react-router-dom';
+import { BrowserRouter as Router, Route, Switch, Redirect} from 'react-router-dom';
 // We use this Router-Package: https://reactrouter.com/
 import React from 'react';
 import './App.css';
@@ -10,7 +10,8 @@ import { useCookies } from 'react-cookie';
 
 // Pages
 import FrontpageBody from './components/FrontpageBody';
-import Subredit from './components/Subredit';
+import SubreditBody from './components/SubreditBody';
+import CreatePostBody from './components/CreatePostBody';
 import ErrorPage from './components/ErrorPage';
 
 const App = () => {
@@ -32,7 +33,8 @@ const App = () => {
       <Header cookies={cookies} handleLogin={handleLogin} handleLogout={handleLogout} />
       <Switch>
         <Route exact path={"/"} component={FrontpageBody} />
-        <Route path={"/r/"} component={Subredit} />
+        <Route path={"/submit"} component={CreatePostBody} />
+        <Route path={"/r/"} component={SubreditBody} />
         <Route exact path={"/404"} component={ErrorPage} />
           <Redirect to="/404" />
       </Switch>
