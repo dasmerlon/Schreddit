@@ -24,6 +24,21 @@ class PostNotFoundException(HTTPException):
         )
 
 
+class CommentNotFoundException(HTTPException):
+    def __init__(self):
+        super().__init__(
+            status_code=status.HTTP_404_NOT_FOUND, detail="This comment does not exist."
+        )
+
+
+class ParentNotFoundException(HTTPException):
+    def __init__(self):
+        super().__init__(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="The thing being replied to does not exist.",
+        )
+
+
 class PostTypeRequestInvalidException(HTTPException):
     def __init__(self):
         super().__init__(
@@ -37,7 +52,7 @@ class SubredditNotFoundException(HTTPException):
     def __init__(self):
         super().__init__(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail="This subreddit subreddit does not exist.",
+            detail="This subreddit does not exist.",
         )
 
 
@@ -47,4 +62,12 @@ class InvalidCredentialsException(HTTPException):
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Could not validate credentials.",
             headers={"WWW-Authenticate": "Bearer"},
+        )
+
+
+class UnauthorizedUpdateException(HTTPException):
+    def __init__(self):
+        super().__init__(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="You are not authorized to modify this resource.",
         )

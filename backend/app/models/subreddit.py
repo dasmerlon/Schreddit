@@ -2,6 +2,8 @@ from neomodel import (DateTimeProperty, RelationshipFrom, RelationshipTo,
                       StringProperty, StructuredNode, UniqueIdProperty,
                       cardinality)
 
+from app.core.config import settings
+
 
 # Nodes
 class Subreddit(StructuredNode):
@@ -14,7 +16,7 @@ class Subreddit(StructuredNode):
     # submit_link_label = StringProperty(max_length=60)
     # submit_text = StringProperty()
     # submit_text_label = StringProperty(max_length=60)
-    title = StringProperty(max_length=100)
+    title = StringProperty(max_length=settings.MAX_TITLE_LENGTH)
     type = StringProperty()
     uid = UniqueIdProperty()
     # welcome_message_enabled = BooleanProperty()
@@ -24,4 +26,4 @@ class Subreddit(StructuredNode):
 
     # Relationships
     admin = RelationshipTo(".user.User", "CREATED_BY", cardinality=cardinality.One)
-    post = RelationshipFrom(".post.Post", "POSTED_IN")
+    post = RelationshipFrom(".post_meta.PostMeta", "POSTED_IN")

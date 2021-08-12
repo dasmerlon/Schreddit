@@ -4,12 +4,12 @@ from neomodel import db
 from pydantic import EmailStr
 
 from app.core.security import get_password_hash, verify_password
-from app.crud.base import CRUDBase
+from app.crud.base_neo import CRUDBaseNeo
 from app.models import User
 from app.schemas import UserCreate, UserUpdate
 
 
-class CRUDUser(CRUDBase[User, UserCreate, UserUpdate]):
+class CRUDUser(CRUDBaseNeo[User, UserCreate, UserUpdate]):
     """User class for CRUD operations."""
 
     @db.read_transaction

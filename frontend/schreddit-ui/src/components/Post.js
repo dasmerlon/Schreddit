@@ -6,7 +6,6 @@ import CardContent from '@material-ui/core/CardContent';
 import IconButton from '@material-ui/core/IconButton';
 import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
-import CardMedia from '@material-ui/core/CardMedia';
 import imA from '../images/a.png'; //import vom Bild
 import imB from '../images/e.jpg'; //import vom Bild
 import vid from '../images/a.mp4'; //import vom Bild
@@ -31,6 +30,8 @@ const tutorialSteps = [
       imB,
   },
 ];
+
+const text = "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.";
 
 const useStyles = makeStyles({
     root: { 
@@ -61,7 +62,8 @@ export default function Posts() {
   const classes = useStyles();
 
   const show_vid = false; 
-  const show_multiple_img = true;
+  const show_multiple_img = false;
+  const show_text = false;
 
   // Alles hier runter ist dafür Zuständig, um bei mehreren Bildern durch alle durch zu blättern:
   const theme = useTheme();
@@ -102,7 +104,7 @@ export default function Posts() {
             </Grid>
           }
           title={
-            <Link href="http://localhost:3000/" color="inherit">
+            <Link href="http://localhost:3000/r/HowToPictures" color="inherit">
               {'r/HowToPictures'}
             </Link>
           }
@@ -125,16 +127,27 @@ export default function Posts() {
             </Typography>
           </CardContent>
 
-          { !show_multiple_img && !show_vid ? 
-            <img className={classes.img} src={tutorialSteps[activeStep].imgPath} />
+          { !show_multiple_img && !show_vid && !show_text ? 
+            <img alt="" className={classes.img} src={tutorialSteps[activeStep].imgPath} />
           : null }
 
-          { show_multiple_img && !show_vid ? 
-            <img className={classes.img} src={tutorialSteps[activeStep].imgPath} /> 
+          { show_multiple_img && !show_vid && !show_text ? 
+            <img alt="" className={classes.img} src={tutorialSteps[activeStep].imgPath} /> 
           : null }
+
+          {show_text && !show_multiple_img && !show_vid ? 
+            <CardContent>
+              <Typography>{text.slice(0,400)}</Typography>
+            </CardContent>
+          : null}
+          {(show_text && show_multiple_img) || (show_text && show_vid) || (show_multiple_img && show_vid) ?
+            <CardContent>
+              <Typography>Internal Error... (Filetype has multiple types)</Typography>
+            </CardContent>
+          : null}
         </CardActionArea>
 
-        { show_multiple_img && !show_vid ? 
+        { show_multiple_img && !show_vid && !show_text ? 
           <MobileStepper
             steps={maxSteps}
             position="static"
@@ -156,7 +169,7 @@ export default function Posts() {
         : null}
         
         <CardActionArea href="http://localhost:3000/r/HowToPictures">
-          {show_vid && !show_multiple_img ? 
+          {show_vid && !show_multiple_img && !show_text ? 
             <video className={classes.img} controls src={vid} type={'video/mp4'} id="myVideo"/> 
           : null}
         </CardActionArea>

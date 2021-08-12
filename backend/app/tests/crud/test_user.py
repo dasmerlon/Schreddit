@@ -8,7 +8,7 @@ from app.tests.utils.fake_schemas import UserSchemas
 
 
 def test_create_user(remove_users: List) -> None:
-    obj_in = UserSchemas.get_create()
+    obj_in = UserSchemas.get_create_test_user()
     user = crud.user.create(obj_in)
     remove_users.append(user.uid)
     assert user

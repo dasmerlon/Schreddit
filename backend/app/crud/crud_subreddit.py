@@ -2,12 +2,12 @@ from typing import Optional
 
 from neomodel import db
 
-from app.crud.base import CRUDBase
+from app.crud.base_neo import CRUDBaseNeo
 from app.models import Subreddit, User
 from app.schemas import SubredditCreate, SubredditUpdate
 
 
-class CRUDSubreddit(CRUDBase[Subreddit, SubredditCreate, SubredditUpdate]):
+class CRUDSubreddit(CRUDBaseNeo[Subreddit, SubredditCreate, SubredditUpdate]):
     """Subreddits class for CRUD operations"""
 
     @db.write_transaction

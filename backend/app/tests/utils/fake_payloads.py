@@ -33,20 +33,44 @@ class PostPayloads:
     @staticmethod
     def get_create(*, type: str = "link", valid: bool = True):
         return {
-            "nsfw": True if type == "link" else False,
-            "spoiler": False if type == "link" else True,
-            "text": "A text." if type != "link" or not valid else None,
-            "title": "A Title",
-            "url": "https://www.google.com/" if type == "link" or not valid else None,
-            "type": type,
+            "metadata": {
+                "nsfw": True if type == "link" else False,
+                "spoiler": False if type == "link" else True,
+                "type": type,
+            },
+            "content": {
+                "text": "A text." if type != "link" or not valid else None,
+                "title": "A Title",
+                "url": "https://www.google.com/"
+                if type == "link" or not valid
+                else None,
+            },
         }
 
     @staticmethod
     def get_update(*, type: str = "link", valid: bool = True):
         return {
-            "nsfw": False if type == "link" else True,
-            "spoiler": True if type == "link" else False,
-            "text": "An updated text." if type != "link" or not valid else None,
-            "title": "An Updated Title",
-            "url": "https://www.update.com/" if type == "link" or not valid else None,
+            "metadata": {
+                "nsfw": False if type == "link" else True,
+                "spoiler": True if type == "link" else False,
+            },
+            "content": {
+                "text": "An updated text." if type != "link" or not valid else None,
+                "title": "An Updated Title",
+                "url": "https://www.update.com/"
+                if type == "link" or not valid
+                else None,
+            },
         }
+
+
+class CommentPayloads:
+    """Comment payloads"""
+
+    @staticmethod
+    def get_create():
+        return {"text": "A comment."}
+
+    @staticmethod
+    def get_update():
+        return {"text": "An updated comment."}

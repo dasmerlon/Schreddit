@@ -1,14 +1,13 @@
-from datetime import datetime
 from enum import Enum
-from typing import List, Optional
+from typing import List
 
-from fastapi import Query
-from pydantic import UUID4, BaseModel, HttpUrl
+from pydantic import BaseModel, validator
 
-from app.core.config import settings
-from app.schemas.base import Pagination, PostGetterDict
-from app.schemas.subreddit import Subreddit
-from app.schemas.user import User
+from app.schemas.base import Pagination
+from app.schemas.post_content import (PostContent, PostContentCreate,
+                                      PostContentUpdate)
+from app.schemas.post_meta import (PostMeta, PostMetaCreate, PostMetaUpdate,
+                                   PostType)
 
 
 class PostSort(str, Enum):
@@ -18,48 +17,30 @@ class PostSort(str, Enum):
     top = "top"
 
 
-class PostType(str, Enum):
-    link = "link"
-    self = "self"
-    image = "image"
-    video = "video"
-    videogif = "videogif"
+class PostCreate(BaseModel):
+    metadata: PostMetaCreate
+    content: PostContentCreate
+
+    @validator("content")
+    def check_content(cls, v, values):
+        if "metadata" in values:
+            if values["metadata"].type == PostType.link:
+                assert v.text is None, "text must be None"
+                assert v.url is not None, "url must not be None"
+            elif values["metadata"].type == PostType.self:
+                assert v.text is not None, "text must not be None"
+                assert v.url is None, "url must be None"
+        return v
 
 
-class PostBase(BaseModel):
-    nsfw: Optional[bool] = None
-    spoiler: Optional[bool] = None
-    text: Optional[str] = None
-    title: Optional[str] = Query(..., max_length=settings.MAX_TITLE_LENGTH)
-    url: Optional[HttpUrl] = None
+class PostUpdate(BaseModel):
+    metadata: PostMetaUpdate
+    content: PostContentUpdate
 
 
-class PostCreate(PostBase):
-    nsfw: bool
-    spoiler: bool
-    sr: str
-    title: str = Query(..., max_length=settings.MAX_TITLE_LENGTH)
-    type: PostType
-
-    class Config:
-        use_enum_values = True
-
-
-class PostUpdate(PostBase):
-    pass
-
-
-class Post(PostBase):
-    created_at: Optional[datetime]
-    updated_at: Optional[datetime]
-    type: PostType
-    uid: UUID4
-    author: Optional[User] = None
-    subreddit: Subreddit
-
-    class Config:
-        orm_mode = True
-        getter_dict = PostGetterDict
+class Post(BaseModel):
+    metadata: PostMeta
+    content: PostContent
 
 
 class PostList(BaseModel):

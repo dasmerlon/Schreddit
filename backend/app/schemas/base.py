@@ -4,7 +4,7 @@ from neomodel import StructuredNode
 from pydantic import BaseModel
 from pydantic.utils import GetterDict
 
-from app.models import Post, Subreddit
+from app.models import CommentMeta, PostMeta, Subreddit
 
 
 class Pagination(BaseModel):
@@ -33,13 +33,30 @@ class PostGetterDict(GetterDict):
     """
 
     def get(self, key: Any, default: Any = None) -> Any:
-        if isinstance(self._obj, Post):
+        if isinstance(self._obj, PostMeta):
+            if key in self._obj.__properties__:
+                return getattr(self._obj, key, default)
+            elif key == "author" and hasattr(self._obj, "author"):
+                return self._obj.author.single()
+            elif key == "subreddit" and hasattr(self._obj, "subreddit"):
+                return self._obj.subreddit.single()
+        else:
+            return super().get(key, default)
+
+
+class CommentGetterDict(GetterDict):
+    """
+    Correctly transform the Comment neomodel to the Comment schema
+    """
+
+    def get(self, key: Any, default: Any = None) -> Any:
+        if isinstance(self._obj, CommentMeta):
             if key in self._obj.__properties__:
                 return getattr(self._obj, key, default)
             elif key == "author":
                 return self._obj.author.single() if self._obj.author else None
-            elif key == "subreddit":
-                return self._obj.subreddit.single() if self._obj.subreddit else None
+            elif key == "parent":
+                return self._obj.parent.single().uid if self._obj.parent else None
         else:
             return super().get(key, default)
 
@@ -53,7 +70,7 @@ class SubredditGetterDict(GetterDict):
         if isinstance(self._obj, Subreddit):
             if key in self._obj.__properties__:
                 return getattr(self._obj, key, default)
-            elif key == "admin":
-                return self._obj.admin.single() if self._obj.admin else None
+            elif key == "admin" and hasattr(self._obj, "admin"):
+                return self._obj.admin.single()
         else:
             return super().get(key, default)

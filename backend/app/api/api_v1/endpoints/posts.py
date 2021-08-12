@@ -9,7 +9,8 @@ from app.api.api_v1.exceptions import (PaginationAfterAndBeforeException,
                                        PaginationInvalidCursorException,
                                        PostNotFoundException,
                                        PostTypeRequestInvalidException,
-                                       SubredditNotFoundException)
+                                       SubredditNotFoundException,
+                                       UnauthorizedUpdateException)
 
 router = APIRouter()
 
@@ -27,42 +28,69 @@ def get_posts(
     sort: Optional[schemas.PostSort] = schemas.PostSort.new,
     size: Optional[int] = Query(25, gt=0, le=100),
 ):
+    """
+    Return a range of up to `limit` posts with an optional sorting order.
+    If `sort` is not passed, posts are returned in descending order of their creation.
+
+    `after` and `before` are cursors for pagination and refer to a post. Only one cursor
+    should be specified.
+
+    - `after` : get posts including and after this cursor
+    - `before` : get posts including and before this cursor
+    - `sort` : sorting order, one of `best`, `hot`, `new`, `top`
+    - `limit` : maximum number of posts to return
+    """
     # act depending on which cursor is passed
     if after and before:
         raise PaginationAfterAndBeforeException
     elif not after and not before:
-        results = crud.post.get_posts_after(None, sort, size)
+        results = crud.post_meta.get_posts_after(None, sort, size)
     elif after:
-        cursor = crud.post.get(after)
+        cursor = crud.post_meta.get(after)
         if cursor is None:
             raise PaginationInvalidCursorException
-        results = crud.post.get_posts_after(cursor, sort, size)
+        results = crud.post_meta.get_posts_after(cursor, sort, size)
     elif before:
-        cursor = crud.post.get(before)
+        cursor = crud.post_meta.get(before)
         if cursor is None:
             raise PaginationInvalidCursorException
-        results = crud.post.get_posts_before(cursor, sort, size)
+        results = crud.post_meta.get_posts_before(cursor, sort, size)
 
     basepath = f"{request.url.path}?sort={sort}"
     next = f"{basepath}&after={results[-1].uid}" if results else None
     prev = f"{basepath}&before={results[0].uid}" if results else None
 
+    # retrieve post content
+    contents = crud.post_content.filter_by_uids([r.uid for r in results])
+
     # set pagination
     links = schemas.Pagination(next=next, prev=prev)
-    return schemas.PostList(links=links, data=results)
+    return schemas.PostList(
+        links=links,
+        data=[
+            schemas.Post(metadata=r, content=contents.get(uid=r.uid)) for r in results
+        ],
+    )
 
 
 @router.get(
-    "/{post_uid}",
+    "/{uid}",
     name="Get Post",
     response_model=schemas.Post,
     status_code=status.HTTP_200_OK,
 )
-def get_post(post_uid: UUID4):
-    post = crud.post.get(post_uid)
-    if post is None:
+def get_post(uid: UUID4):
+    """
+    Return a post by its UUID.
+
+    - `uid` : the UUID of the post to return
+    """
+    post_meta = crud.post_meta.get(uid)
+    post_content = crud.post_content.get(uid)
+    if not post_meta or not post_content:
         raise PostNotFoundException
-    return post
+
+    return schemas.Post(metadata=post_meta, content=post_content)
 
 
 @router.post(
@@ -87,22 +115,18 @@ def submit_post(
     - `type` : one of `link`, `self`, `image`, `video`, `videogif`)
     - `url` : a valid URL
     """
-    if post.type == schemas.PostType.link and (not post.url or post.text):
-        raise PostTypeRequestInvalidException
-    elif post.type != schemas.PostType.link and (not post.text or post.url):
-        raise PostTypeRequestInvalidException
-
     # check if subreddit exists
-    sr = crud.subreddit.get_by_sr(post.sr)
+    sr = crud.subreddit.get_by_sr(post.metadata.sr)
     if sr is None:
         raise SubredditNotFoundException
 
     # create post
-    created_post = crud.post.create(post)
-    crud.post.set_author(created_post, current_user)
-    crud.post.set_subreddit(created_post, sr)
+    created_post_meta = crud.post_meta.create(post.metadata)
+    created_post_content = crud.post_content.create(created_post_meta.uid, post.content)
+    crud.post_meta.set_author(created_post_meta, current_user)
+    crud.post_meta.set_subreddit(created_post_meta, sr)
 
-    return created_post
+    return schemas.Post(metadata=created_post_meta, content=created_post_content)
 
 
 @router.put(
@@ -126,11 +150,20 @@ def update_post(
     - `uid` : the unique ID of the post to be updated
     - `url` : a valid URL
     """
-    old_post = crud.post.get(post_uid)
-    if old_post is None:
+    old_post_meta = crud.post_meta.get(post_uid)
+    old_post_content = crud.post_content.get(post_uid)
+    if not old_post_meta or not old_post_content:
         raise PostNotFoundException
-    if old_post.type == schemas.PostType.link.value and post.text is not None:
+    if crud.post_meta.get_author(old_post_meta) != current_user:
+        raise UnauthorizedUpdateException
+    if old_post_meta.type == schemas.PostType.link.value and (
+        post.content.text is not None or post.content.url is None
+    ):
         raise PostTypeRequestInvalidException
-    elif old_post.type != schemas.PostType.link.value and post.url is not None:
+    elif old_post_meta.type != schemas.PostType.link.value and (
+        post.content.text is None or post.content.url is not None
+    ):
         raise PostTypeRequestInvalidException
-    crud.post.update(old_post, post)
+
+    crud.post_meta.update(old_post_meta, post.metadata)
+    crud.post_content.update(old_post_content, post.content)

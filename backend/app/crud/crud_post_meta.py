@@ -2,17 +2,17 @@ from typing import Optional
 
 from neomodel import NodeSet, db
 
-from app.crud.base import CRUDBase
-from app.models import Post, Subreddit, User
-from app.schemas import PostCreate, PostSort, PostUpdate
+from app.crud.base_neo import CRUDBaseNeo
+from app.models import PostMeta, Subreddit, User
+from app.schemas import PostMetaCreate, PostMetaUpdate, PostSort
 
 
-class CRUDPost(CRUDBase[Post, PostCreate, PostUpdate]):
+class CRUDPostMeta(CRUDBaseNeo[PostMeta, PostMetaCreate, PostMetaUpdate]):
     """Post class for CRUD operations"""
 
     @db.read_transaction
     def get_posts_after(
-        self, after: Optional[Post], sort: PostSort, limit: int
+        self, after: Optional[PostMeta], sort: PostSort, limit: int
     ) -> NodeSet:
         """
         Get the posts after the cursor.
@@ -40,7 +40,7 @@ class CRUDPost(CRUDBase[Post, PostCreate, PostUpdate]):
         return result[:limit]
 
     @db.read_transaction
-    def get_posts_before(self, before: Post, sort: PostSort, limit: int) -> NodeSet:
+    def get_posts_before(self, before: PostMeta, sort: PostSort, limit: int) -> NodeSet:
         """
         Get the posts before the cursor.
 
@@ -63,14 +63,18 @@ class CRUDPost(CRUDBase[Post, PostCreate, PostUpdate]):
         return result[:limit]
 
     @db.write_transaction
-    def set_author(self, db_obj: Post, author: User) -> User:
+    def set_author(self, db_obj: PostMeta, author: User) -> User:
         post_author = db_obj.author.connect(author)
         return post_author
 
     @db.write_transaction
-    def set_subreddit(self, db_obj: Post, subreddit: Subreddit) -> Subreddit:
+    def set_subreddit(self, db_obj: PostMeta, subreddit: Subreddit) -> Subreddit:
         post_subreddit = db_obj.subreddit.connect(subreddit)
         return post_subreddit
 
+    @db.read_transaction
+    def get_author(self, db_obj: PostMeta) -> User:
+        return db_obj.author.single()
 
-post = CRUDPost(Post)
+
+post_meta = CRUDPostMeta(PostMeta)

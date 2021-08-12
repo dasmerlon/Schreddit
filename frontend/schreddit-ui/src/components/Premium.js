@@ -21,7 +21,7 @@ export default function RecipeReviewCard() {
         <Card className={classes.root}>
             <CardHeader
                 action={<SvgIcon fontSize="large" color="secondary"><path d={mdiShieldStar} /></SvgIcon>}
-                title="Reddit Premium"
+                title="Schreddit Premium"
                 subheader="The best Reddit experience, with monthly Coins"
                 />
             <CardContent>

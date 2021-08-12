@@ -11,7 +11,7 @@ CreateSchemaType = TypeVar("CreateSchemaType", bound=BaseModel)
 UpdateSchemaType = TypeVar("UpdateSchemaType", bound=BaseModel)
 
 
-class CRUDBase(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
+class CRUDBaseNeo(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
     """Abstract base class for CRUD operations."""
 
     def __init__(self, model: Type[ModelType]):
@@ -37,41 +37,56 @@ class CRUDBase(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
     def get_all(self) -> NodeSet:
         """
         Get an Iterable of all nodes from the model class.
+
         :return: iterable of nodes
         """
         return self.model.nodes
 
     @db.write_transaction
-    def create(self, obj_in: CreateSchemaType) -> ModelType:
+    def create(self, obj_in: Union[CreateSchemaType, None]) -> ModelType:
         """
         Create a new node.
+
         :param obj_in: the CreateSchema of the node to create
         :return: the database model of the created node
         """
-        obj_in_data = jsonable_encoder(obj_in)
-        db_obj = self.model(**obj_in_data)
+        if obj_in is None:
+            db_obj = self.model()
+        else:
+            obj_in_data = jsonable_encoder(obj_in)
+            db_obj = self.model(**obj_in_data)
+
         db_obj.save()
         return db_obj
 
     @db.write_transaction
     def update(
-        self, db_obj: ModelType, obj_in: Union[UpdateSchemaType, Dict[str, Any]]
+        self, db_obj: ModelType, obj_in: Union[UpdateSchemaType, Dict[str, Any], None]
     ) -> ModelType:
         """
         Update a node.
+
         :param db_obj: the database model of the node to be updated
         :param obj_in: the UpdateSchema of the node to be updated
         :return: the updated database model
         """
+        # convert obj_in to a dict
         if isinstance(obj_in, dict):
             update_data = obj_in
+        elif obj_in is None:  # no update data, only update timestamp
+            update_data = {}
         else:
             update_data = obj_in.dict(exclude_unset=True)
+
+        # update fields
         for field in db_obj.__properties__:
             if field in update_data:
                 setattr(db_obj, field, update_data[field])
+
+        # update timestamp if it exists
         if hasattr(db_obj, "updated_at"):
             setattr(db_obj, "updated_at", datetime.now(timezone.utc))
+
         db_obj.save()
         return db_obj
 
