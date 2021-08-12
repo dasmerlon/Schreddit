@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState, useRef  } from 'react';
 import {makeStyles} from "@material-ui/core/styles";
 import {Grid, Container, Hidden, CssBaseline} from "@material-ui/core";
 import Post from "./Post";
@@ -9,6 +9,9 @@ import Premium from "./Premium";
 import CommunitiesByCategory from "./PopularComs";
 import Info from "./Info";
 import TopComs from "./TopComs";
+
+// InfiniteScrolling source:
+// https://dev.to/hunterjsbit/react-infinite-scroll-in-few-lines-588f
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -24,6 +27,42 @@ const useStyles = makeStyles((theme) => ({
 //      - Infinit Scrolling einbauen
 export default function ForntpageBody() {
     const classes = useStyles();
+
+    const [postList, setPostList] = useState({
+      list: [<Post/>,<Post/>,<Post/>,<Post/>]
+    }); 
+    const [page, setPage] = useState(1);
+    const loader = useRef(null);
+
+    useEffect(() => {
+      var options = {
+        root: null,
+        rootMargin: "20px",
+        threshold: 1.0
+      };
+      // initialize IntersectionObserver and attaching to Load More div
+      const observer = new IntersectionObserver(handleObserver, options);
+      if (loader.current) {
+        observer.observe(loader.current)
+      }
+    }, []);
+
+    useEffect(() => {
+      // here we simulate adding new posts to List
+      const newList = postList.list.concat([<Post/>, <Post/>, <Post/>, <Post/>]);
+      setPostList({
+        list: newList
+      })
+    }, [page]);
+
+    // here we handle what happens when user scrolls to Load More div
+    // in this case we just update page variable
+    const handleObserver = (entities) => {
+      const target = entities[0];
+      if (target.isIntersecting) {   
+        setPage((page) => page + 1)
+      }
+    };
 
     return (
     <div className={classes.root}> 
@@ -41,19 +80,16 @@ export default function ForntpageBody() {
               <SortByBar />
             </Grid>
             <Grid item>
-              <Post />
-            </Grid>
-            <Grid item>
-              <Post />
-            </Grid>
-            <Grid item>
-              <Post />
-            </Grid>
-            <Grid item>
-              <Post />
-            </Grid>
-            <Grid item>
-              <Post />
+              {
+                postList.list.map((post, index) => {
+                  return (<div key={index} className="post" >
+                    <h2> {post } </h2>
+                  </div>)
+                })
+              }
+              <div className="loading" ref={loader}>
+                <h2>Loading Posts ...</h2>
+              </div>
             </Grid>
           </Grid>
           <Grid item container spacing={3} direction='column' className={classes.grid} xs={1}>
