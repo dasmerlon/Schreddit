@@ -21,20 +21,30 @@ def init_dbs():
 
 def create_users(count: int) -> List[models.User]:
     """
-    Create random users.
+    Create random users and one fixed dummy user.
 
     :param count: number of users to create
     :return: list of users
     """
     users = []
-    for _ in range(count):
+
+    # create test user
+    dummy_schema = schemas.UserCreate(
+        email="dummy@data.com",
+        username="dummy",
+        password="data",
+    )
+    users.append(crud.user.create(dummy_schema))
+
+    # create random users
+    for _ in range(count - 1):
         schema = schemas.UserCreate(
             email=fake.unique.ascii_safe_email(),
             username=fake.unique.user_name(),
             password=fake.password(),
         )
         users.append(crud.user.create(schema))
-    print(f"Created {count} fake users.")
+    print(f"Created the dummy user and {count-1} fake users.")
     return users
 
 
@@ -120,7 +130,32 @@ def create_comments(
     return comments
 
 
-def fill(users: int, subreddits: int, posts: int, comments: int, depth: int):
+def create_votes(
+    count: int, users: List[models.User], things: List[models.ThingMeta]
+) -> None:
+    """
+
+    :param count: number of votes per user
+    :param users: list of users for whom votes are created
+    :param things: list of things that can be voted
+    :return:
+    """
+    for user in users:
+        for _ in range(count):
+            vote = fake.random_element([-1, 1])
+            index = fake.unique.random_int(0, len(things) - 1)
+            state = crud.thing_meta.get_vote_state(things[index], user)
+            if vote == -1:
+                crud.thing_meta.downvote(things[index], user, state)
+            elif vote == 1:
+                crud.thing_meta.upvote(things[index], user, state)
+        fake.unique.clear()
+    print(f"Created {count} fake votes per user.")
+
+
+def fill(
+    users: int, subreddits: int, posts: int, comments: int, depth: int, votes: int
+) -> None:
     """
     Fill the databases with random fake data.
 
@@ -129,14 +164,20 @@ def fill(users: int, subreddits: int, posts: int, comments: int, depth: int):
     :param posts: number of posts to create
     :param comments: number of comments to create per level
     :param depth: maximum depth of comment tree
+    :param votes: number of votes per user
     """
     init_dbs()
     fake_users = create_users(users)
     fake_subreddits = create_subreddits(subreddits, fake_users)
+    things = []  # will hold all posts and comments
     fake_posts = create_posts(posts, fake_users, fake_subreddits)
+    things.extend(fake_posts)
     fake_comments = create_comments(comments, fake_users, fake_posts)
+    things.extend(fake_comments)
     for _ in range(depth - 1):
         fake_comments = create_comments(comments, fake_users, fake_comments)
+        things.extend(fake_comments)
+    create_votes(votes, fake_users, things)
 
 
 def clear():
@@ -152,27 +193,54 @@ def clear():
         print("Not removing anything")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     parser = argparse.ArgumentParser(
-        description='Fill the databases with dummy data or clear all data.',
-        formatter_class=argparse.ArgumentDefaultsHelpFormatter
+        description="Fill the databases with dummy data or clear all data.",
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter,
     )
-    parser.add_argument('action', choices=["fill", "clear"],
-                        help="either fill or clear the databases")
-    parser.add_argument('-u', '--users', default=10,
-                        help="number of users to create", type=int)
-    parser.add_argument('-s', '--subreddits', default=10,
-                        help="number of subreddits to create", type=int)
-    parser.add_argument('-p', '--posts', default=10,
-                        help="number of posts to create", type=int)
-    parser.add_argument('-c', '--comments', default=10,
-                        help="number of comments to create for each depth level",
-                        type=int)
-    parser.add_argument('-d', '--depth', default=3,
-                        help="maximum depth of the comment tree", type=int)
+    parser.add_argument(
+        "action", choices=["fill", "clear"], help="either fill or clear the databases"
+    )
+    parser.add_argument(
+        "-u", "--users", default=10, help="number of users to create", type=int
+    )
+    parser.add_argument(
+        "-s",
+        "--subreddits",
+        default=10,
+        help="number of subreddits to create",
+        type=int,
+    )
+    parser.add_argument(
+        "-p", "--posts", default=20, help="number of posts to create", type=int
+    )
+    parser.add_argument(
+        "-c",
+        "--comments",
+        default=50,
+        help="number of comments to create for each depth level",
+        type=int,
+    )
+    parser.add_argument(
+        "-d", "--depth", default=3, help="maximum depth of the comment tree", type=int
+    )
+    parser.add_argument(
+        "-v",
+        "--votes",
+        default=50,
+        help="number of votes to create for each user",
+        type=int,
+    )
 
     args = parser.parse_args()
     if args.action == "fill":
-        fill(args.users, args.subreddits, args.posts, args.comments, args.depth)
+        fill(
+            args.users,
+            args.subreddits,
+            args.posts,
+            args.comments,
+            args.depth,
+            args.votes,
+        )
     elif args.action == "clear":
         clear()
