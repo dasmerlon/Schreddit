@@ -55,6 +55,19 @@ def post_self_in_db(
 
 
 @pytest.fixture
+def post_self_in_db_upvoted(
+    post_self_in_db_other_user: (PostMeta, PostContent), test_user_in_db: User
+) -> (PostMeta, PostContent):
+    post_meta = post_self_in_db_other_user[0]
+    post_content = post_self_in_db_other_user[1]
+    state = crud.post_meta.get_vote_state(post_meta, test_user_in_db)
+    crud.post_meta.upvote(post_meta, test_user_in_db, state)
+    yield post_meta, post_content
+    crud.post_meta.remove(post_meta.uid)
+    crud.post_content.remove(post_meta.uid)
+
+
+@pytest.fixture
 def post_self_in_db_other_user(
     other_user_in_db: User, subreddit_in_db: Subreddit
 ) -> (PostMeta, PostContent):
@@ -77,6 +90,19 @@ def comment_in_db(
     comment_content = crud.comment_content.create(comment_meta.uid, schema.content)
     crud.comment_meta.set_author(comment_meta, test_user_in_db)
     crud.comment_meta.set_parent(comment_meta, post_self_in_db[0])
+    yield comment_meta, comment_content
+    crud.comment_meta.remove(comment_meta.uid)
+    crud.comment_content.remove(comment_meta.uid)
+
+
+@pytest.fixture
+def comment_in_db_upvoted(
+    comment_in_db: (CommentMeta, CommentContent), test_user_in_db: User
+) -> (CommentMeta, CommentContent):
+    comment_meta = comment_in_db[0]
+    comment_content = comment_in_db[1]
+    state = crud.comment_meta.get_vote_state(comment_meta, test_user_in_db)
+    crud.comment_meta.upvote(comment_meta, test_user_in_db, state)
     yield comment_meta, comment_content
     crud.comment_meta.remove(comment_meta.uid)
     crud.comment_content.remove(comment_meta.uid)
@@ -135,7 +161,7 @@ def remove_comments():
     uids = []
     yield uids
     for uid in uids:
-        if crud.comment_meta.get(uid) is not None:
-            crud.comment_meta.remove(uid)
-        if crud.comment_content.get(uid) is not None:
-            crud.comment_content.remove(uid)
+        if crud.comment_meta.get(UUID4(uid)) is not None:
+            crud.comment_meta.remove(UUID4(uid))
+        if crud.comment_content.get(UUID4(uid)) is not None:
+            crud.comment_content.remove(UUID4(uid))
