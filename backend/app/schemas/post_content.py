@@ -1,18 +1,18 @@
-from datetime import datetime
 from typing import Optional
 
-from pydantic import BaseModel, HttpUrl, constr, validator
+from pydantic import HttpUrl, constr, validator
 
 from app.core.config import settings
+from app.schemas.thing_content import (ThingContent, ThingContentBase,
+                                       ThingContentCreate, ThingContentUpdate)
 
 
-class PostContentBase(BaseModel):
-    text: Optional[constr(min_length=1, strip_whitespace=True)] = None
+class PostContentBase(ThingContentBase):
     title: Optional[
         constr(
             min_length=1, max_length=settings.MAX_TITLE_LENGTH, strip_whitespace=True
         )
-    ]
+    ] = None
     url: Optional[HttpUrl] = None
 
     @validator("title")
@@ -23,18 +23,15 @@ class PostContentBase(BaseModel):
             return v
 
 
-class PostContentCreate(PostContentBase):
+class PostContentCreate(PostContentBase, ThingContentCreate):
     title: constr(
         min_length=1, max_length=settings.MAX_TITLE_LENGTH, strip_whitespace=True
     )
 
 
-class PostContentUpdate(PostContentBase):
+class PostContentUpdate(PostContentBase, ThingContentUpdate):
     pass
 
 
-class PostContent(PostContentBase):
-    updated_at: Optional[datetime]
-
-    class Config:
-        orm_mode = True
+class PostContent(PostContentBase, ThingContent):
+    pass

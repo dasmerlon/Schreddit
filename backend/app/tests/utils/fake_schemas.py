@@ -64,11 +64,14 @@ class PostSchemas:
 class CommentSchemas:
     @staticmethod
     def get_create():
-        return schemas.CommentCreate(text="A comment.")
+        metadata = schemas.CommentMetaCreate()
+        content = schemas.CommentContentCreate(text="A comment.")
+        return schemas.CommentCreate(metadata=metadata, content=content)
 
     @staticmethod
     def get_update():
-        return schemas.CommentUpdate(text="An updated comment.")
+        content = schemas.CommentContentUpdate(text="An updated comment.")
+        return schemas.CommentUpdate(content=content)
 
 
 class SubredditSchemas:

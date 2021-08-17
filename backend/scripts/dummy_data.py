@@ -109,9 +109,10 @@ def create_comments(
     """
     comments = []
     for _ in range(count):
-        schema = schemas.CommentCreate(text=fake.paragraph())
-        comment = crud.comment_meta.create(None)
-        crud.comment_content.create(comment.uid, schema)
+        metadata = schemas.CommentMetaCreate()
+        content = schemas.CommentContentCreate(text=fake.paragraph())
+        comment = crud.comment_meta.create(metadata)
+        crud.comment_content.create(comment.uid, content)
         crud.comment_meta.set_author(comment, fake.random_element(users))
         crud.comment_meta.set_parent(comment, fake.random_element(parents))
         comments.append(comment)

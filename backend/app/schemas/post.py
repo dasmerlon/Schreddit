@@ -8,6 +8,7 @@ from app.schemas.post_content import (PostContent, PostContentCreate,
                                       PostContentUpdate)
 from app.schemas.post_meta import (PostMeta, PostMetaCreate, PostMetaUpdate,
                                    PostType)
+from app.schemas.thing import Thing, ThingCreate, ThingUpdate
 
 
 class PostSort(str, Enum):
@@ -17,10 +18,7 @@ class PostSort(str, Enum):
     top = "top"
 
 
-class PostCreate(BaseModel):
-    metadata: PostMetaCreate
-    content: PostContentCreate
-
+class PostCreate(ThingCreate[PostMetaCreate, PostContentCreate]):
     @validator("content")
     def check_content(cls, v, values):
         if "metadata" in values:
@@ -33,14 +31,12 @@ class PostCreate(BaseModel):
         return v
 
 
-class PostUpdate(BaseModel):
-    metadata: PostMetaUpdate
-    content: PostContentUpdate
+class PostUpdate(ThingUpdate[PostMetaUpdate, PostContentUpdate]):
+    pass
 
 
-class Post(BaseModel):
-    metadata: PostMeta
-    content: PostContent
+class Post(Thing[PostMeta, PostContent]):
+    pass
 
 
 class PostList(BaseModel):

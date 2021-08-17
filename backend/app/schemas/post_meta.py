@@ -1,12 +1,9 @@
-from datetime import datetime
 from enum import Enum
 from typing import Optional
 
-from pydantic import UUID4, BaseModel
-
 from app.schemas.base import PostGetterDict
-from app.schemas.subreddit import Subreddit
-from app.schemas.user import User
+from app.schemas.thing_meta import (ThingMeta, ThingMetaBase, ThingMetaCreate,
+                                    ThingMetaUpdate)
 
 
 class PostType(str, Enum):
@@ -17,12 +14,12 @@ class PostType(str, Enum):
     videogif = "videogif"
 
 
-class PostMetaBase(BaseModel):
+class PostMetaBase(ThingMetaBase):
     nsfw: Optional[bool] = None
     spoiler: Optional[bool] = None
 
 
-class PostMetaCreate(PostMetaBase):
+class PostMetaCreate(PostMetaBase, ThingMetaCreate):
     nsfw: bool
     spoiler: bool
     sr: str
@@ -32,18 +29,13 @@ class PostMetaCreate(PostMetaBase):
         use_enum_values = True
 
 
-class PostMetaUpdate(PostMetaBase):
+class PostMetaUpdate(PostMetaBase, ThingMetaUpdate):
     pass
 
 
-class PostMeta(PostMetaBase):
-    created_at: Optional[datetime]
-    updated_at: Optional[datetime]
+class PostMeta(PostMetaBase, ThingMeta):
     type: PostType
-    uid: UUID4
-    author: Optional[User] = None
-    subreddit: Subreddit
+    sr: str
 
     class Config:
-        orm_mode = True
         getter_dict = PostGetterDict

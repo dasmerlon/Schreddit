@@ -1,25 +1,24 @@
-from datetime import datetime
-from enum import Enum
-from typing import Optional
-
-from pydantic import UUID4, BaseModel
+from pydantic import UUID4
 
 from app.schemas.base import CommentGetterDict
-from app.schemas.user import User
+from app.schemas.thing_meta import (ThingMeta, ThingMetaBase, ThingMetaCreate,
+                                    ThingMetaUpdate)
 
 
-class CommentParentType(str, Enum):
-    post = "post"
-    comment = "comment"
+class CommentMetaBase(ThingMetaBase):
+    pass
 
 
-class CommentMeta(BaseModel):
-    created_at: Optional[datetime]
-    updated_at: Optional[datetime]
-    uid: UUID4
-    author: Optional[User] = None
+class CommentMetaCreate(CommentMetaBase, ThingMetaCreate):
+    pass
+
+
+class CommentMetaUpdate(CommentMetaBase, ThingMetaUpdate):
+    pass
+
+
+class CommentMeta(CommentMetaBase, ThingMeta):
     parent: UUID4
 
     class Config:
-        orm_mode = True
         getter_dict = CommentGetterDict

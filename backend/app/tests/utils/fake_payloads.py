@@ -69,8 +69,8 @@ class CommentPayloads:
 
     @staticmethod
     def get_create():
-        return {"text": "A comment."}
+        return {"metadata": {}, "content": {"text": "A comment."}}
 
     @staticmethod
     def get_update():
-        return {"text": "An updated comment."}
+        return {"content": {"text": "An updated comment."}}

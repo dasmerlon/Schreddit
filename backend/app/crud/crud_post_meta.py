@@ -2,13 +2,13 @@ from typing import Optional
 
 from neomodel import NodeSet, db
 
-from app.crud.base_neo import CRUDBaseNeo
-from app.models import PostMeta, Subreddit, User
+from app.crud.crud_thing_meta import CRUDThingBaseMeta
+from app.models import PostMeta, Subreddit
 from app.schemas import PostMetaCreate, PostMetaUpdate, PostSort
 
 
-class CRUDPostMeta(CRUDBaseNeo[PostMeta, PostMetaCreate, PostMetaUpdate]):
-    """Post class for CRUD operations"""
+class CRUDPostMeta(CRUDThingBaseMeta[PostMeta, PostMetaCreate, PostMetaUpdate]):
+    """Post meta class for CRUD operations"""
 
     @db.read_transaction
     def get_posts_after(
@@ -63,18 +63,9 @@ class CRUDPostMeta(CRUDBaseNeo[PostMeta, PostMetaCreate, PostMetaUpdate]):
         return result[:limit]
 
     @db.write_transaction
-    def set_author(self, db_obj: PostMeta, author: User) -> User:
-        post_author = db_obj.author.connect(author)
-        return post_author
-
-    @db.write_transaction
     def set_subreddit(self, db_obj: PostMeta, subreddit: Subreddit) -> Subreddit:
         post_subreddit = db_obj.subreddit.connect(subreddit)
         return post_subreddit
-
-    @db.read_transaction
-    def get_author(self, db_obj: PostMeta) -> User:
-        return db_obj.author.single()
 
 
 post_meta = CRUDPostMeta(PostMeta)

@@ -31,13 +31,12 @@ def get_comment(uid: UUID4):
 
 
 @router.post(
-    "/{type}/{parent}",
+    "/{parent}",
     name="Submit Comment",
     response_model=schemas.Comment,
     status_code=status.HTTP_201_CREATED,
 )
 def submit_comment(
-    type: schemas.CommentParentType,
     parent: UUID4,
     comment: schemas.CommentCreate,
     current_user: models.User = Depends(deps.get_current_user),
@@ -48,17 +47,13 @@ def submit_comment(
     - `parent` : the UUID of the thing being replied to, so either a post or a comment
     - `text` : raw markdown text
     """
-    # get parent
-    if type == schemas.CommentParentType.post:
-        parent_thing = crud.post_meta.get(parent)
-    elif type == schemas.CommentParentType.comment:
-        parent_thing = crud.comment_meta.get(parent)
+    parent_thing = crud.thing_meta.get(parent)
     if not parent_thing:
         raise ParentNotFoundException
 
     # create comment
-    metadata = crud.comment_meta.create(None)
-    content = crud.comment_content.create(metadata.uid, comment)
+    metadata = crud.comment_meta.create(comment.metadata)
+    content = crud.comment_content.create(metadata.uid, comment.content)
     crud.comment_meta.set_author(metadata, current_user)
     crud.comment_meta.set_parent(metadata, parent_thing)
 
@@ -89,4 +84,4 @@ def update_comment(
         raise UnauthorizedUpdateException
 
     crud.comment_meta.update(old_comment_meta, None)
-    crud.comment_content.update(old_comment_content, comment)
+    crud.comment_content.update(old_comment_content, comment.content)

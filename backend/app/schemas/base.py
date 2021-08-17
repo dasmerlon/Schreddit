@@ -37,9 +37,9 @@ class PostGetterDict(GetterDict):
             if key in self._obj.__properties__:
                 return getattr(self._obj, key, default)
             elif key == "author" and hasattr(self._obj, "author"):
-                return self._obj.author.single()
-            elif key == "subreddit" and hasattr(self._obj, "subreddit"):
-                return self._obj.subreddit.single()
+                return self._obj.author.single().username if self._obj.author else None
+            elif key == "sr" and hasattr(self._obj, "subreddit"):
+                return self._obj.subreddit.single().sr if self._obj.subreddit else None
         else:
             return super().get(key, default)
 
@@ -54,7 +54,7 @@ class CommentGetterDict(GetterDict):
             if key in self._obj.__properties__:
                 return getattr(self._obj, key, default)
             elif key == "author":
-                return self._obj.author.single() if self._obj.author else None
+                return self._obj.author.single().username if self._obj.author else None
             elif key == "parent":
                 return self._obj.parent.single().uid if self._obj.parent else None
         else:

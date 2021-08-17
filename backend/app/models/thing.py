@@ -1,8 +1,9 @@
+from mongoengine import Document, StringField, UUIDField
 from neomodel import (DateTimeProperty, RelationshipFrom, RelationshipTo,
                       StructuredNode, UniqueIdProperty, cardinality)
 
 
-class Thing(StructuredNode):
+class ThingMeta(StructuredNode):
     # Properties
     uid = UniqueIdProperty()
     created_at = DateTimeProperty(default_now=True)
@@ -12,4 +13,11 @@ class Thing(StructuredNode):
     author = RelationshipTo(
         ".user.User", "AUTHORED_BY", cardinality=cardinality.ZeroOrOne
     )
-    child = RelationshipFrom(".comment_meta.CommentMeta", "PARENT")
+    children = RelationshipFrom(".comment.CommentMeta", "PARENT")
+
+
+class ThingContent(Document):
+    uid = UUIDField(required=True, unique=True)
+    text = StringField()
+
+    meta = {"allow_inheritance": True}

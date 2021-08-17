@@ -45,7 +45,7 @@ def test_submit_comment(
     elif type == "comment":
         parent = comment_in_db[0]
 
-    r = client.post(f"{settings.API_V1_STR}/comments/{type}/{parent.uid}", json=payload)
+    r = client.post(f"{settings.API_V1_STR}/comments/{parent.uid}", json=payload)
 
     # assert post creation
     assert r.status_code == status.HTTP_201_CREATED
@@ -54,9 +54,8 @@ def test_submit_comment(
     assert created_comment.get("metadata")
     assert created_comment.get("content")
     remove_comments.append(created_comment["metadata"]["uid"])
-    assert created_comment["content"]["text"] == payload["text"]
-    assert created_comment["metadata"]["author"]["email"] == fake_auth.email
-    assert created_comment["metadata"]["author"]["username"] == fake_auth.username
+    assert created_comment["content"]["text"] == payload["content"]["text"]
+    assert created_comment["metadata"]["author"] == fake_auth.username
     assert created_comment["metadata"]["parent"].replace("-", "") == parent.uid
 
     r = client.get(
@@ -67,9 +66,8 @@ def test_submit_comment(
     assert retrieved_comment
     assert retrieved_comment.get("metadata")
     assert retrieved_comment.get("content")
-    assert retrieved_comment["content"]["text"] == payload["text"]
-    assert retrieved_comment["metadata"]["author"]["email"] == fake_auth.email
-    assert retrieved_comment["metadata"]["author"]["username"] == fake_auth.username
+    assert retrieved_comment["content"]["text"] == payload["content"]["text"]
+    assert retrieved_comment["metadata"]["author"] == fake_auth.username
     assert retrieved_comment["metadata"]["parent"].replace("-", "") == parent.uid
 
 
@@ -78,9 +76,7 @@ def test_submit_comment_nonexisting_parent(
     client: TestClient, fake_auth: User, type: str, subreddit_in_db: Subreddit
 ) -> None:
     payload = CommentPayloads.get_create()
-    r = client.post(
-        f"{settings.API_V1_STR}/comments/{type}/{uuid4().hex}", json=payload
-    )
+    r = client.post(f"{settings.API_V1_STR}/comments/{uuid4().hex}", json=payload)
     assert r.status_code == status.HTTP_404_NOT_FOUND
     assert "detail" in r.json()
 
@@ -93,9 +89,9 @@ def test_submit_comment_wrong_format(
     post_self_in_db: (PostMeta, PostContent),
 ) -> None:
     payload = CommentPayloads.get_create()
-    payload["text"] = text
+    payload["content"]["text"] = text
     parent = post_self_in_db[0]
-    r = client.post(f"{settings.API_V1_STR}/comments/post/{parent.uid}", json=payload)
+    r = client.post(f"{settings.API_V1_STR}/comments/{parent.uid}", json=payload)
     assert r.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
     assert "detail" in r.json()
 
@@ -120,7 +116,7 @@ def test_update_comment(
         retrieved_comment["metadata"]["created_at"]
         != retrieved_comment["metadata"]["updated_at"]
     )
-    assert retrieved_comment["content"]["text"] == payload["text"]
+    assert retrieved_comment["content"]["text"] == payload["content"]["text"]
 
 
 def test_update_comment_nonexisting_parent(
@@ -143,7 +139,7 @@ def test_update_comment_wrong_format(
 ) -> None:
     metadata = comment_in_db[0]
     payload = CommentPayloads.get_update()
-    payload["text"] = text
+    payload["content"]["text"] = text
     r = client.put(f"{settings.API_V1_STR}/comments/{metadata.uid}", json=payload)
     assert r.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
     assert "detail" in r.json()
