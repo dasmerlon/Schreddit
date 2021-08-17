@@ -12,12 +12,17 @@ class CRUDPostMeta(CRUDThingBaseMeta[PostMeta, PostMetaCreate, PostMetaUpdate]):
 
     @db.read_transaction
     def get_posts_after(
-        self, after: Optional[PostMeta], sort: PostSort, limit: int
+        self,
+        subreddit: Subreddit,
+        after: Optional[PostMeta],
+        sort: PostSort,
+        limit: int,
     ) -> NodeSet:
         """
         Get the posts after the cursor.
 
-        :param after: get posts after this cursor according to the sorting   order,
+        :param subreddit: the subreddit to get posts from
+        :param after: get posts after this cursor according to the sorting order,
         or get first posts if no cursor is specified
         :param sort: sorting order
         :param limit: number of posts to get
@@ -25,9 +30,9 @@ class CRUDPostMeta(CRUDThingBaseMeta[PostMeta, PostMetaCreate, PostMetaUpdate]):
         """
         if sort.new:
             if after is None:
-                result = self.model.nodes.order_by("-created_at")
+                result = subreddit.post.order_by("-created_at")
             else:
-                result = self.model.nodes.order_by("-created_at").filter(
+                result = subreddit.post.order_by("-created_at").filter(
                     created_at__lt=after.created_at
                 )
         elif sort.hot:  # TODO: implement other sorting orders
@@ -40,17 +45,20 @@ class CRUDPostMeta(CRUDThingBaseMeta[PostMeta, PostMetaCreate, PostMetaUpdate]):
         return result[:limit]
 
     @db.read_transaction
-    def get_posts_before(self, before: PostMeta, sort: PostSort, limit: int) -> NodeSet:
+    def get_posts_before(
+        self, subreddit: Subreddit, before: PostMeta, sort: PostSort, limit: int
+    ) -> NodeSet:
         """
         Get the posts before the cursor.
 
+        :param subreddit: the subreddit to get posts from
         :param before: get posts before this cursor according to the sorting order
         :param sort: sorting order
         :param limit: number of posts to get
         :return: a list of posts
         """
         if sort.new:
-            result = self.model.nodes.order_by("created_at").filter(
+            result = subreddit.post.order_by("created_at").filter(
                 created_at__gt=before.created_at
             )
         elif sort.hot:  # TODO: implement other sorting orders
