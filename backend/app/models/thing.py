@@ -2,6 +2,8 @@ from mongoengine import Document, StringField, UUIDField
 from neomodel import (DateTimeProperty, RelationshipFrom, RelationshipTo,
                       StructuredNode, UniqueIdProperty, cardinality)
 
+from app.models.relationships import Downvote, Upvote
+
 
 class ThingMeta(StructuredNode):
     # Properties
@@ -14,6 +16,8 @@ class ThingMeta(StructuredNode):
         ".user.User", "AUTHORED_BY", cardinality=cardinality.ZeroOrOne
     )
     children = RelationshipFrom(".comment.CommentMeta", "PARENT")
+    downvotes = RelationshipTo(".user.User", "DOWNVOTED_BY", model=Downvote)
+    upvotes = RelationshipTo(".user.User", "UPVOTED_BY", model=Upvote)
 
 
 class ThingContent(Document):
