@@ -74,3 +74,24 @@ class CommentPayloads:
     @staticmethod
     def get_update():
         return {"text": "An updated comment."}
+
+
+class SubredditPayloads:
+    """Subreddit payloads"""
+
+    @staticmethod
+    def get_create(*, type: str = "public"):
+        return {
+            "description": "A subreddit description.",
+            "sr": "test",
+            "title": "A subreddit title",
+            "type": type,
+        }
+
+    @staticmethod
+    def get_update(*, type: str = "public"):
+        return {
+            "description": "An updated subreddit description.",
+            "title": "An updated subreddit title",
+            "type": type,
+        }

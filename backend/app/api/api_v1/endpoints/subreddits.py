@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException, Response, status
 
 from app import crud, models, schemas
 from app.api import deps
-from app.api.api_v1.exceptions import SubredditNotFoundException
+from app.api.api_v1.exceptions import SubredditNotFoundException, UnauthorizedUpdateException
 
 router = APIRouter()
 
@@ -73,4 +73,6 @@ def update_subreddit(
     old_sr = crud.subreddit.get_by_sr(sr)
     if old_sr is None:
         raise SubredditNotFoundException
+    if crud.subreddit.get_admin(old_sr) != current_user:
+        raise UnauthorizedUpdateException
     crud.subreddit.update(old_sr, subreddit)
