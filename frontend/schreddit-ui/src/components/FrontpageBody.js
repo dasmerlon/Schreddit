@@ -25,7 +25,7 @@ const useStyles = makeStyles((theme) => ({
 
 //TODO: - Sticky funktionalität vom Contact Component ist hardcoded über die höhe der Seite..
 //      - Infinit Scrolling einbauen
-export default function ForntpageBody() {
+export default function ForntpageBody(props) {
     const classes = useStyles();
 
     const [postList, setPostList] = useState({
@@ -50,6 +50,7 @@ export default function ForntpageBody() {
     useEffect(() => {
       // here we simulate adding new posts to List
       const newList = postList.list.concat([<Post/>, <Post/>, <Post/>, <Post/>]);
+      console.log(props.cookies);
       setPostList({
         list: newList
       })
