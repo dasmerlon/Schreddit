@@ -17,6 +17,8 @@ import MoreIcon from '@material-ui/icons/MoreVert';
 import Login from './Login'
 import Register from './Register'
 import Dropdown from './SubredditSelector'
+import { Link } from "react-router-dom";
+import { CardActionArea } from '@material-ui/core';
 
 const useStyles = makeStyles((theme) => ({
     grow: {
@@ -93,6 +95,9 @@ const useStyles = makeStyles((theme) => ({
             display: 'none',
         },
     },
+    logo: {
+        width: 90,
+    }
 }));
 
 
@@ -224,9 +229,11 @@ export default function PrimarySearchAppBar(props) {
             <AppBar position="static" className={classes.appBar}>
                 <Toolbar>
                     <img src={props.logo} className={classes.schredditIcon} />
-                    <Typography className={classes.title} variant="h6" noWrap>
-                        Schreddit
-                    </Typography>
+                    <CardActionArea href="/" className={classes.logo}>
+                        <Typography className={classes.title} variant="h6" noWrap>
+                            Schreddit
+                        </Typography>
+                    </CardActionArea>
                     <Dropdown
                         cookies={props.cookies}
                     />
@@ -269,16 +276,18 @@ export default function PrimarySearchAppBar(props) {
                             setError={setError}
                         />
 
-                        <IconButton
-                            edge="end"
-                            aria-label="account of current user"
-                            aria-controls={menuId}
-                            aria-haspopup="true"
-                            onClick={handleProfileMenuOpen}
-                            color="inherit"
-                        >
-                            <AccountCircle />
-                        </IconButton>
+                        <Link to={{ pathname: '/settings/account', state: props.cookies}}>
+                            <IconButton
+                                edge="end"
+                                aria-label="account of current user"
+                                aria-controls={menuId}
+                                aria-haspopup="true"
+                                // old = onClick={handleProfileMenuOpen}
+                                color="inherit"
+                            >
+                                <AccountCircle />
+                            </IconButton>
+                        </Link>
                     </div>
                     <div className={classes.sectionMobile}>
                         <IconButton

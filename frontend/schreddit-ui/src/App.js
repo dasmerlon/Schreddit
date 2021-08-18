@@ -3,8 +3,8 @@ import { BrowserRouter as Router, Route, Switch, Redirect} from 'react-router-do
 // We use this Router-Package: https://reactrouter.com/
 import React from 'react';
 import './App.css';
-import logo from './images/schreddit.svg';
 import Header from './components/header/Header';
+import UserSettingsBody from './components/header/UserSettingsBody';
 import { useCookies } from 'react-cookie';
 
 
@@ -37,6 +37,7 @@ const App = () => {
         <Route exact path={"/"} component={FrontpageBody} />
         <Route path={"/createSubreddit"} component={() => <CreateSubreddit cookies={cookies}/>}/>
         <Route path={"/submit"} component={CreatePostBody} />
+        <Route path={"/settings/account"} component={() => <UserSettingsBody cookies={cookies}/>}/>
         <Route path={"/r/"} component={SubreditBody} />
         <Route exact path={"/404"} component={ErrorPage} />
           <Redirect to="/404" />
