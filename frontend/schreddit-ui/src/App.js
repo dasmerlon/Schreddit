@@ -17,16 +17,19 @@ import CreatePostBody from './components/CreatePostBody';
 import ErrorPage from './components/ErrorPage';
 
 const App = () => {
-  const [cookies, setCookie, removeCookie] = useCookies(["token", "loggedIn"]);
+  const [cookies, setCookie, removeCookie] = useCookies(["token", "loggedIn", "username", "email"]);
 
-  const handleLogin = token => {
+  const handleLogin = (token, type, data) => {
     setCookie("token", token, { path: '/' });
     setCookie("loggedIn", true, { path: '/' });
+    setCookie(type, data, {path: '/'}); // saves username on login, but for email it saves "null"
   };
 
   const handleLogout = () => {
     removeCookie("token");
-    removeCookie("loggedIn")
+    removeCookie("loggedIn");
+    removeCookie("username");
+    removeCookie("email"); // That is why we need to remove email.
     window.location.reload();
   };
 

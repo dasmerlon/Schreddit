@@ -50,7 +50,6 @@ export default function ForntpageBody(props) {
     useEffect(() => {
       // here we simulate adding new posts to List
       const newList = postList.list.concat([<Post/>, <Post/>, <Post/>, <Post/>]);
-      console.log(props.cookies);
       setPostList({
         list: newList
       })

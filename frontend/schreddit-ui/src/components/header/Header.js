@@ -135,8 +135,6 @@ export default function PrimarySearchAppBar(props) {
     const [password, setPassword] = React.useState("");
 
     const handleEmailChange = event => {
-        console.log("Email:")
-        console.log(event)
         if (/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email.email)) {
             setEmail({
                 email: event.target.value,
@@ -154,15 +152,12 @@ export default function PrimarySearchAppBar(props) {
     }
     
     const handleUsernameChange = event => {
-        console.log("Username:")
-        console.log(event)
-        if (/[\wöüßä]+/.test(username.username)) {
+        if (/^[\wöüßä]+$/.test(username.username)) {
             setUsername({
                 username: event.target.value,
                 errorMessage: "",
                 error: false
             });
-            console.log("Username accepted")
 
         } else {
             setUsername({

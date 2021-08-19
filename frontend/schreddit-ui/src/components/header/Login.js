@@ -28,7 +28,12 @@ export default function Login(props) {
         loginData.append('password', props.password.password);
         axios.post(configData.LOGIN_API_URL, loginData)
             .then(response => {
-                props.handleLogin(response.data.access_token);
+                const regex = /^[\wöüäß]+$/;
+                if (regex.test(props.email.email)) {
+                    props.handleLogin(response.data.access_token, "username", props.email.email);
+                } else {
+                    props.handleLogin(response.data.access_token, "email", "null");
+                }
                 handleLoginDialogClose();
             })
             .catch(error => {
