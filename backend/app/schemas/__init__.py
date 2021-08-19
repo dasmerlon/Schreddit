@@ -1,4 +1,4 @@
-from .base import Pagination
+from .base import CursorDirection, Pagination
 from .comment import Comment, CommentCreate, CommentSort, CommentUpdate
 from .comment_content import (CommentContent, CommentContentCreate,
                               CommentContentUpdate)
