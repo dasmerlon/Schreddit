@@ -91,6 +91,7 @@ export default function CreatePostBody() {
       { textValue.slice(-9, 0) === 'undefine' ? setTextFieldValue(' ') : setTextFieldValue(textValue + event.target.value[event.target.value.length-1])}
     };
 
+    // Dies soll ein anfang sein für die verschiedenen Textmanipulationen, die in einem Texteditor möglich sind (not done yet)
     const handleBold = (event) => {
       setTextFieldValue(textValue + '**bold**');
     }

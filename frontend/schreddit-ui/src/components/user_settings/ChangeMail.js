@@ -46,13 +46,13 @@ export default function Login(props) {
                     <DialogTitle id="login-form-dialog-title">Login</DialogTitle>
                     <DialogContent>
                         <DialogContentText>
-                            Please provide your username or email address and your password to login to Schreddit:
+                            Please provide your username and your password to login to Schreddit:
                                     </DialogContentText>
                         <TextField
                             autoFocus
                             margin="dense"
                             id="email"
-                            label="Username / Email Address"
+                            label="Email Address"
                             type="email"
                             helperText={props.email.errorMessage}
                             variant="outlined"

@@ -6,7 +6,6 @@ import configData from '../config.json'
 import axios from 'axios';
 import MenuItem from '@material-ui/core/MenuItem';
 import InputLabel from '@material-ui/core/InputLabel';
-import FormHelperText from '@material-ui/core/FormHelperText';
 import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
 import { useHistory } from "react-router-dom"
@@ -97,10 +96,10 @@ export default function CreateSubreddit(props) {
             }).then(response => {
                 history.push("/r/" + subreddit.name);
             }).catch(error => {
+                console.log(error.response)
                 if (error.response.status === 422) {
                     setError({ message: "Please check your input. Something is not valid." });
-                }
-                else {
+                } else {
                     setError({ message: "Something went wrong, please try again later." });
                 }
                 console.log(error.response);

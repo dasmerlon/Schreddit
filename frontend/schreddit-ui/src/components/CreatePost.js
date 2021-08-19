@@ -1,5 +1,5 @@
 import React from 'react';
-import {Button, Avatar, Card, IconButton, makeStyles, SvgIcon, TextField} from "@material-ui/core";
+import { Avatar, Card, IconButton, makeStyles, SvgIcon, TextField} from "@material-ui/core";
 import { Link } from "react-router-dom";
 import CardActions from '@material-ui/core/CardActions';
 //Symbols: (Source: https://materialdesignicons.com/)
@@ -19,11 +19,6 @@ const useStyles = makeStyles({
 
 export default function CreatePost() {
     const classes = useStyles();
-
-    // Diese Funktion ist nötig um die OnClick Funktionalität des Textfeldes zu erreichen.
-    const handleClick = () => {
-        <Link to={{ pathname:'http://localhost:3000/submit', state: [{id: 1, name: 'Ford', color: 'red'}] }}></Link>
-    };
 
     return (
         <Card>

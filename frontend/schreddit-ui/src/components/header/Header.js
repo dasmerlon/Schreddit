@@ -8,7 +8,6 @@ import InputBase from '@material-ui/core/InputBase';
 import Badge from '@material-ui/core/Badge';
 import MenuItem from '@material-ui/core/MenuItem';
 import Menu from '@material-ui/core/Menu';
-import MenuIcon from '@material-ui/icons/Menu';
 import SearchIcon from '@material-ui/icons/Search';
 import AccountCircle from '@material-ui/icons/AccountCircle';
 import MailIcon from '@material-ui/icons/Mail';
@@ -136,6 +135,8 @@ export default function PrimarySearchAppBar(props) {
     const [password, setPassword] = React.useState("");
 
     const handleEmailChange = event => {
+        console.log("Email:")
+        console.log(event)
         if (/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email.email)) {
             setEmail({
                 email: event.target.value,
@@ -151,11 +152,25 @@ export default function PrimarySearchAppBar(props) {
             });
         }
     }
-
+    
     const handleUsernameChange = event => {
-        setUsername({
-            username: event.target.value,
-        })
+        console.log("Username:")
+        console.log(event)
+        if (/[\wöüßä]+/.test(username.username)) {
+            setUsername({
+                username: event.target.value,
+                errorMessage: "",
+                error: false
+            });
+            console.log("Username accepted")
+
+        } else {
+            setUsername({
+                username: event.target.value,
+                errorMessage: "The username is not valid",
+                error: true
+            });
+        }
     }
 
     const handlePasswordChange = event => {
@@ -228,7 +243,7 @@ export default function PrimarySearchAppBar(props) {
         <div className={classes.grow}>
             <AppBar position="static" className={classes.appBar}>
                 <Toolbar>
-                    <img src={props.logo} className={classes.schredditIcon} />
+                    <img alt="" src={props.logo} className={classes.schredditIcon} />
                     <CardActionArea href="/" className={classes.logo}>
                         <Typography className={classes.title} variant="h6" noWrap>
                             Schreddit
@@ -276,7 +291,7 @@ export default function PrimarySearchAppBar(props) {
                             setError={setError}
                         />
 
-                        <Link to={{ pathname: '/settings/account', state: props.cookies}}>
+                        <Link style={{color:"inherit"}} to={{ pathname: '/settings/account', state: props.cookies}}>
                             <IconButton
                                 edge="end"
                                 aria-label="account of current user"

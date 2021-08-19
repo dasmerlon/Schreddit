@@ -8,6 +8,7 @@ import Tab from '@material-ui/core/Tab';
 import Typography from '@material-ui/core/Typography';
 import Box from '@material-ui/core/Box';
 import { Grid, Container, CssBaseline } from '@material-ui/core';
+import { Divider, Button } from '@material-ui/core';
 
 //Für meinen privaten user a@b.com, a, a
 //"access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2MjkyODUxNzcsInN1YiI6InVpZDpkMDY2ZmIzNGUxOTY0NTI4YmYyMDc0ZDFlN2E2MTZlOCJ9.sVrTQtnB9O_lVUZOGw0zGgRjOgdRk96v0ygK_oPhfBI",
@@ -16,12 +17,16 @@ import { Grid, Container, CssBaseline } from '@material-ui/core';
 
 const useStyles = makeStyles((theme) => ({
     root: {
-        backgroundColor: "#dae0e6",
         flexGrow: 1,
     },
     grid: {
         width: '100%',
         margin: '0px',
+    },
+    mainGrid: {
+        maxWidth: '750px',
+        margin: '0px',
+        flexGrow: 1,
     },
     tabs: {
         textransform: "none",
@@ -64,7 +69,7 @@ function a11yProps(index) {
 }
 
 
-export default function UserSettingsBody() {
+export default function UserSettingsBody(props) {
     const classes = useStyles();
 
     const theme = useTheme();
@@ -72,10 +77,6 @@ export default function UserSettingsBody() {
 
     const handleChange = (event, newValue) => {
         setValue(newValue);
-    };
-  
-    const handleChangeIndex = (index) => {
-        setValue(index);
     };
 
     return (
@@ -88,7 +89,7 @@ export default function UserSettingsBody() {
                         <Typography variant="h5">User settings</Typography>
                     </Grid>
                     <Grid item>
-                        <AppBar position="static" color="default">
+                        <AppBar position="static" color="transparent" elevation={0}>
                             <Tabs
                                 value={value}
                                 onChange={handleChange}
@@ -105,11 +106,50 @@ export default function UserSettingsBody() {
                             <Tab style={{textTransform: 'none'}} label="Subscriptions" {...a11yProps(5)} />
                             <Tab style={{textTransform: 'none'}} label="Chat & Messaging" {...a11yProps(6)} />
                             </Tabs>
+                            <Divider/>
                         </AppBar>
                         <TabPanel value={value} index={0} dir={theme.direction}>
-                            <Grid container spacing={3} direction='column' className={classes.grid} >
+                            <Grid container spacing={4} direction='column' className={classes.mainGrid} >
                                 <Grid item>
                                     <Typography variant="h5">Account settings</Typography>
+                                </Grid>
+                                <Grid item>
+                                    <Typography style={{color:"gray"}} variant="subtitle2">ACCOUNT PREFRENCES</Typography>
+                                    <Divider />
+                                </Grid>
+                                <Grid item>
+                                    <Grid item container spacing={10} justifyContent="space-between">
+                                        <Grid item>
+                                            <Grid container spacing={0} direction='column'>
+                                                <Grid item>
+                                                    <Typography variant="h5" >Email address</Typography>
+                                                </Grid>
+                                                <Grid item>
+                                                    <Typography variant="subtitle2" >a@b.com</Typography>
+                                                </Grid>
+                                            </Grid>
+                                        </Grid>
+                                        <Grid item>
+                                            
+                                            <Button variant="outlined" color="primary" style={{textTransform:"none"}}>Change</Button>
+                                        </Grid>
+                                    </Grid>
+                                    <Grid item container spacing={10} justifyContent="space-between">
+                                        <Grid item>
+                                            <Grid container spacing={0} direction='column'>
+                                                <Grid item>
+                                                    <Typography variant="h5" >Change password</Typography>
+                                                </Grid>
+                                                <Grid item>
+                                                    <Typography variant="subtitle2" >Password must be at least 8 characters long</Typography>
+                                                </Grid>
+                                            </Grid>
+                                        </Grid>
+                                        <Grid item>
+                                            
+                                            <Button variant="outlined" color="primary" style={{textTransform:"none"}}>Change</Button>
+                                        </Grid>
+                                    </Grid>
                                 </Grid>
                             </Grid>
                         </TabPanel>

@@ -72,8 +72,11 @@ export default function Register(props) {
                             label="Username"
                             type="text"
                             variant="outlined"
+                            error={props.username.error}
+                            helperText={props.username.errorMessage}
                             fullWidth
-                            onChange={props.handleUsernameChange}
+                            onInput={props.handleUsernameChange}
+                            onBlur={props.handleUsernameChange}
                         />
                         <TextField
                             margin="dense"
