@@ -1,79 +1,67 @@
-from typing import Optional
+from typing import Dict, List, Optional
 
-from neomodel import NodeSet, db
+from neomodel import db
 
+from app import models, schemas
 from app.crud.crud_thing_meta import CRUDThingBaseMeta
-from app.models import PostMeta, Subreddit
-from app.schemas import PostMetaCreate, PostMetaUpdate, PostSort
+from app.crud.cypher import CypherGetPosts
 
 
-class CRUDPostMeta(CRUDThingBaseMeta[PostMeta, PostMetaCreate, PostMetaUpdate]):
+class CRUDPostMeta(
+    CRUDThingBaseMeta[models.PostMeta, schemas.PostMetaCreate, schemas.PostMetaUpdate]
+):
     """Post meta class for CRUD operations"""
 
     @db.read_transaction
-    def get_posts_after(
+    def get_posts(
         self,
-        subreddit: Subreddit,
-        after: Optional[PostMeta],
-        sort: PostSort,
+        subreddit: models.Subreddit,
+        cursor: Optional[models.PostMeta],
+        direction: Optional[schemas.CursorDirection],
+        sort: schemas.PostSort,
         limit: int,
-    ) -> NodeSet:
+    ) -> List[Dict]:
         """
         Get the posts after the cursor.
 
         :param subreddit: the subreddit to get posts from
-        :param after: get posts after this cursor according to the sorting order,
-        or get first posts if no cursor is specified
+        :param cursor: a cursor for pagination
+        :param direction: if ``after``, get posts after the cursor;
+        if ``before``, get posts before the cursor;
+        if ``None`` get first posts
         :param sort: sorting order
         :param limit: number of posts to get
-        :return: a list of posts
+        :return: a list of dicts containing PostMeta data, author, sr and vote count
         """
-        if sort.new:
-            if after is None:
-                result = subreddit.post.order_by("-created_at")
-            else:
-                result = subreddit.post.order_by("-created_at").filter(
-                    created_at__lt=after.created_at
-                )
-        elif sort.hot:  # TODO: implement other sorting orders
-            pass
-        elif sort.top:
-            pass
-        elif sort.best:
-            pass
+        query = CypherGetPosts(sort, cursor, direction).get_query()
 
-        return result[:limit]
+        # set required parameters for query
+        params = {"sr_uid": subreddit.uid, "limit": limit}
+        if cursor:
+            params["cursor_id"] = cursor.id
+            if sort == schemas.PostSort.new:
+                params["cursor_prop"] = cursor.created_at.timestamp()
+            elif sort == schemas.PostSort.hot:
+                params["cursor_prop"] = cursor.hot_score()
+            elif sort == schemas.PostSort.top:
+                params["cursor_prop"] = cursor.upvote_count()
+            elif sort == schemas.PostSort.best:  # TODO: implement best sorting order
+                pass
 
-    @db.read_transaction
-    def get_posts_before(
-        self, subreddit: Subreddit, before: PostMeta, sort: PostSort, limit: int
-    ) -> NodeSet:
-        """
-        Get the posts before the cursor.
-
-        :param subreddit: the subreddit to get posts from
-        :param before: get posts before this cursor according to the sorting order
-        :param sort: sorting order
-        :param limit: number of posts to get
-        :return: a list of posts
-        """
-        if sort.new:
-            result = subreddit.post.order_by("created_at").filter(
-                created_at__gt=before.created_at
-            )
-        elif sort.hot:  # TODO: implement other sorting orders
-            pass
-        elif sort.top:
-            pass
-        elif sort.best:
-            pass
-
-        return result[:limit]
+        results, columns = db.cypher_query(query, params)
+        post_list = [row[0] for row in results]
+        if direction == schemas.CursorDirection.before:
+            # TODO: need to reverse the list here, because I couldn't find an easy
+            #  way to do this in the Cypher query yet
+            post_list.reverse()
+        return post_list
 
     @db.write_transaction
-    def set_subreddit(self, db_obj: PostMeta, subreddit: Subreddit) -> Subreddit:
+    def set_subreddit(
+        self, db_obj: models.PostMeta, subreddit: models.Subreddit
+    ) -> models.Subreddit:
         post_subreddit = db_obj.subreddit.connect(subreddit)
         return post_subreddit
 
 
-post_meta = CRUDPostMeta(PostMeta)
+post_meta = CRUDPostMeta(models.PostMeta)

@@ -49,33 +49,41 @@ def get_posts(
     if after and before:
         raise PaginationAfterAndBeforeException
     elif not after and not before:
-        results = crud.post_meta.get_posts_after(subreddit, None, sort, size)
+        results = crud.post_meta.get_posts(subreddit, None, None, sort, size)
     elif after:
         cursor = crud.post_meta.get(after)
         if cursor is None:
             raise PaginationInvalidCursorException
-        results = crud.post_meta.get_posts_after(subreddit, cursor, sort, size)
+        results = crud.post_meta.get_posts(
+            subreddit, cursor, schemas.CursorDirection.after, sort, size
+        )
     elif before:
         cursor = crud.post_meta.get(before)
         if cursor is None:
             raise PaginationInvalidCursorException
-        results = crud.post_meta.get_posts_before(subreddit, cursor, sort, size)
+        results = crud.post_meta.get_posts(
+            subreddit, cursor, schemas.CursorDirection.before, sort, size
+        )
+
+    # convert list of dicts to list of PostMeta Schemas
+    meta_list = [schemas.PostMeta(**row) for row in results]
 
     basepath = f"{request.url.path}?sort={sort}"
-    next = f"{basepath}&after={results[-1].uid}" if results else None
-    prev = f"{basepath}&before={results[0].uid}" if results else None
+    next = f"{basepath}&after={meta_list[-1].uid}" if meta_list else None
+    prev = f"{basepath}&before={meta_list[0].uid}" if meta_list else None
 
     # retrieve post content
-    contents = crud.post_content.filter_by_uids([r.uid for r in results])
+    content_list = crud.post_content.filter_by_uids([meta.uid for meta in meta_list])
+
+    # create list of Post schemas by matching metadata and content
+    post_list = [
+        schemas.Post(metadata=meta, content=content_list.get(uid=meta.uid))
+        for meta in meta_list
+    ]
 
     # set pagination
     links = schemas.Pagination(next=next, prev=prev)
-    return schemas.PostList(
-        links=links,
-        data=[
-            schemas.Post(metadata=r, content=contents.get(uid=r.uid)) for r in results
-        ],
-    )
+    return schemas.PostList(links=links, data=post_list)
 
 
 @router.get(
