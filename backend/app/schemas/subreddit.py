@@ -3,7 +3,7 @@ from enum import Enum
 from typing import Optional
 
 from fastapi import Query
-from pydantic import BaseModel
+from pydantic import BaseModel, UUID4
 
 from app.core.config import settings
 from app.schemas.base import SubredditGetterDict
@@ -52,6 +52,7 @@ class SubredditUpdate(SubredditBase):
 class Subreddit(SubredditCreate):
     created_at: Optional[datetime]
     admin: User
+    uid: UUID4
 
     class Config:
         orm_mode = True

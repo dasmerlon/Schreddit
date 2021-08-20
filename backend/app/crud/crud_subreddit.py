@@ -28,5 +28,30 @@ class CRUDSubreddit(CRUDBaseNeo[Subreddit, SubredditCreate, SubredditUpdate]):
     def get_admin(self, db_obj: Subreddit) -> User:
         return db_obj.admin.single()
 
+    # @db.write_transaction
+    # def create(self, obj_in: Subreddit) -> Subreddit:
+    #     """
+    #     Create a subreddit.
+    #     :param obj_in: the `SubredditCreate` schema
+    #     :return: the created subreddit
+    #     """
+    #     db_obj = Subreddit(
+    #         sr = obj_in.sr,
+    #         title = obj_in.title,
+    #         type = obj_in.type,
+    #     )
+    #     db_obj.save()
+    #     return db_obj
+
+    # @db.write_transaction
+    # def update(self, admin: User, obj_in: Subreddit) -> Subreddit:
+    #     """
+    #     Update an existing subreddit.
+    #     :param db_obj: the admin of the Subreddit
+    #     :param obj_in: the `SubredditUpdate` schema to update
+    #     :return: the updated subreddit
+    #     """
+    #     pass
+
 
 subreddit = CRUDSubreddit(Subreddit)

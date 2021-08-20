@@ -104,8 +104,16 @@ def subreddit_in_db(test_user_in_db: User) -> Subreddit:
     crud.subreddit.remove(sr.uid)
 
 
+@pytest.fixture
+def subreddit_private_in_db(test_user_in_db: User) -> Subreddit:
+    sr = crud.subreddit.create(SubredditSchemas.get_create(type="private"))
+    crud.subreddit.set_admin(sr, test_user_in_db)
+    yield sr
+    crud.subreddit.remove(sr.uid)
+
+
 """
-Fixtures for removing users and posts
+Fixtures for removing users, posts, comments & subreddits
 """
 
 
@@ -131,11 +139,20 @@ def remove_posts():
 
 @pytest.fixture
 def remove_comments():
-    """Add UUIDs of comments to this list that should be deleted after the test."""
     uids = []
     yield uids
     for uid in uids:
-        if crud.comment_meta.get(uid) is not None:
-            crud.comment_meta.remove(uid)
-        if crud.comment_content.get(uid) is not None:
-            crud.comment_content.remove(uid)
+        if crud.comment_meta.get(UUID4(uid)) is not None:
+            crud.comment_meta.remove(UUID4(uid))
+        if crud.comment_content.get(UUID4(uid)) is not None:
+            crud.comment_content.remove(UUID4(uid))
+
+@pytest.fixture
+def remove_subreddits():
+    uids = []
+    yield uids
+    for uid in uids:
+        if crud.subreddit.get(UUID4(uid)) is not None:
+            crud.subreddit.remove(UUID4(uid))
+        if crud.subreddit.get(UUID4(uid)) is not None:
+            crud.subreddit.remove(UUID4(uid))
