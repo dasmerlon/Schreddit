@@ -1,4 +1,3 @@
-import './App.css';
 import { BrowserRouter as Router, Route, Switch, Redirect} from 'react-router-dom';
 // We use this Router-Package: https://reactrouter.com/
 import React from 'react';
@@ -17,19 +16,18 @@ import CreatePostBody from './components/CreatePostBody';
 import ErrorPage from './components/ErrorPage';
 
 const App = () => {
-  const [cookies, setCookie, removeCookie] = useCookies(["token", "loggedIn", "username", "email"]);
+  const [cookies, setCookie, removeCookie] = useCookies(["token", "loggedIn", "username"]);
 
-  const handleLogin = (token, type, data) => {
+  const handleLogin = (token, username) => {
     setCookie("token", token, { path: '/' });
     setCookie("loggedIn", true, { path: '/' });
-    setCookie(type, data, {path: '/'}); // saves username on login, but for email it saves "null"
+    setCookie("username", username, {path: '/'});
   };
 
   const handleLogout = () => {
-    removeCookie("token");
     removeCookie("loggedIn");
+    removeCookie("token");
     removeCookie("username");
-    removeCookie("email"); // That is why we need to remove email.
     window.location.reload();
   };
 
