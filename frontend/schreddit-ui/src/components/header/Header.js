@@ -16,8 +16,8 @@ import MoreIcon from '@material-ui/icons/MoreVert';
 import Login from './Login'
 import Register from './Register'
 import Dropdown from './SubredditSelector'
-import { Link } from "react-router-dom";
 import { CardActionArea } from '@material-ui/core';
+import { Grid } from '@material-ui/core';
 
 const useStyles = makeStyles((theme) => ({
     grow: {
@@ -88,6 +88,13 @@ const useStyles = makeStyles((theme) => ({
             display: 'flex',
         },
     },
+    sectionDesktopProfile: {
+        marginInlineEnd: "5%",
+        display: 'none',
+        [theme.breakpoints.up('md')]: {
+            display: 'flex',
+        },
+    },
     sectionMobile: {
         display: 'flex',
         [theme.breakpoints.up('md')]: {
@@ -152,7 +159,7 @@ export default function PrimarySearchAppBar(props) {
     }
     
     const handleUsernameChange = event => {
-        if (/^[\wöüßä]+$/.test(username.username)) {
+        if (/^[\wöüßä]{1,17}$/.test(username.username)) {
             setUsername({
                 username: event.target.value,
                 errorMessage: "",
@@ -162,7 +169,7 @@ export default function PrimarySearchAppBar(props) {
         } else {
             setUsername({
                 username: event.target.value,
-                errorMessage: "The username is not valid",
+                errorMessage: "The username is not valid (no symbols and 1-17 characters).",
                 error: true
             });
         }
@@ -251,15 +258,15 @@ export default function PrimarySearchAppBar(props) {
                         <div className={classes.searchIcon}>
                             <SearchIcon />
                         </div>
-                        <InputBase
-                            placeholder="Search…"
-                            classes={{
-                                root: classes.inputRoot,
-                                input: classes.inputInput,
-                            }}
-                            inputProps={{ 'aria-label': 'search' }}
-                        />
-                    </div>
+                            <InputBase
+                                placeholder="Search…"
+                                classes={{
+                                    root: classes.inputRoot,
+                                    input: classes.inputInput,
+                                }}
+                                inputProps={{ 'aria-label': 'search' }}
+                            />
+                        </div>
                     <div className={classes.grow} />
                     <div className={classes.sectionDesktop}>
                         <Login
@@ -285,20 +292,23 @@ export default function PrimarySearchAppBar(props) {
                             error={error}
                             setError={setError}
                         />
-
-                        <Link style={{color:"inherit"}} to={{ pathname: '/settings/account', state: props.cookies}}>
-                            <IconButton
-                                edge="end"
-                                aria-label="account of current user"
-                                aria-controls={menuId}
-                                aria-haspopup="true"
-                                // old = onClick={handleProfileMenuOpen}
-                                color="inherit"
-                            >
-                                <AccountCircle />
-                            </IconButton>
-                        </Link>
                     </div>
+
+                    <div className={classes.sectionDesktopProfile}>
+                        <CardActionArea href="/settings/account" className={classes.logo}>
+                            <Grid container >
+                                <Grid item>
+                                    <Typography className={classes.title} variant="h6" noWrap>
+                                        {props.cookies.username}
+                                    </Typography>
+                                </Grid>
+                                <Grid item>
+                                    <AccountCircle />
+                                </Grid>
+                            </Grid>
+                        </CardActionArea>
+                    </div>
+                        
                     <div className={classes.sectionMobile}>
                         <IconButton
                             aria-label="show more"

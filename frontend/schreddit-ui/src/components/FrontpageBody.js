@@ -50,10 +50,11 @@ export default function ForntpageBody(props) {
     useEffect(() => {
       // here we simulate adding new posts to List
       const newList = postList.list.concat([<Post/>, <Post/>, <Post/>, <Post/>]);
+      //console.log(props.cookies);
       setPostList({
         list: newList
       })
-    }, [page]);
+    }, [page]); // Do not add postList.list as a dependency.. It will start an infinite loop. Even though there is a warning
 
     // here we handle what happens when user scrolls to Load More div
     // in this case we just update page variable
