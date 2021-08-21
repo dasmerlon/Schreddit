@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import configData from '../config.json'
 import axios from 'axios';
 import Button from '@material-ui/core/Button'
@@ -12,6 +12,7 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 
 export default function Login(props) {
     const [showLoginDialog, setShowLoginDialog] = React.useState(false);
+    const [a, setA] = React.useState(false);
 
     const openLoginDialog = () => {
         props.setError({ message: "" })
@@ -28,77 +29,88 @@ export default function Login(props) {
         loginData.append('password', props.password.password);
         axios.post(configData.LOGIN_API_URL, loginData)
             .then(response => {
-                const regex = /^[\wöüäß]+$/;
-                if (regex.test(props.email.email)) {
-                    props.handleLogin(response.data.access_token, "username", props.email.email);
-                } else {
-                    props.handleLogin(response.data.access_token, "email", "null");
-                }
-                handleLoginDialogClose();
+                const token = response.data.access_token;
+
+                axios.get(configData.USER_API_URL + "/" + props.email.email)
+                    .then(userResponse => {
+                        props.handleLogin(token, userResponse.data.username);
+                        handleLoginDialogClose();
+                    })
+                    .catch(error => {
+                        props.setError({ message: "User information could not load... Please try again later." });
+                        console.log(error);
+                    });
             })
             .catch(error => {
                 props.setError({ message: "Something went wrong, please try again later." });
                 console.log(error);
             });
     };
-    if (!props.cookies.loggedIn) {
-        return (
-            <div>
-                <Button variant="outlined" aria-label="login button" style={{ margin: '7px' }} color="inherit" onClick={openLoginDialog}>
-                    Login
-                            </Button>
-                <Dialog open={showLoginDialog} onClose={handleLoginDialogClose} onKeyDown={(e) => { if (e.keyCode === 13) { sendLoginData() } }} aria-labelledby="login-form-dialog">
-                    <DialogTitle id="login-form-dialog-title">Login</DialogTitle>
-                    <DialogContent>
-                        <DialogContentText>
-                            Please provide your username or email address and your password to login to Schreddit:
-                                    </DialogContentText>
-                        <TextField
-                            autoFocus
-                            margin="dense"
-                            id="email"
-                            label="Username / Email Address"
-                            type="email"
-                            helperText={props.email.errorMessage}
-                            variant="outlined"
-                            error={props.email.error}
-                            fullWidth
-                            onChange={props.handleEmailChange}
-                            onBlur={props.handleEmailChange}
-                        />
-                        <TextField
-                            margin="dense"
-                            id="password"
-                            label="Password"
-                            type="password"
-                            variant="outlined"
-                            fullWidth
-                            onChange={props.handlePasswordChange}
-                        />
-                        <p >
-                            {props.error.message}
-                        </p>
-                    </DialogContent>
-                    <DialogActions>
-                        <Button onClick={handleLoginDialogClose} color="primary">
-                            Cancel
-                                    </Button>
-                        <Button onClick={sendLoginData} color="primary">
-                            Login
-                                    </Button>
-                    </DialogActions>
-                </Dialog>
-            </div>
-        )
-    } else {
-        return (
-            <div>
-                <Button variant="outlined" aria-label="login button" style={{ margin: '7px' }} color="inherit" onClick={props.handleLogout}>
-                    Logout
-                </Button>
-            </div>
-        )
-    }
 
+    useEffect(() => {
+        setA(props.cookies.loggedIn);
+        console.log(props.cookies.loggedIn);
+        console.log("a " + a)
+        
+    }, [props.cookies.loggedIn])
+
+    if (!a) {
+            return (
+                <div>
+                    <Button variant="outlined" aria-label="login button" style={{ margin: '7px' }} color="inherit" onClick={openLoginDialog}>
+                        Login
+                                </Button>
+                    <Dialog open={showLoginDialog} onClose={handleLoginDialogClose} onKeyDown={(e) => { if (e.keyCode === 13) { sendLoginData() } }} aria-labelledby="login-form-dialog">
+                        <DialogTitle id="login-form-dialog-title">Login</DialogTitle>
+                        <DialogContent>
+                            <DialogContentText>
+                                Please provide your username or email address and your password to login to Schreddit:
+                                        </DialogContentText>
+                            <TextField
+                                autoFocus
+                                margin="dense"
+                                id="email"
+                                label="Username / Email Address"
+                                type="email"
+                                helperText={props.email.errorMessage}
+                                variant="outlined"
+                                error={props.email.error}
+                                fullWidth
+                                onChange={props.handleEmailChange}
+                                onBlur={props.handleEmailChange}
+                            />
+                            <TextField
+                                margin="dense"
+                                id="password"
+                                label="Password"
+                                type="password"
+                                variant="outlined"
+                                fullWidth
+                                onChange={props.handlePasswordChange}
+                            />
+                            <p >
+                                {props.error.message}
+                            </p>
+                        </DialogContent>
+                        <DialogActions>
+                            <Button onClick={handleLoginDialogClose} color="primary">
+                                Cancel
+                                        </Button>
+                            <Button onClick={sendLoginData} color="primary">
+                                Login
+                                        </Button>
+                        </DialogActions>
+                    </Dialog>
+                </div>
+            )
+        } else {
+            return (
+                <div>
+                    <Button variant="outlined" aria-label="login button" style={{ margin: '7px' }} color="inherit" onClick={props.handleLogout}>
+                        Logout
+                    </Button>
+                </div>
+            )
+        }
 
 }
