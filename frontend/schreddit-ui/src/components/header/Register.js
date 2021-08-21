@@ -8,10 +8,16 @@ import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
+import { InputAdornment } from '@material-ui/core';
 
 
 export default function Register(props) {
     const [showRegisterDialog, setShowRegisterDialog] = React.useState(false);
+    const [titleValue, setTitleValue] = React.useState('');
+
+    const handleTitleChange = (event) => {
+      setTitleValue(event.target.value);
+    };
 
     const openRegisterDialog = () => {
         props.setError({ message: "" })
@@ -77,8 +83,13 @@ export default function Register(props) {
                             fullWidth
                             onInput={props.handleUsernameChange}
                             onBlur={props.handleUsernameChange}
+                            onChange={handleTitleChange}
+                            InputProps={{
+                                endAdornment: <InputAdornment position="end">{titleValue.length}/17</InputAdornment>
+                            }}
                         />
                         <TextField
+
                             margin="dense"
                             id="password"
                             label="Password"
