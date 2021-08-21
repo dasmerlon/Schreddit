@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
 import AppBar from '@material-ui/core/AppBar';
@@ -9,6 +9,8 @@ import Typography from '@material-ui/core/Typography';
 import Box from '@material-ui/core/Box';
 import { Grid, Container, CssBaseline } from '@material-ui/core';
 import { Divider, Button } from '@material-ui/core';
+import axios from 'axios';
+import configData from '../config.json';
 
 //Für meinen privaten user a@b.com, a, a
 //"access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2MjkyODUxNzcsInN1YiI6InVpZDpkMDY2ZmIzNGUxOTY0NTI4YmYyMDc0ZDFlN2E2MTZlOCJ9.sVrTQtnB9O_lVUZOGw0zGgRjOgdRk96v0ygK_oPhfBI",
@@ -74,10 +76,28 @@ export default function UserSettingsBody(props) {
 
     const theme = useTheme();
     const [value, setValue] = React.useState(0);
+    const [email, setEmail] = React.useState("");
 
     const handleChange = (event, newValue) => {
         setValue(newValue);
     };
+
+    useEffect(() => {
+        console.log(props.cookies)
+        if(props.cookies.loggedIn) { //if(email !== "")?
+            axios.get(configData.USER_API_URL + "/" + props.cookies.username)
+            .then(userResponse => {
+                setEmail(userResponse.data.email);
+            })
+            .catch(error => {
+                setEmail("User information could not load... Please try again later.");
+                console.log(error);
+            })
+        } else {
+            setEmail("")
+        }    
+    }, [props.cookies]);
+
 
     return (
     <div className={classes.root}> 
@@ -125,7 +145,7 @@ export default function UserSettingsBody(props) {
                                                     <Typography variant="h5" >Email address</Typography>
                                                 </Grid>
                                                 <Grid item>
-                                                    <Typography variant="subtitle2" >a@b.com</Typography>
+                                                    <Typography variant="subtitle2" >{email}</Typography>
                                                 </Grid>
                                             </Grid>
                                         </Grid>
@@ -166,4 +186,3 @@ export default function UserSettingsBody(props) {
     </div>
     );
 } 
-
