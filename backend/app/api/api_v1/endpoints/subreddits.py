@@ -37,30 +37,32 @@ def create_subreddit(
 
 
 @router.get(
-    "/{sr}",
+    "/r/{sr}",
     name="Get Subreddit",
     response_model=schemas.Subreddit,
     status_code=status.HTTP_200_OK,
 )
-def get_subreddit(subreddit: str):
+def get_subreddit(sr: str):
     """
     Get Subreddit by sr
+
+    - `str` : the name of the subreddit
     """
-    sr = crud.subreddit.get_by_sr(subreddit)
-    if sr is None:
+    get_sr = crud.subreddit.get_by_sr(sr)
+    if not get_sr:
         raise SubredditNotFoundException
-    return sr
+    return get_sr
 
 
 @router.put(
-    "/{sr}",
+    "/r/{sr}",
     name="Edit Subreddit",
     response_class=Response,
     status_code=status.HTTP_204_NO_CONTENT,
 )
 def update_subreddit(
     sr: str,
-    subreddit: schemas.SubredditUpdate,
+    sr_update: schemas.SubredditUpdate,
     current_user: models.User = Depends(deps.get_current_user),
 ):
     """
@@ -70,9 +72,21 @@ def update_subreddit(
     - `title` : title of the subreddit, up to 300 characters long
     - `type` : subreddit type
     """
+    to_update = {} # collect all changes made
     old_sr = crud.subreddit.get_by_sr(sr)
+
     if old_sr is None:
         raise SubredditNotFoundException
     if crud.subreddit.get_admin(old_sr) != current_user:
         raise UnauthorizedUpdateException
-    crud.subreddit.update(old_sr, subreddit)
+    if old_sr.description != sr_update.description:
+        to_update["description"] = sr_update.description
+    if old_sr.title != sr_update.title:
+        to_update["title"] = sr_update.title
+    if not to_update:
+        raise HTTPException(
+            status_code=status.HTTP_304_NOT_MODIFIED,
+            detail="No changes have been made."
+        )
+    crud.subreddit.update(old_sr, sr_update)
+    return Response(status_code=status.HTTP_204_NO_CONTENT)

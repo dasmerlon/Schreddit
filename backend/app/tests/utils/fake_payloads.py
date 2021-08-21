@@ -83,9 +83,9 @@ class SubredditPayloads:
     def get_create(*, type: str = "public"):
         return {
             "description": "A subreddit description.",
-            "sr": "test",
             "title": "A subreddit title",
             "type": type,
+            "sr": "test",
         }
 
     @staticmethod

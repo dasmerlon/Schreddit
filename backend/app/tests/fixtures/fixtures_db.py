@@ -112,6 +112,14 @@ def subreddit_private_in_db(test_user_in_db: User) -> Subreddit:
     crud.subreddit.remove(sr.uid)
 
 
+@pytest.fixture
+def subreddit_in_db_other_user(other_user_in_db: User) -> Subreddit:
+    sr = crud.subreddit.create(SubredditSchemas.get_create(type="public"))
+    crud.subreddit.set_admin(sr, other_user_in_db)
+    yield sr
+    crud.subreddit.remove(sr.uid)
+
+
 """
 Fixtures for removing users, posts, comments & subreddits
 """
