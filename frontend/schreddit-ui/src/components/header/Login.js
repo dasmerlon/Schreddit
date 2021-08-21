@@ -48,11 +48,8 @@ export default function Login(props) {
     };
 
     useEffect(() => {
-        setA(props.cookies.loggedIn);
-        console.log(props.cookies.loggedIn);
-        console.log("a " + a)
-        
-    }, [props.cookies.loggedIn])
+        setA(props.cookies.loggedIn);        
+    }, [props.cookies.loggedIn, a])
 
     if (!a) {
             return (
@@ -95,10 +92,10 @@ export default function Login(props) {
                         <DialogActions>
                             <Button onClick={handleLoginDialogClose} color="primary">
                                 Cancel
-                                        </Button>
+                            </Button>
                             <Button onClick={sendLoginData} color="primary">
                                 Login
-                                        </Button>
+                            </Button>
                         </DialogActions>
                     </Dialog>
                 </div>
