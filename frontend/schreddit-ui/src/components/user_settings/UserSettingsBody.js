@@ -114,7 +114,6 @@ export default function UserSettingsBody(props) {
                 console.log(response)
                 //history.push("/r/" + subreddit.name);
             }).catch(error => {
-                console.log(error.response)
                 if (error.response.status === 304) {
                     setError({ message: "Please enter a new email or password." });
                 } else {
