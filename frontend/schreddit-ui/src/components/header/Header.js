@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { fade, makeStyles } from '@material-ui/core/styles';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
@@ -112,6 +112,7 @@ export default function PrimarySearchAppBar(props) {
     const classes = useStyles();
     const [anchorEl, setAnchorEl] = React.useState(null);
     const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = React.useState(null);
+    const [renderProfile, setrenderProfile] = React.useState(null);
 
     const isMenuOpen = Boolean(anchorEl);
     const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
@@ -200,6 +201,7 @@ export default function PrimarySearchAppBar(props) {
         </Menu>
     );
 
+    //TODO: Edit mobile view
     const mobileMenuId = 'primary-search-account-menu-mobile';
     const renderMobileMenu = (
         <Menu
@@ -241,6 +243,15 @@ export default function PrimarySearchAppBar(props) {
         </Menu>
     );
 
+    useEffect(() => {
+        if(props.cookies.loggedIn) { 
+            setrenderProfile ("/settings/account")
+        } else {
+            setrenderProfile("/")
+        }    
+    }, [props.cookies.loggedIn]);
+    
+            
     return (
         <div className={classes.grow}>
             <AppBar position="static" className={classes.appBar}>
@@ -295,7 +306,7 @@ export default function PrimarySearchAppBar(props) {
                     </div>
 
                     <div className={classes.sectionDesktopProfile}>
-                        <CardActionArea href="/settings/account" className={classes.logo}>
+                        <CardActionArea href={renderProfile} className={classes.logo}>
                             <Grid container >
                                 <Grid item>
                                     <Typography className={classes.title} variant="h6" noWrap>
