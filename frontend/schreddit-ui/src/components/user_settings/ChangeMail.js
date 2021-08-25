@@ -10,90 +10,144 @@ import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 
 
-export default function Login(props) {
-    const [showLoginDialog, setShowLoginDialog] = React.useState(false);
+export default function ChangeMail(props) {
+    const [showEmailChangeDialog, setShowEmailChangeDialog] = React.useState(false);
+    const [email, setEmail] = React.useState("");
+    const [emailConfirmed, setEmailConfirmed] = React.useState("");
+    const [error, setError] = React.useState("");
 
-    const openLoginDialog = () => {
-        props.setError({ message: "" })
-        setShowLoginDialog(true);
+    const openEmailChangeDialog = () => {
+        setError({ message: "" })
+        setShowEmailChangeDialog(true);
     };
 
-    const handleLoginDialogClose = () => {
-        setShowLoginDialog(false);
+    const handleEmailChangeDialogClose = () => {
+        setShowEmailChangeDialog(false);
     };
 
-    const sendLoginData = async () => {
-        const loginData = new URLSearchParams();
-        loginData.append('username', props.email.email);
-        loginData.append('password', props.password.password);
-        axios.post(configData.LOGIN_API_URL, loginData)
-            .then(response => {
-                props.handleLogin(response.data.access_token);
-                handleLoginDialogClose();
-            })
-            .catch(error => {
-                props.setError({ message: "Something went wrong, please try again later." });
-                console.log(error);
+    const handleEmailChange = (setIndependentEmail, independentEmail, event) => {
+        console.log(email.email)
+        console.log(emailConfirmed.email)
+        const temp = "";
+        if (/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(independentEmail.email)) {
+            setIndependentEmail({
+                email: event.target.value,
+                errorMessage: "",
+                error: false
             });
-    };
-    if (!props.cookies.loggedIn) {
-        return (
-            <div>
-                <Button variant="outlined" aria-label="login button" style={{ margin: '7px' }} color="inherit" onClick={openLoginDialog}>
-                    Login
-                            </Button>
-                <Dialog open={showLoginDialog} onClose={handleLoginDialogClose} onKeyDown={(e) => { if (e.keyCode === 13) { sendLoginData() } }} aria-labelledby="login-form-dialog">
-                    <DialogTitle id="login-form-dialog-title">Login</DialogTitle>
-                    <DialogContent>
-                        <DialogContentText>
-                            Please provide your username and your password to login to Schreddit:
-                                    </DialogContentText>
-                        <TextField
-                            autoFocus
-                            margin="dense"
-                            id="email"
-                            label="Email Address"
-                            type="email"
-                            helperText={props.email.errorMessage}
-                            variant="outlined"
-                            error={props.email.error}
-                            fullWidth
-                            onChange={props.handleEmailChange}
-                            onBlur={props.handleEmailChange}
-                        />
-                        <TextField
-                            margin="dense"
-                            id="password"
-                            label="Password"
-                            type="password"
-                            variant="outlined"
-                            fullWidth
-                            onChange={props.handlePasswordChange}
-                        />
-                        <p >
-                            {props.error.message}
-                        </p>
-                    </DialogContent>
-                    <DialogActions>
-                        <Button onClick={handleLoginDialogClose} color="primary">
-                            Cancel
-                                    </Button>
-                        <Button onClick={sendLoginData} color="primary">
-                            Login
-                                    </Button>
-                    </DialogActions>
-                </Dialog>
-            </div>
-        )
-    } else {
-        return (
-            <div>
-                <Button variant="outlined" aria-label="login button" style={{ margin: '7px' }} color="inherit" onClick={props.handleLogout}>
-                    Logout
-                </Button>
-            </div>
-        )
+
+        } else {
+            setIndependentEmail({
+                email: event.target.value,
+                errorMessage: "The email is not valid",
+                error: true
+            });
+            const temp = "The email is not valid";
+        }
+
+        if(independentEmail == emailConfirmed){
+            if(email.email === emailConfirmed.email) {      
+                setEmailConfirmed({
+                    email: event.target.value,
+                    errorMessage: "" + temp,
+                    error: false
+                });    
+            } else {
+                setEmailConfirmed({
+                    email: event.target.value,
+                    errorMessage: "Email must match",
+                    error: true
+                });              
+            }
+        } else {
+            if(email.email === emailConfirmed.email) {      
+                setEmailConfirmed({
+                    email: emailConfirmed.email,
+                    errorMessage: "" + emailConfirmed.errorMessage,
+                    error: false
+                });    
+            } else {
+                setEmailConfirmed({
+                    email: emailConfirmed.email,
+                    errorMessage: "Email must match",
+                    error: true
+                });              
+            }
+        }
     }
 
+    const sendUserSettingsUpdate = async () => {
+        axios.put(configData.USER_SETTINGS_API_URL, {
+            email: email.email
+        },
+            {
+                headers: {
+                    Authorization: `Bearer ${props.cookies.token}`
+                }
+            }).then(response => {
+                console.log(response)
+                handleEmailChangeDialogClose();
+                window.location.reload();
+                //history.push("/r/" + subreddit.name);
+            }).catch(error => {
+                if (error.response.status === 304) {
+                    setError({ message: "Please enter a new email or password." });
+                } else {
+                    setError({ message: "Something went wrong, please try again later." });
+                }
+                console.log(error.response);
+            })
+    };
 
+    return (
+        <div>
+            <Button variant="outlined" aria-label="change email button" style={{ margin: '7px' }} color="inherit" onClick={openEmailChangeDialog}>
+                Change Email
+                        </Button>
+            <Dialog open={showEmailChangeDialog} onClose={handleEmailChangeDialogClose} onKeyDown={(e) => { if (e.keyCode === 13) { sendUserSettingsUpdate() } }} aria-labelledby="change-email-form-dialog">
+                <DialogTitle id="change-email-form-dialog-title">Change Email</DialogTitle>
+                <DialogContent>
+                    <DialogContentText>
+                        Please provide your new email address to login to Schreddit in the future:
+                                </DialogContentText>
+                    <TextField
+                        autoFocus
+                        margin="dense"
+                        id="email"
+                        label="New Email Address"
+                        type="email"
+                        helperText={email.errorMessage}
+                        variant="outlined"
+                        error={email.error}
+                        fullWidth
+                        onChange={(e) => handleEmailChange(setEmail, email, e)}
+                        onBlur={(e) => handleEmailChange(setEmail, email, e)}
+                    />
+                    <TextField
+                        margin="dense"
+                        id="emailConfirmed"
+                        label="Confirm New Email Address"
+                        type="emailConfirmed"
+                        helperText={emailConfirmed.errorMessage}
+                        variant="outlined"
+                        error={emailConfirmed.error}
+                        fullWidth
+                        onChange={(e) => handleEmailChange(setEmailConfirmed, emailConfirmed, e)}
+                        onBlur={(e) => handleEmailChange(setEmailConfirmed, emailConfirmed, e)}
+                    />
+                    <p >
+                        {error.message}
+                    </p>
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={handleEmailChangeDialogClose} color="primary">
+                        Cancel
+                                </Button>
+                    <Button onClick={sendUserSettingsUpdate} color="primary">
+                        Save email
+                                </Button>
+                </DialogActions>
+            </Dialog>
+        </div>
+    )
 }

@@ -11,6 +11,7 @@ import { Grid, Container, CssBaseline } from '@material-ui/core';
 import { Divider, Button } from '@material-ui/core';
 import axios from 'axios';
 import configData from '../config.json';
+import ChangeMail from './ChangeMail';
 
 //Für meinen privaten user a@b.com, a, a
 //"access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2MjkyODUxNzcsInN1YiI6InVpZDpkMDY2ZmIzNGUxOTY0NTI4YmYyMDc0ZDFlN2E2MTZlOCJ9.sVrTQtnB9O_lVUZOGw0zGgRjOgdRk96v0ygK_oPhfBI",
@@ -78,6 +79,7 @@ export default function UserSettingsBody(props) {
     const [value, setValue] = React.useState(0);
     const [email, setEmail] = React.useState("a@g.com");
     const [error, setError] = React.useState("");
+    const [onlyPassword, setOnlyPassword] = React.useState(true);
     const [newPasword, setNewPassword] = React.useState("a");
 
     // For the navigation tabs
@@ -86,6 +88,7 @@ export default function UserSettingsBody(props) {
     };
 
     useEffect(() => {
+        console.log(props.cookies)
         if(props.cookies.loggedIn) { //if(email !== "")?
             axios.get(configData.USER_API_URL + "/" + props.cookies.username)
             .then(userResponse => {
@@ -101,10 +104,12 @@ export default function UserSettingsBody(props) {
     }, [props.cookies]);
 
 
-    const sendCreateSubredditData = async () => {
+    //EmailChange does not need a password -> only a new Email!
+    //PasswordChange does only needs the new Password (no Email)
+    const sendUserSettingsUpdate = async (onlyPassword) => {
         axios.put(configData.USER_SETTINGS_API_URL, {
+            password: newPasword,
             email: email,
-            password: newPasword
         },
             {
                 headers: {
@@ -175,8 +180,9 @@ export default function UserSettingsBody(props) {
                                             </Grid>
                                         </Grid>
                                         <Grid item>
-                                            
-                                            <Button variant="outlined" color="primary" onClick={sendCreateSubredditData} style={{textTransform:"none"}}>Change</Button>
+                                            <ChangeMail 
+                                                cookies={props.cookies}
+                                            />
                                         </Grid>
                                     </Grid>
                                     <Grid item container spacing={10} justifyContent="space-between">
@@ -191,7 +197,7 @@ export default function UserSettingsBody(props) {
                                             </Grid>
                                         </Grid>
                                         <Grid item>
-                                            <Button variant="outlined" color="primary" onClick={sendCreateSubredditData} style={{textTransform:"none"}}>Change</Button>
+                                            <Button variant="outlined" color="primary" onClick={sendUserSettingsUpdate} style={{textTransform:"none"}}>Change</Button>
                                         </Grid>
                                     </Grid>
                                 </Grid>
