@@ -88,7 +88,6 @@ export default function UserSettingsBody(props) {
     };
 
     useEffect(() => {
-        console.log(props.cookies)
         if(props.cookies.loggedIn) { //if(email !== "")?
             axios.get(configData.USER_API_URL + "/" + props.cookies.username)
             .then(userResponse => {
@@ -96,7 +95,6 @@ export default function UserSettingsBody(props) {
             })
             .catch(error => {
                 setEmail("User information could not load... Please try again later.");
-                console.log(error);
             })
         } else {
             setEmail("")
@@ -116,7 +114,6 @@ export default function UserSettingsBody(props) {
                     Authorization: `Bearer ${props.cookies.token}`
                 }
             }).then(response => {
-                console.log(response)
                 //history.push("/r/" + subreddit.name);
             }).catch(error => {
                 if (error.response.status === 304) {
@@ -124,7 +121,6 @@ export default function UserSettingsBody(props) {
                 } else {
                     setError({ message: "Something went wrong, please try again later." });
                 }
-                console.log(error.response);
             })
     };
 

@@ -26,8 +26,6 @@ export default function ChangeMail(props) {
     };
 
     const handleEmailChange = (setIndependentEmail, independentEmail, event) => {
-        console.log(email.email)
-        console.log(emailConfirmed.email)
         const temp = "";
         if (/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(independentEmail.email)) {
             setIndependentEmail({
@@ -85,7 +83,6 @@ export default function ChangeMail(props) {
                     Authorization: `Bearer ${props.cookies.token}`
                 }
             }).then(response => {
-                console.log(response)
                 handleEmailChangeDialogClose();
                 window.location.reload();
                 //history.push("/r/" + subreddit.name);
@@ -95,7 +92,6 @@ export default function ChangeMail(props) {
                 } else {
                     setError({ message: "Something went wrong, please try again later." });
                 }
-                console.log(error.response);
             })
     };
 
