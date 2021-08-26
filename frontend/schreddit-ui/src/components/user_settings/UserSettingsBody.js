@@ -12,6 +12,7 @@ import { Divider, Button } from '@material-ui/core';
 import axios from 'axios';
 import configData from '../config.json';
 import ChangeMail from './ChangeMail';
+import ChangePassword from './ChangePassword';
 
 //Für meinen privaten user a@b.com, a, a
 //"access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2MjkyODUxNzcsInN1YiI6InVpZDpkMDY2ZmIzNGUxOTY0NTI4YmYyMDc0ZDFlN2E2MTZlOCJ9.sVrTQtnB9O_lVUZOGw0zGgRjOgdRk96v0ygK_oPhfBI",
@@ -102,29 +103,6 @@ export default function UserSettingsBody(props) {
     }, [props.cookies]);
 
 
-    //EmailChange does not need a password -> only a new Email!
-    //PasswordChange does only needs the new Password (no Email)
-    const sendUserSettingsUpdate = async (onlyPassword) => {
-        axios.put(configData.USER_SETTINGS_API_URL, {
-            password: newPasword,
-            email: email,
-        },
-            {
-                headers: {
-                    Authorization: `Bearer ${props.cookies.token}`
-                }
-            }).then(response => {
-                //history.push("/r/" + subreddit.name);
-            }).catch(error => {
-                if (error.response.status === 304) {
-                    setError({ message: "Please enter a new email or password." });
-                } else {
-                    setError({ message: "Something went wrong, please try again later." });
-                }
-            })
-    };
-
-    // For email we need new email, but for password change, we can use either username or email
     return (
     <div className={classes.root}> 
         <React.Fragment>
@@ -193,7 +171,9 @@ export default function UserSettingsBody(props) {
                                             </Grid>
                                         </Grid>
                                         <Grid item>
-                                            <Button variant="outlined" color="primary" onClick={sendUserSettingsUpdate} style={{textTransform:"none"}}>Change</Button>
+                                            <ChangePassword
+                                                cookies={props.cookies}
+                                            />
                                         </Grid>
                                     </Grid>
                                 </Grid>

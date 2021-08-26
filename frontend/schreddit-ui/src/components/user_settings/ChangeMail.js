@@ -88,7 +88,7 @@ export default function ChangeMail(props) {
                 //history.push("/r/" + subreddit.name);
             }).catch(error => {
                 if (error.response.status === 304) {
-                    setError({ message: "Please enter a new email or password." });
+                    setError({ message: "Please enter a new email." });
                 } else {
                     setError({ message: "Something went wrong, please try again later." });
                 }
@@ -98,7 +98,7 @@ export default function ChangeMail(props) {
     return (
         <div>
             <Button variant="outlined" aria-label="change email button" style={{ margin: '7px' }} color="inherit" onClick={openEmailChangeDialog}>
-                Change Email
+                Change
                         </Button>
             <Dialog open={showEmailChangeDialog} onClose={handleEmailChangeDialogClose} onKeyDown={(e) => { if (e.keyCode === 13) { sendUserSettingsUpdate() } }} aria-labelledby="change-email-form-dialog">
                 <DialogTitle id="change-email-form-dialog-title">Change Email</DialogTitle>
