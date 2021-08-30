@@ -16,13 +16,14 @@ router = APIRouter()
 
 
 @router.get(
-    "",
+    "/r/{sr_uid}",
     name="Get Posts",
     response_model=schemas.PostList,
     status_code=status.HTTP_200_OK,
 )
 def get_posts(
     request: Request,
+    sr_uid: UUID4,
     after: Optional[UUID4] = None,
     before: Optional[UUID4] = None,
     sort: Optional[schemas.PostSort] = schemas.PostSort.new,
@@ -40,21 +41,25 @@ def get_posts(
     - `sort` : sorting order, one of `best`, `hot`, `new`, `top`
     - `limit` : maximum number of posts to return
     """
+    subreddit = crud.subreddit.get(sr_uid)
+    if not subreddit:
+        raise SubredditNotFoundException
+
     # act depending on which cursor is passed
     if after and before:
         raise PaginationAfterAndBeforeException
     elif not after and not before:
-        results = crud.post_meta.get_posts_after(None, sort, size)
+        results = crud.post_meta.get_posts_after(subreddit, None, sort, size)
     elif after:
         cursor = crud.post_meta.get(after)
         if cursor is None:
             raise PaginationInvalidCursorException
-        results = crud.post_meta.get_posts_after(cursor, sort, size)
+        results = crud.post_meta.get_posts_after(subreddit, cursor, sort, size)
     elif before:
         cursor = crud.post_meta.get(before)
         if cursor is None:
             raise PaginationInvalidCursorException
-        results = crud.post_meta.get_posts_before(cursor, sort, size)
+        results = crud.post_meta.get_posts_before(subreddit, cursor, sort, size)
 
     basepath = f"{request.url.path}?sort={sort}"
     next = f"{basepath}&after={results[-1].uid}" if results else None

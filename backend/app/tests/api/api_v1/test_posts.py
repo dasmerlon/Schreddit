@@ -54,9 +54,8 @@ def test_submit_post(
             assert created_post["metadata"][key] == metadata[key]
     for key in content:
         assert created_post["content"][key] == content[key]
-    assert created_post["metadata"]["author"]["email"] == fake_auth.email
-    assert created_post["metadata"]["author"]["username"] == fake_auth.username
-    assert created_post["metadata"]["subreddit"]["sr"] == metadata["sr"]
+    assert created_post["metadata"]["author"] == fake_auth.username
+    assert created_post["metadata"]["sr"] == metadata["sr"]
 
     r = client.get(f"{settings.API_V1_STR}/posts/{created_post['metadata']['uid']}")
     assert r.status_code == status.HTTP_200_OK
@@ -70,9 +69,8 @@ def test_submit_post(
             assert retrieved_post["metadata"][key] == metadata[key]
     for key in content:
         assert retrieved_post["content"][key] == content[key]
-    assert retrieved_post["metadata"]["author"]["email"] == fake_auth.email
-    assert retrieved_post["metadata"]["author"]["username"] == fake_auth.username
-    assert retrieved_post["metadata"]["subreddit"]["sr"] == metadata["sr"]
+    assert retrieved_post["metadata"]["author"] == fake_auth.username
+    assert retrieved_post["metadata"]["sr"] == metadata["sr"]
 
 
 @pytest.mark.parametrize(

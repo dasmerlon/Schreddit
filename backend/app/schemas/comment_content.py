@@ -1,27 +1,24 @@
-from typing import Optional
+from pydantic import validator
 
-from pydantic import BaseModel, constr, validator
+from app.schemas.thing_content import (ThingContent, ThingContentBase,
+                                       ThingContentCreate, ThingContentUpdate)
 
 
-class CommentContentBase(BaseModel):
-    text: Optional[constr(min_length=1, strip_whitespace=True)] = None
-
+class CommentContentBase(ThingContentBase):
     @validator("text")
     def text_must_not_be_none(cls, v):
         if v is None:
             raise ValueError("text must not be None")
-        else:
-            return v
+        return v
 
 
-class CommentContentCreate(CommentContentBase):
-    text: constr(min_length=1, strip_whitespace=True)
-
-
-class CommentContentUpdate(CommentContentBase):
+class CommentContentCreate(CommentContentBase, ThingContentCreate):
     pass
 
 
-class CommentContent(CommentContentBase):
-    class Config:
-        orm_mode = True
+class CommentContentUpdate(CommentContentBase, ThingContentUpdate):
+    pass
+
+
+class CommentContent(CommentContentBase, ThingContent):
+    pass

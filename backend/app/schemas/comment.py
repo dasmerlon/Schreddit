@@ -1,10 +1,10 @@
 from enum import Enum
 
-from pydantic import BaseModel
-
 from app.schemas.comment_content import (CommentContent, CommentContentCreate,
                                          CommentContentUpdate)
-from app.schemas.comment_meta import CommentMeta
+from app.schemas.comment_meta import (CommentMeta, CommentMetaCreate,
+                                      CommentMetaUpdate)
+from app.schemas.thing import Thing, ThingCreate, ThingUpdate
 
 
 class CommentSort(str, Enum):
@@ -16,14 +16,13 @@ class CommentSort(str, Enum):
     # qa = "qa"
 
 
-class CommentCreate(CommentContentCreate):
+class CommentCreate(ThingCreate[CommentMetaCreate, CommentContentCreate]):
     pass
 
 
-class CommentUpdate(CommentContentUpdate):
+class CommentUpdate(ThingUpdate[CommentMetaUpdate, CommentContentUpdate]):
     pass
 
 
-class Comment(BaseModel):
-    metadata: CommentMeta
-    content: CommentContent
+class Comment(Thing[CommentMeta, CommentContent]):
+    pass

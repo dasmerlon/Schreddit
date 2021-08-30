@@ -2,13 +2,13 @@ from typing import List, Union
 
 from pydantic import UUID4
 
-from app.crud.base_mongo import CRUDBaseMongo
+from app.crud.crud_thing_content import CRUDThingBaseContent
 from app.models import CommentContent
 from app.schemas import CommentContentCreate, CommentContentUpdate
 
 
 class CRUDCommentContent(
-    CRUDBaseMongo[CommentContent, CommentContentCreate, CommentContentUpdate]
+    CRUDThingBaseContent[CommentContent, CommentContentCreate, CommentContentUpdate]
 ):
     """Comment content class for CRUD operations"""
 

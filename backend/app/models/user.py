@@ -18,4 +18,4 @@ class User(StructuredNode):
 
     # Relationships
     friend = RelationshipTo("User", "FRIENDS_WITH", model=Friendship)
-    post_author = RelationshipFrom(".post_meta.PostMeta", "AUTHORED_BY")
+    post_author = RelationshipFrom(".post.PostMeta", "AUTHORED_BY")

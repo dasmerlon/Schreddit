@@ -43,19 +43,15 @@ class CRUDBaseNeo(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
         return self.model.nodes
 
     @db.write_transaction
-    def create(self, obj_in: Union[CreateSchemaType, None]) -> ModelType:
+    def create(self, obj_in: CreateSchemaType) -> ModelType:
         """
         Create a new node.
 
         :param obj_in: the CreateSchema of the node to create
         :return: the database model of the created node
         """
-        if obj_in is None:
-            db_obj = self.model()
-        else:
-            obj_in_data = jsonable_encoder(obj_in)
-            db_obj = self.model(**obj_in_data)
-
+        obj_in_data = jsonable_encoder(obj_in)
+        db_obj = self.model(**obj_in_data)
         db_obj.save()
         return db_obj
 

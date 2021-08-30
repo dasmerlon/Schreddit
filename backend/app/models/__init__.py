@@ -1,7 +1,5 @@
-from .base import Thing
-from .comment_content import CommentContent
-from .comment_meta import CommentMeta
-from .post_content import PostContent
-from .post_meta import PostMeta
+from .comment import CommentContent, CommentMeta
+from .post import PostContent, PostMeta
 from .subreddit import Subreddit
+from .thing import ThingContent, ThingMeta
 from .user import User

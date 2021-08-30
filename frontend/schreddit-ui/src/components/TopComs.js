@@ -75,9 +75,9 @@ export default function RecipeReviewCard() {
                 title="Contemplative Reptile"
                 />
                 <FiCardContent className={classes.fiCardContent}>
-                <Typography gutterBottom variant="h5" component="h2">
-                    Top Science Communities
-                </Typography>
+                    <Typography gutterBottom variant="h5" component="h2">
+                        Top Science Communities
+                    </Typography>
                 </FiCardContent>
             </FiCardActionArea>
             <CardContent>

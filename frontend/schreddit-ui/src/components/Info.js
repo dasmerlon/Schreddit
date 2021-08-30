@@ -19,7 +19,12 @@ const useStyles = makeStyles((theme) => ({
 // TODO: Find a better way to make the Info-Card sticky
 export default function Info() {
     const classes = useStyles();
-    
+ 
+    // This function will scroll the window to the top 
+    const scrollToTop = () => {
+        window.scrollTo(0, 0);
+    };
+ 
     return (
         <>
         <Card className={classes.card}>
@@ -189,7 +194,7 @@ export default function Info() {
             </CardContent>
         </Card>
         
-        <Button className={classes.button} variant="contained" color="primary">Back to Top</Button>
+        <Button onClick={scrollToTop} className={classes.button} variant="contained" color="primary">Back to Top</Button>
 
         <br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/>
         <br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/>
