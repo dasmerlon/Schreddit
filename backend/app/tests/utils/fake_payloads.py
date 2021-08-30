@@ -69,11 +69,11 @@ class CommentPayloads:
 
     @staticmethod
     def get_create():
-        return {"metadata": {}, "content": {"text": "A comment."}}
+        return {"text": "A comment."}
 
     @staticmethod
     def get_update():
-        return {"content": {"text": "An updated comment."}}
+        return {"text": "An updated comment."}
 
 
 class SubredditPayloads:
