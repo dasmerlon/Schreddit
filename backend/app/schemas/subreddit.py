@@ -3,7 +3,7 @@ from enum import Enum
 from typing import Optional
 
 from fastapi import Query
-from pydantic import BaseModel, UUID4
+from pydantic import UUID4, BaseModel
 
 from app.core.config import settings
 from app.schemas.base import SubredditGetterDict

@@ -155,6 +155,7 @@ def remove_comments():
         if crud.comment_content.get(UUID4(uid)) is not None:
             crud.comment_content.remove(UUID4(uid))
 
+
 @pytest.fixture
 def remove_subreddits():
     uids = []

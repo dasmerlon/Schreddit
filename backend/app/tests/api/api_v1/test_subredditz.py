@@ -1,7 +1,5 @@
-from typing import Dict, List
-from uuid import uuid4
+from typing import List
 
-import pytest
 from fastapi import status
 from fastapi.testclient import TestClient
 
@@ -25,9 +23,7 @@ def test_get_subreddit_fail(client: TestClient) -> None:
 
 
 def test_create_subreddit(
-        client: TestClient,
-        fake_auth: User,
-        remove_subreddits: List
+    client: TestClient, fake_auth: User, remove_subreddits: List
 ) -> None:
     payload = SubredditPayloads.get_create(type="public")
     r = client.post(f"{settings.API_V1_STR}/subreddits/r/{payload['sr']}", json=payload)
@@ -55,11 +51,8 @@ def test_create_subreddit(
 
 
 def test_create_subreddit_existing_sr(
-        client: TestClient,
-        fake_auth: User,
-        subreddit_in_db: Subreddit
+    client: TestClient, fake_auth: User, subreddit_in_db: Subreddit
 ) -> None:
-    subreddit = subreddit_in_db
     payload = SubredditPayloads.get_create(type="public")
     r = client.post(f"{settings.API_V1_STR}/subreddits/r/{payload['sr']}", json=payload)
     assert r.status_code == status.HTTP_403_FORBIDDEN
@@ -85,9 +78,7 @@ def test_create_subreddit_wrong_type(client: TestClient, fake_auth: User) -> Non
 
 
 def test_update_subreddit_type_private(
-        client: TestClient,
-        fake_auth: User,
-        subreddit_private_in_db: Subreddit
+    client: TestClient, fake_auth: User, subreddit_private_in_db: Subreddit
 ) -> None:
     subreddit = subreddit_private_in_db
     payload = SubredditPayloads.get_update(type="private")
@@ -104,9 +95,7 @@ def test_update_subreddit_type_private(
 
 
 def test_update_subreddit_type_private_fail(
-        client: TestClient,
-        fake_auth: User,
-        subreddit_private_in_db: Subreddit
+    client: TestClient, fake_auth: User, subreddit_private_in_db: Subreddit
 ) -> None:
     payload = SubredditPayloads.get_update(type="private")
     r = client.put(f"{settings.API_V1_STR}/subreddits/r/does_not_exist", json=payload)
@@ -125,7 +114,10 @@ def test_update_subreddit_from_other_user_fail(
     assert r.status_code == status.HTTP_401_UNAUTHORIZED
     assert "detail" in r.json()
 
-def test_update_subreddit_not_modified(client: TestClient, fake_auth: User, subreddit_in_db: Subreddit) -> None:
+
+def test_update_subreddit_not_modified(
+    client: TestClient, fake_auth: User, subreddit_in_db: Subreddit
+) -> None:
     payload = SubredditPayloads.get_create(type="public")
     r = client.put(f"{settings.API_V1_STR}/subreddits/r/{payload['sr']}", json=payload)
     assert r.status_code == status.HTTP_304_NOT_MODIFIED

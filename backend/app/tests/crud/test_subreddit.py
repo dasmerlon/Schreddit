@@ -1,5 +1,4 @@
 from typing import List
-from uuid import uuid4
 
 from app import crud
 from app.models import Subreddit, User
@@ -19,10 +18,9 @@ def test_get_subreddit_fail() -> None:
     assert subreddit is None
 
 
-def test_create_subreddit(test_user_in_db: User,
-                          subreddit_in_db: Subreddit,
-                          remove_subreddits: List
-                          ) -> None:
+def test_create_subreddit(
+    test_user_in_db: User, subreddit_in_db: Subreddit, remove_subreddits: List
+) -> None:
     obj_in = SubredditSchemas.get_create(type="public")
     obj_in.sr = subreddit_in_db.sr
     subreddit = crud.subreddit.create(obj_in)

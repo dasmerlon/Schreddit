@@ -2,7 +2,8 @@ from fastapi import APIRouter, Depends, HTTPException, Response, status
 
 from app import crud, models, schemas
 from app.api import deps
-from app.api.api_v1.exceptions import SubredditNotFoundException, UnauthorizedUpdateException
+from app.api.api_v1.exceptions import (SubredditNotFoundException,
+                                       UnauthorizedUpdateException)
 
 router = APIRouter()
 
@@ -72,7 +73,7 @@ def update_subreddit(
     - `title` : title of the subreddit, up to 300 characters long
     - `type` : subreddit type
     """
-    to_update = {} # collect all changes made
+    to_update = {}  # collect all changes made
     old_sr = crud.subreddit.get_by_sr(sr)
 
     if old_sr is None:
@@ -86,7 +87,7 @@ def update_subreddit(
     if not to_update:
         raise HTTPException(
             status_code=status.HTTP_304_NOT_MODIFIED,
-            detail="No changes have been made."
+            detail="No changes have been made.",
         )
     crud.subreddit.update(old_sr, sr_update)
     return Response(status_code=status.HTTP_204_NO_CONTENT)
