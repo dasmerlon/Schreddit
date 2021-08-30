@@ -102,6 +102,7 @@ const useStyles = makeStyles((theme) => ({
         },
     },
     logo: {
+        paddingLeft: 10,
         width: 90,
     }
 }));
@@ -307,7 +308,7 @@ export default function PrimarySearchAppBar(props) {
 
                     <div className={classes.sectionDesktopProfile}>
                         <CardActionArea href={renderProfile} className={classes.logo}>
-                            <Grid container >
+                            <Grid container direction="column">
                                 <Grid item>
                                     <Typography className={classes.title} variant="h6" noWrap>
                                         {props.cookies.username}

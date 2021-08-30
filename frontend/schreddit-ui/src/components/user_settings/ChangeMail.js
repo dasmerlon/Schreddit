@@ -105,7 +105,7 @@ export default function ChangeMail(props) {
                 <DialogContent>
                     <DialogContentText>
                         Please provide your new email address to login to Schreddit in the future:
-                                </DialogContentText>
+                    </DialogContentText>
                     <TextField
                         autoFocus
                         margin="dense"
@@ -123,7 +123,7 @@ export default function ChangeMail(props) {
                         margin="dense"
                         id="emailConfirmed"
                         label="Confirm New Email Address"
-                        type="emailConfirmed"
+                        type="email"
                         helperText={emailConfirmed.errorMessage}
                         variant="outlined"
                         error={emailConfirmed.error}

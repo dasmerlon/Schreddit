@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import configData from '../config.json'
 import axios from 'axios';
 import Button from '@material-ui/core/Button'
@@ -12,7 +12,6 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 
 export default function Login(props) {
     const [showLoginDialog, setShowLoginDialog] = React.useState(false);
-    const [a, setA] = React.useState(false);
 
     const openLoginDialog = () => {
         props.setError({ message: "" })
@@ -47,11 +46,7 @@ export default function Login(props) {
             });
     };
 
-    useEffect(() => {
-        setA(props.cookies.loggedIn);        
-    }, [props.cookies.loggedIn, a])
-
-    if (!a) {
+    if (!props.cookies.loggedIn) {
             return (
                 <div>
                     <Button variant="outlined" aria-label="login button" style={{ margin: '7px' }} color="inherit" onClick={openLoginDialog}>

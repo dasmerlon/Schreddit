@@ -26,9 +26,6 @@ export default function ChangePassword(props) {
     };
 
     const handlePasswordChange = (independentPassword, event) => {
-        console.log(password.password)
-        console.log(passwordConfirmed.password)
-
         if(independentPassword == passwordConfirmed){
             if(password.password === passwordConfirmed.password) {      
                 setPasswordConfirmed({
