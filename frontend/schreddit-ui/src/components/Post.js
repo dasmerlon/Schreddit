@@ -48,7 +48,9 @@ const useStyles = makeStyles({
       maxWidth: 700,
       overflow: 'hidden',
       display: 'block',
-      width: '100%',
+      // width: '100%',
+      marginLeft: 'auto',
+      marginRight: 'auto'
     },
   });
 
