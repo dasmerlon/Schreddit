@@ -6,6 +6,7 @@ import CardContent from '@material-ui/core/CardContent';
 import IconButton from '@material-ui/core/IconButton';
 import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
+import { useHistory } from "react-router-dom"
 import imA from '../images/a.png'; //import vom Bild
 import imB from '../images/e.jpg'; //import vom Bild
 import vid from '../images/a.mp4'; //import vom Bild
@@ -30,8 +31,6 @@ const tutorialSteps = [
       imB,
   },
 ];
-
-const text = "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.";
 
 const useStyles = makeStyles({
     root: { 
@@ -58,12 +57,21 @@ const useStyles = makeStyles({
 //             <CardMedia component='iframe' className={classes.media} src={vid} />
 //      - Für den Avatar auch ein richtiges Bild und nicht nur einen Buchstaben 
 //        mit Hintergrund verwenden.
-export default function Posts() {
+export default function Posts(props) {
   const classes = useStyles();
 
-  const show_vid = false; 
-  const show_multiple_img = false;
-  const show_text = false;
+  const [show_vid, set_show_vid] = React.useState(false); 
+  const [show_multiple_img, set_show_multiple_img] = React.useState(false);
+  const [show_text, set_show_text] = React.useState(false);
+  
+  // if(props.type === "video" || props.type === "videogif"){
+  //   set_show_vid(true);
+  // }
+  // else if(props.type === "self" ){
+  //   set_show_text(true);
+  // }
+
+  let history = useHistory();
 
   // Alles hier runter ist dafür Zuständig, um bei mehreren Bildern durch alle durch zu blättern:
   const theme = useTheme();
@@ -77,6 +85,10 @@ export default function Posts() {
   const handleBack = () => {
     setActiveStep((prevActiveStep) => prevActiveStep - 1);
   };
+
+  const goToSubreddit = () => {
+    history.push("/" + props.srName)
+  }
 
   return (
       <Card useStyles={classes.root}>
@@ -104,50 +116,48 @@ export default function Posts() {
             </Grid>
           }
           title={
-            <Link href="http://localhost:3000/r/HowToPictures" color="inherit">
-              {'r/HowToPictures'}
+            <Link href={ "/r/" + props.sr } color="inherit">
+              {'r/' + props.sr}
             </Link>
           }
           subheader={
             <Typography component="h2">
               Posted by 
-              <Link href="http://localhost:3000/" color="inherit">
-                {' u/Pictureman180 '}
+              <Link href={"/u/" + props.author} color="inherit">
+                { " u/" + props.author }
               </Link> 
-              2 days ago
+              <br/>
+              { props.createdAt }
             </Typography>
           }
         />
 
-        <CardActionArea href="http://localhost:3000/r/HowToPictures">
+        <CardActionArea href={"" + props.uid}>
           <CardContent>
             <Typography variant="h5" component="h2">
-              How does Shutter, ISO & Apature effect your pictures? 
-              <Chip label="Informative 👨‍🎓" color="secondary" href="http://localhost:3000/" clickable />
+              { props.title } 
+              {/* <Chip label="Informative 👨‍🎓" color="secondary" href="http://localhost:3000/" clickable /> */}
             </Typography>
           </CardContent>
 
-          { !show_multiple_img && !show_vid && !show_text ? 
+         
+          { !show_multiple_img && (!props.type === "video" || !props.type === "videogif") && !props.type === "self" ? 
             <img alt="" className={classes.img} src={tutorialSteps[activeStep].imgPath} />
           : null }
 
-          { show_multiple_img && !show_vid && !show_text ? 
-            <img alt="" className={classes.img} src={tutorialSteps[activeStep].imgPath} /> 
-          : null }
-
-          {show_text && !show_multiple_img && !show_vid ? 
+          {props.type === "self" ? 
             <CardContent>
-              <Typography>{text.slice(0,400)}</Typography>
+              <Typography>{props.text.slice(0,400)}</Typography>
             </CardContent>
           : null}
-          {(show_text && show_multiple_img) || (show_text && show_vid) || (show_multiple_img && show_vid) ?
+          {(props.type === "self" && show_multiple_img) || (show_text && show_vid) || (show_multiple_img && show_vid) ?
             <CardContent>
               <Typography>Internal Error... (Filetype has multiple types)</Typography>
             </CardContent>
           : null}
         </CardActionArea>
 
-        { show_multiple_img && !show_vid && !show_text ? 
+        { show_multiple_img && (!props.type === "video" || !props.type === "videogif") && !props.type === "self" ? 
           <MobileStepper
             steps={maxSteps}
             position="static"
@@ -169,7 +179,7 @@ export default function Posts() {
         : null}
         
         <CardActionArea href="http://localhost:3000/r/HowToPictures">
-          {show_vid && !show_multiple_img && !show_text ? 
+          {(props.type === "video" || props.type === "videogif")  ? 
             <video className={classes.img} controls src={vid} type={'video/mp4'} id="myVideo"/> 
           : null}
         </CardActionArea>
