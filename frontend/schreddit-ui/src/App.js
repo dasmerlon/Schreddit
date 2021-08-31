@@ -8,10 +8,11 @@ import { useCookies } from 'react-cookie';
 
 
 
+
 // Pages
 import FrontpageBody from './components/FrontpageBody';
 import CreateSubreddit from './components/subreddit/CreateSubreddit'
-import SubreditBody from './components/SubreditBody';
+import SubredditBody from './components/SubredditBody';
 import CreatePostBody from './components/CreatePostBody';
 import ErrorPage from './components/ErrorPage';
 
@@ -25,9 +26,9 @@ const App = () => {
   };
 
   const handleLogout = () => {
-    removeCookie("loggedIn");
-    removeCookie("token");
-    removeCookie("username");
+    removeCookie("token", { path: '/' });
+    removeCookie("loggedIn", { path: '/' })
+    removeCookie("username", { path: '/' })
     window.location.reload();
   };
 
