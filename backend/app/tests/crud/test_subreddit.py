@@ -36,6 +36,5 @@ def test_update_subreddit(test_user_in_db: User, subreddit_in_db: Subreddit) -> 
     crud.subreddit.update(subreddit, obj_in)
     updated_subreddit = crud.subreddit.get(subreddit.uid)
     assert updated_subreddit.uid == subreddit.uid
-    assert obj_in.title == updated_subreddit.title
-    assert obj_in.description == updated_subreddit.description
-    # assert obj_in.sr == updated_subreddit.sr
+    for key in obj_in.dict():
+        assert getattr(updated_subreddit, key) == getattr(obj_in, key)

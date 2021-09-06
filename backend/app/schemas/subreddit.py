@@ -2,7 +2,6 @@ from datetime import datetime
 from enum import Enum
 from typing import Optional
 
-from fastapi import Query
 from pydantic import UUID4, BaseModel, constr
 
 from app.core.config import settings

@@ -94,6 +94,9 @@ def test_update_subreddit_type_private(
     assert "detail" not in retrieved_subreddit
     assert retrieved_subreddit["created_at"] != retrieved_subreddit["updated_at"]
 
+    for key in payload:
+        assert retrieved_subreddit[key] == payload[key]
+
 
 def test_update_subreddit_type_private_fail(
     client: TestClient, fake_auth: User, subreddit_private_in_db: Subreddit
