@@ -14,9 +14,10 @@ def test_get_subreddit(client: TestClient, subreddit_in_db: Subreddit) -> None:
     assert r.status_code == status.HTTP_200_OK
     sr = r.json()
     assert sr
+    assert sr["sr"] == subreddit.sr
 
 
-def test_get_subreddit_fail(client: TestClient) -> None:
+def test_get_subreddit_fail(client: TestClient, subreddit_in_db: Subreddit) -> None:
     r = client.get(f"{settings.API_V1_STR}/subreddits/r/does_not_exist")
     assert r.status_code == status.HTTP_404_NOT_FOUND
     assert "detail" in r.json()

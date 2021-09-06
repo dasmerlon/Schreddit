@@ -3,7 +3,7 @@ from enum import Enum
 from typing import Optional
 
 from fastapi import Query
-from pydantic import UUID4, BaseModel
+from pydantic import UUID4, BaseModel, constr
 
 from app.core.config import settings
 from app.schemas.base import SubredditGetterDict
@@ -23,7 +23,7 @@ class SubredditBase(BaseModel):
     # over_18: Optional[bool] = None
     # public_description: Optional[bool] = None
     # spoilers_enable: Optional[bool] = None
-    title: Optional[str] = Query(None, max_length=settings.MAX_TITLE_LENGTH)
+    title: Optional[constr(min_length=1, max_length=settings.MAX_TITLE_LENGTH)]
     # welcome_message_enabled: Optional[bool] = None
     # welcome_message_text: Optional[str] = None
 
@@ -31,7 +31,7 @@ class SubredditBase(BaseModel):
 class SubredditCreate(SubredditBase):
     description: str
     sr: str
-    title: str = Query(None, max_length=settings.MAX_TITLE_LENGTH)
+    title: Optional[constr(min_length=1, max_length=settings.MAX_TITLE_LENGTH)]
     type: SubredditType
 
     class Config:
