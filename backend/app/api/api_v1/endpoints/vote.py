@@ -20,9 +20,9 @@ def vote(
     current_user: models.User = Depends(deps.get_current_user),
 ):
     """
-    Vote a post up or down or remove a vote.
+    Vote a thing up or down or remove a vote.
 
-    - `uid` : UUID of the post
+    - `uid` : UUID of the thing to vote
     - `dir` : direction of the vote,
     `1` for upvotes, `-1` for downvotes and `0` for unvoting
     """

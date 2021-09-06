@@ -6,7 +6,9 @@ class Friendship(StructuredRel):
 
 
 class Vote(StructuredRel):
-    __abstract_node__ = True
+    """
+    Abstract base class for ``Downvote`` and ``Upvote``.
+    """
     timestamp = DateTimeProperty(default_now=True)
 
 
