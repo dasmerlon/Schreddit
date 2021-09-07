@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { fade, makeStyles } from '@material-ui/core/styles';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
@@ -17,7 +17,6 @@ import Login from './Login'
 import Register from './Register'
 import Dropdown from './SubredditSelector'
 import { CardActionArea } from '@material-ui/core';
-import { Grid } from '@material-ui/core';
 
 const useStyles = makeStyles((theme) => ({
     grow: {
@@ -84,13 +83,7 @@ const useStyles = makeStyles((theme) => ({
     },
     sectionDesktop: {
         display: 'none',
-        [theme.breakpoints.up('md')]: {
-            display: 'flex',
-        },
-    },
-    sectionDesktopProfile: {
-        marginInlineEnd: "5%",
-        display: 'none',
+        marginInlineEnd: "4%",
         [theme.breakpoints.up('md')]: {
             display: 'flex',
         },
@@ -102,9 +95,8 @@ const useStyles = makeStyles((theme) => ({
         },
     },
     logo: {
-        paddingLeft: 10,
         width: 90,
-    }
+    },
 }));
 
 
@@ -113,7 +105,6 @@ export default function PrimarySearchAppBar(props) {
     const classes = useStyles();
     const [anchorEl, setAnchorEl] = React.useState(null);
     const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = React.useState(null);
-    const [renderProfile, setrenderProfile] = React.useState(null);
 
     const isMenuOpen = Boolean(anchorEl);
     const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
@@ -244,15 +235,7 @@ export default function PrimarySearchAppBar(props) {
         </Menu>
     );
 
-    useEffect(() => {
-        if(props.cookies.loggedIn) { 
-            setrenderProfile ("/settings/account")
-        } else {
-            setrenderProfile("/")
-        }    
-    }, [props.cookies.loggedIn]);
-    
-            
+ 
     return (
         <div className={classes.grow}>
             <AppBar position="static" className={classes.appBar}>
@@ -304,21 +287,6 @@ export default function PrimarySearchAppBar(props) {
                             error={error}
                             setError={setError}
                         />
-                    </div>
-
-                    <div className={classes.sectionDesktopProfile}>
-                        <CardActionArea href={renderProfile} className={classes.logo}>
-                            <Grid container direction="column">
-                                <Grid item>
-                                    <Typography className={classes.title} variant="h6" noWrap>
-                                        {props.cookies.username}
-                                    </Typography>
-                                </Grid>
-                                <Grid item>
-                                    <AccountCircle />
-                                </Grid>
-                            </Grid>
-                        </CardActionArea>
                     </div>
                         
                     <div className={classes.sectionMobile}>

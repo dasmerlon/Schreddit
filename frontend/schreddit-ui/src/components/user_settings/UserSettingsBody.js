@@ -8,7 +8,7 @@ import Tab from '@material-ui/core/Tab';
 import Typography from '@material-ui/core/Typography';
 import Box from '@material-ui/core/Box';
 import { Grid, Container, CssBaseline } from '@material-ui/core';
-import { Divider, Button } from '@material-ui/core';
+import { Divider } from '@material-ui/core';
 import axios from 'axios';
 import configData from '../config.json';
 import ChangeMail from './ChangeMail';
@@ -79,10 +79,7 @@ export default function UserSettingsBody(props) {
     const theme = useTheme();
     const [value, setValue] = React.useState(0);
     const [email, setEmail] = React.useState("a@g.com");
-    const [error, setError] = React.useState("");
-    const [onlyPassword, setOnlyPassword] = React.useState(true);
-    const [newPasword, setNewPassword] = React.useState("a");
-
+    
     // For the navigation tabs
     const handleChange = (event, newValue) => {
         setValue(newValue);

@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { useEffect } from 'react';
+import { makeStyles } from '@material-ui/core/styles';
 import configData from '../config.json'
 import axios from 'axios';
 import Button from '@material-ui/core/Button'
@@ -8,10 +9,25 @@ import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
+import { CardActionArea, Grid, Typography } from '@material-ui/core';
+import AccountCircle from '@material-ui/icons/AccountCircle';
+import { Avatar } from '@material-ui/core';
 
+const useStyles = makeStyles((theme) => ({
+    small: {
+        width: theme.spacing(3),
+        height: theme.spacing(3),
+    },
+    username: {
+        paddingTop: 10,
+    }
+}));
 
 export default function Login(props) {
+    const classes = useStyles();
+
     const [showLoginDialog, setShowLoginDialog] = React.useState(false);
+    const [renderProfile, setrenderProfile] = React.useState(null);
 
     const openLoginDialog = () => {
         props.setError({ message: "" })
@@ -45,6 +61,14 @@ export default function Login(props) {
                 console.log(error);
             });
     };
+
+    useEffect(() => {
+        if(props.cookies.loggedIn) { 
+            setrenderProfile ("/settings/account")
+        } else {
+            setrenderProfile("/")
+        }    
+    }, [props.cookies.loggedIn]);
 
     if (!props.cookies.loggedIn) {
             return (
@@ -98,9 +122,31 @@ export default function Login(props) {
         } else {
             return (
                 <div>
-                    <Button variant="outlined" aria-label="login button" style={{ margin: '7px' }} color="inherit" onClick={props.handleLogout}>
-                        Logout
-                    </Button>
+                    <Grid container spacing={1}> 
+                        <Grid item>
+                            <Button variant="outlined" aria-label="login button" style={{ margin: '7px' }} color="inherit" onClick={props.handleLogout}>
+                                Logout
+                            </Button>
+                        </Grid>
+                        <Grid item>
+                            <CardActionArea href={renderProfile} >
+                                <div className={classes.username}>
+                                    <Grid container direction="row" spacing={1}>
+                                        <Grid item >
+                                            <Avatar className={classes.small}>
+                                                <AccountCircle />
+                                            </Avatar>
+                                        </Grid>
+                                        <Grid item>
+                                            <Typography variant="h6" noWrap>
+                                                {props.cookies.username}
+                                            </Typography>
+                                        </Grid>
+                                    </Grid>
+                                </div>
+                            </CardActionArea>
+                        </Grid>
+                    </Grid>
                 </div>
             )
         }
