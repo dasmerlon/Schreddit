@@ -82,6 +82,14 @@ class SubredditSchemas:
         return schemas.SubredditCreate(
             description="A subreddit description.",
             sr="test",
-            title="A Subreddit Title",
+            title="A subreddit title",
+            type=type,
+        )
+
+    @staticmethod
+    def get_update(*, type: str = "public"):
+        return schemas.SubredditUpdate(
+            description="An updated subreddit description",
+            title="An updated subreddit title",
             type=type,
         )
