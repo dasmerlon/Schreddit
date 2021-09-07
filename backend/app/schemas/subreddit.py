@@ -30,7 +30,7 @@ class SubredditBase(BaseModel):
 class SubredditCreate(SubredditBase):
     description: str
     sr: str
-    title: Optional[constr(min_length=1, max_length=settings.MAX_TITLE_LENGTH)]
+    title: constr(min_length=1, max_length=settings.MAX_TITLE_LENGTH)
     type: SubredditType
 
     class Config:

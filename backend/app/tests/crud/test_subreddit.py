@@ -30,7 +30,7 @@ def test_create_subreddit(test_user_in_db: User, remove_subreddits: List) -> Non
     assert obj_in.type == subreddit.type
 
 
-def test_update_subreddit(test_user_in_db: User, subreddit_in_db: Subreddit) -> None:
+def test_update_subreddit(subreddit_in_db: Subreddit) -> None:
     obj_in = SubredditSchemas.get_update(type="public")
     subreddit = subreddit_in_db
     crud.subreddit.update(subreddit, obj_in)
