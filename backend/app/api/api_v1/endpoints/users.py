@@ -47,7 +47,7 @@ def get_user(username: str):
     """
     try:
         user = crud.user.get_by_email(username)
-    except DeflateError:
+    except:
         user = crud.user.get_by_username(username)
     if user is None:
         raise HTTPException(
