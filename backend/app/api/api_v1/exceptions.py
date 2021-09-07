@@ -31,6 +31,21 @@ class CommentNotFoundException(HTTPException):
         )
 
 
+class ThingNotFoundException(HTTPException):
+    def __init__(self):
+        super().__init__(
+            status_code=status.HTTP_404_NOT_FOUND, detail="This thing does not exist."
+        )
+
+
+class ThingAlreadyVoted(HTTPException):
+    def __init__(self):
+        super().__init__(
+            status_code=status.HTTP_304_NOT_MODIFIED,
+            detail="This thing is already voted in the specified direction.",
+        )
+
+
 class ParentNotFoundException(HTTPException):
     def __init__(self):
         super().__init__(

@@ -1,3 +1,4 @@
+from enum import IntEnum
 from typing import Generic, Optional, TypeVar
 
 from pydantic.generics import GenericModel
@@ -14,6 +15,12 @@ ContentUpdateType = TypeVar("ContentUpdateType", bound=ThingContentUpdate)
 
 MetadataType = TypeVar("MetadataType", bound=ThingMeta)
 ContentType = TypeVar("ContentType", bound=ThingContent)
+
+
+class VoteOptions(IntEnum):
+    upvote = 1
+    novote = 0
+    downvote = -1
 
 
 class ThingCreate(GenericModel, Generic[MetadataCreateType, ContentCreateType]):

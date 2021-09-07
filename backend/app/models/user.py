@@ -1,14 +1,9 @@
-from neomodel import (DateTimeProperty, EmailProperty, RelationshipFrom,
-                      RelationshipTo, StringProperty, StructuredNode,
-                      StructuredRel, UniqueIdProperty)
+from neomodel import (EmailProperty, RelationshipFrom, RelationshipTo,
+                      StringProperty, StructuredNode, UniqueIdProperty)
+
+from app.models.relationships import Downvote, Friendship, Upvote
 
 
-# Relationships
-class Friendship(StructuredRel):
-    since = DateTimeProperty(default_now=True)
-
-
-# Nodes
 class User(StructuredNode):
     # Properties
     uid = UniqueIdProperty()
@@ -18,4 +13,6 @@ class User(StructuredNode):
 
     # Relationships
     friend = RelationshipTo("User", "FRIENDS_WITH", model=Friendship)
-    post_author = RelationshipFrom(".post.PostMeta", "AUTHORED_BY")
+    author = RelationshipFrom(".post.PostMeta", "AUTHORED_BY")
+    downvotes = RelationshipFrom(".thing.ThingMeta", "DOWNVOTED_BY", model=Downvote)
+    upvotes = RelationshipFrom(".thing.ThingMeta", "UPVOTED_BY", model=Upvote)

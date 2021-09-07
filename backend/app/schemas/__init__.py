@@ -8,7 +8,7 @@ from .post_content import PostContent, PostContentCreate, PostContentUpdate
 from .post_meta import PostMeta, PostMetaCreate, PostMetaUpdate, PostType
 from .subreddit import (Subreddit, SubredditCreate, SubredditType,
                         SubredditUpdate)
-from .thing import Thing, ThingCreate, ThingUpdate
+from .thing import Thing, ThingCreate, ThingUpdate, VoteOptions
 from .thing_content import ThingContent, ThingContentCreate, ThingContentUpdate
 from .thing_meta import ThingMeta, ThingMetaCreate, ThingMetaUpdate
 from .token import Token, TokenPayload
