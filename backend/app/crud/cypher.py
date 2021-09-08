@@ -10,6 +10,7 @@ user_lbl = models.User.__name__
 
 # property names
 username_prop = models.User.username.name
+useruid_prop = models.User.uid.name
 sr_prop = models.Subreddit.sr.name
 created_at_prop = models.PostMeta.created_at.name
 
@@ -32,7 +33,8 @@ unite = (
     f"WITH properties(post) AS postmap, {{"
     f"  author: author.{username_prop}, "
     f"  sr: sr.{sr_prop}, "
-    f"  count: score"
+    f"  count: score, "
+    f"  state: state"
     f"}} AS infomap "
     # merge both maps into one
     f"RETURN apoc.map.merge(postmap, infomap) AS output "
@@ -135,5 +137,15 @@ class CypherGetPosts:
                 f"LIMIT $limit "
             )
 
+        state = (
+            f"OPTIONAL MATCH (post)-[vote:{upvoted_rel}|{downvoted_rel}]-(user:User) "
+            f"WHERE id(user) = $user_id "
+            f"WITH post, sr, author, score, CASE type(vote) "
+            f"  WHEN '{upvoted_rel}' THEN 1 "
+            f"  WHEN '{downvoted_rel}' THEN -1 "
+            f"  ELSE 0 "
+            f"END AS state "
+        )
+
         # remove redundant whitespace and return query
-        return re.sub(" +", " ", base + addon + where + order + unite)
+        return re.sub(" +", " ", base + addon + where + order + state + unite)

@@ -28,6 +28,7 @@ def get_posts(
     before: Optional[UUID4] = None,
     sort: Optional[schemas.PostSort] = schemas.PostSort.new,
     size: Optional[int] = Query(25, gt=0, le=100),
+    current_user: models.User = Depends(deps.get_current_user),
 ):
     """
     Return a range of up to `limit` posts with an optional sorting order.
@@ -40,7 +41,7 @@ def get_posts(
     - `after` : get posts including and after this cursor
     - `before` : get posts including and before this cursor
     - `sort` : sorting order, one of `best`, `hot`, `new`, `top`
-    - `limit` : maximum number of posts to return
+    - `size` : maximum number of posts to return
     """
     subreddit = crud.subreddit.get_by_sr(sr)
     if not subreddit:
@@ -50,20 +51,22 @@ def get_posts(
     if after and before:
         raise PaginationAfterAndBeforeException
     elif not after and not before:
-        results = crud.post_meta.get_posts(subreddit, None, None, sort, size)
+        results = crud.post_meta.get_posts(
+            subreddit, current_user, None, None, sort, size
+        )
     elif after:
         cursor = crud.post_meta.get(after)
         if cursor is None:
             raise PaginationInvalidCursorException
         results = crud.post_meta.get_posts(
-            subreddit, cursor, schemas.CursorDirection.after, sort, size
+            subreddit, current_user, cursor, schemas.CursorDirection.after, sort, size
         )
     elif before:
         cursor = crud.post_meta.get(before)
         if cursor is None:
             raise PaginationInvalidCursorException
         results = crud.post_meta.get_posts(
-            subreddit, cursor, schemas.CursorDirection.before, sort, size
+            subreddit, current_user, cursor, schemas.CursorDirection.before, sort, size
         )
 
     # convert list of dicts to list of PostMeta Schemas

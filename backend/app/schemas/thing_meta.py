@@ -24,6 +24,7 @@ class ThingMeta(BaseModel):
     uid: UUID4
     author: Optional[str] = None
     count: int
+    state: Optional[int]
 
     class Config:
         getter_dict = ThingGetterDict
