@@ -33,14 +33,15 @@ class CRUDPostMeta(
         if ``None`` get first posts
         :param sort: sorting order
         :param limit: number of posts to get
-        :return: a list of dicts containing PostMeta data, author, sr and vote count
+        :return: a list of dicts containing PostMeta data,
+        author, sr, vote count and vote state
         """
         query = CypherGetPosts(sort, cursor, direction).get_query()
 
         # set required parameters for query
-        params = {"sr_uid": subreddit.uid, "limit": limit, "user_id": user.id}
+        params = {"sr_uid": subreddit.uid, "limit": limit, "user_uid": user.uid}
         if cursor:
-            params["cursor_id"] = cursor.id
+            params["cursor_uid"] = cursor.uid
             if sort == schemas.PostSort.new:
                 params["cursor_prop"] = cursor.created_at.timestamp()
             elif sort == schemas.PostSort.hot:

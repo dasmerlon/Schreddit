@@ -10,7 +10,6 @@ user_lbl = models.User.__name__
 
 # property names
 username_prop = models.User.username.name
-useruid_prop = models.User.uid.name
 sr_prop = models.Subreddit.sr.name
 created_at_prop = models.PostMeta.created_at.name
 
@@ -26,6 +25,16 @@ base = (
     f"WHERE sr.uid = $sr_uid "
     # match post authors
     f"OPTIONAL MATCH (post)-[:{authored_by_rel}]-(author:{user_lbl}) "
+)
+state = (
+    # match vote state of logged in user for every post
+    f"OPTIONAL MATCH (post)-[vote:{upvoted_rel}|{downvoted_rel}]-(user:User) "
+    f"WHERE user.uid = $user_uid "
+    f"WITH post, sr, author, score, CASE type(vote) "
+    f"  WHEN '{upvoted_rel}' THEN 1 "
+    f"  WHEN '{downvoted_rel}' THEN -1 "
+    f"  ELSE 0 "
+    f"END AS state "
 )
 unite = (
     # put post properties into a map
@@ -71,6 +80,8 @@ class CypherGetPosts:
     def get_query(self):
         """
         Get the Cypher query.
+        It is built by concatenating the variables
+        ``base``, ``addon``, ``where``, ``order``, ``state`` and ``unite``.
 
         :return: the Cypher query
         """
@@ -93,7 +104,7 @@ class CypherGetPosts:
                     f"WHERE post.{created_at_prop} {s[0]} $cursor_prop "
                     f"OR ("
                     f"  post.{created_at_prop} = $cursor_prop AND "
-                    f"  id(post) {s[0]} $cursor_id"
+                    f"  post.uid {s[0]} $cursor_uid"
                     f") "
                 )
             order = (
@@ -118,7 +129,7 @@ class CypherGetPosts:
             if self.cursor:
                 where = (
                     f"WHERE hot {s[0]} $cursor_prop "
-                    f"OR (hot = $cursor_prop AND id(post) {s[0]} $cursor_id) "
+                    f"OR (hot = $cursor_prop AND post.uid {s[0]} $cursor_uid) "
                 )
             order = (
                 f"WITH post, sr, author, score, hot "
@@ -129,23 +140,13 @@ class CypherGetPosts:
             if self.cursor:
                 where = (
                     f"WHERE upvotes {s[0]} $cursor_prop "
-                    f"OR (upvotes = $cursor_prop AND id(post) {s[0]} $cursor_id) "
+                    f"OR (upvotes = $cursor_prop AND post.uid {s[0]} $cursor_uid) "
                 )
             order = (
                 f"WITH post, sr, author, score, upvotes "
                 f"ORDER BY upvotes {s[1]}, id(post) {s[1]} "
                 f"LIMIT $limit "
             )
-
-        state = (
-            f"OPTIONAL MATCH (post)-[vote:{upvoted_rel}|{downvoted_rel}]-(user:User) "
-            f"WHERE id(user) = $user_id "
-            f"WITH post, sr, author, score, CASE type(vote) "
-            f"  WHEN '{upvoted_rel}' THEN 1 "
-            f"  WHEN '{downvoted_rel}' THEN -1 "
-            f"  ELSE 0 "
-            f"END AS state "
-        )
 
         # remove redundant whitespace and return query
         return re.sub(" +", " ", base + addon + where + order + state + unite)

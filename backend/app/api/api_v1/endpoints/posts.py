@@ -31,7 +31,7 @@ def get_posts(
     current_user: models.User = Depends(deps.get_current_user),
 ):
     """
-    Return a range of up to `limit` posts with an optional sorting order.
+    Return a range of up to `size` posts with an optional sorting order.
     If `sort` is not passed, posts are returned in descending order of their creation.
 
     `after` and `before` are cursors for pagination and refer to a post. Only one cursor
@@ -69,15 +69,17 @@ def get_posts(
             subreddit, current_user, cursor, schemas.CursorDirection.before, sort, size
         )
 
-    # convert list of dicts to list of PostMeta Schemas
+    # convert list of dicts to list of PostMeta schemas
     meta_list = [schemas.PostMeta(**row) for row in results]
-
-    basepath = f"{request.url.path}?sort={sort}"
-    next = f"{basepath}&after={meta_list[-1].uid}" if meta_list else None
-    prev = f"{basepath}&before={meta_list[0].uid}" if meta_list else None
 
     # retrieve post content
     content_list = crud.post_content.filter_by_uids([meta.uid for meta in meta_list])
+
+    # build new cursors for pagination
+    basepath = f"{request.url.path}?sort={sort}"
+    next = f"{basepath}&after={meta_list[-1].uid}" if meta_list else None
+    prev = f"{basepath}&before={meta_list[0].uid}" if meta_list else None
+    links = schemas.Pagination(next=next, prev=prev)
 
     # create list of Post schemas by matching metadata and content
     post_list = [
@@ -85,8 +87,6 @@ def get_posts(
         for meta in meta_list
     ]
 
-    # set pagination
-    links = schemas.Pagination(next=next, prev=prev)
     return schemas.PostList(links=links, data=post_list)
 
 
