@@ -16,14 +16,14 @@ router = APIRouter()
 
 
 @router.get(
-    "/r/{sr_uid}",
+    "/r/{sr}",
     name="Get Posts",
     response_model=schemas.PostList,
     status_code=status.HTTP_200_OK,
 )
 def get_posts(
     request: Request,
-    sr_uid: UUID4,
+    sr: str,
     after: Optional[UUID4] = None,
     before: Optional[UUID4] = None,
     sort: Optional[schemas.PostSort] = schemas.PostSort.new,
@@ -36,12 +36,13 @@ def get_posts(
     `after` and `before` are cursors for pagination and refer to a post. Only one cursor
     should be specified.
 
+    - `sr` : sr of the subreddit to get posts from
     - `after` : get posts including and after this cursor
     - `before` : get posts including and before this cursor
     - `sort` : sorting order, one of `best`, `hot`, `new`, `top`
     - `limit` : maximum number of posts to return
     """
-    subreddit = crud.subreddit.get(sr_uid)
+    subreddit = crud.subreddit.get_by_sr(sr)
     if not subreddit:
         raise SubredditNotFoundException
 
