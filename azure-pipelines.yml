@@ -20,4 +20,4 @@ steps:
       app_location: '/frontend/schreddit-ui/'
       output_location: 'build'
       routes_location: '/frontend/schreddit-ui'
-      azure_static_web_apps_api_token: 'cd4bf1472a70b45fd7be80d52579f1929602774ea60dbbabb9a160d0f73e3db20-e00fb157-8cb5-4ebc-8f43-f0446493420d00335940'
+      azure_static_web_apps_api_token: '33bb6e208ddedc2061cf005277a8e4f7ca6eb433dfcab4ed9384e41bc03fe75f0-cccc7319-a8b2-4ac7-a634-bb58c5ef884100338906'
