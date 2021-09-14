@@ -23,7 +23,7 @@ def subscribe(
         raise SubredditNotFoundException
 
     # check if subreddit is already subscribed
-    #TODO
+    # TODO
 
     # create subscription
     crud.user.set_subscription(current_user, subreddit)
@@ -49,3 +49,16 @@ def unsubscribe(
 
     # delete subscription
     crud.user.delete_subscription(current_user, subreddit)
+
+
+@router.get(
+    "/{sr}/subscriber",
+    name="Get subscriber count of a subreddit",
+    status_code=status.HTTP_200_OK,
+)
+def get_subscriber_count(sr: str):
+    subreddit = crud.subreddit.get_by_sr(sr)
+    if subreddit is None:
+        raise SubredditNotFoundException
+
+    return crud.subreddit.get_subscriber_count(subreddit)

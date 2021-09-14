@@ -38,7 +38,7 @@ class SubredditCreate(SubredditBase):
 
 
 class SubredditUpdate(SubredditBase):
-    pass 
+    pass
 
 
 class Subreddit(SubredditCreate):

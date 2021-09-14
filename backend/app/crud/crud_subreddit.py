@@ -28,5 +28,9 @@ class CRUDSubreddit(CRUDBaseNeo[Subreddit, SubredditCreate, SubredditUpdate]):
     def get_admin(self, db_obj: Subreddit) -> User:
         return db_obj.admin.single()
 
+    @db.read_transaction
+    def get_subscriber_count(self, db_obj: Subreddit) -> int:
+        return len(db_obj.subscriber)
+
 
 subreddit = CRUDSubreddit(Subreddit)
