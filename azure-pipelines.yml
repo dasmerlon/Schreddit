@@ -1,0 +1,23 @@
+# Node.js with React
+# Build a Node.js project that uses React.
+# Add steps that analyze code, save build artifacts, deploy, and more:
+# https://docs.microsoft.com/azure/devops/pipelines/languages/javascript
+
+trigger:
+- main
+
+pool:
+  vmImage: ubuntu-latest
+
+
+steps:
+  - checkout: self
+    submodules: true
+  - task: AzureStaticWebApp@0
+    env:
+      CI: false
+    inputs:
+      app_location: '/frontend/schreddit-ui/'
+      output_location: 'build'
+      routes_location: '/frontend/schreddit-ui'
+      azure_static_web_apps_api_token: '33bb6e208ddedc2061cf005277a8e4f7ca6eb433dfcab4ed9384e41bc03fe75f0-cccc7319-a8b2-4ac7-a634-bb58c5ef884100338906'
