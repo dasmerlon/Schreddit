@@ -3,6 +3,7 @@ from neomodel import (DateTimeProperty, RelationshipFrom, RelationshipTo,
                       cardinality)
 
 from app.core.config import settings
+from app.models.relationships import Subscription
 
 
 # Nodes
@@ -25,3 +26,4 @@ class Subreddit(StructuredNode):
     # Relationships
     admin = RelationshipTo(".user.User", "CREATED_BY", cardinality=cardinality.One)
     post = RelationshipFrom(".post.PostMeta", "POSTED_IN")
+    subscriber = RelationshipFrom(".user.User", "SUBSCRIBED_TO", model=Subscription)

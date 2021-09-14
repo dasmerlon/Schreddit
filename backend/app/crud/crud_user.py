@@ -5,7 +5,7 @@ from pydantic import EmailStr
 
 from app.core.security import get_password_hash, verify_password
 from app.crud.base_neo import CRUDBaseNeo
-from app.models import User
+from app.models import Subreddit, User
 from app.schemas import UserCreate, UserUpdate
 
 
@@ -80,6 +80,16 @@ class CRUDUser(CRUDBaseNeo[User, UserCreate, UserUpdate]):
         if not verify_password(password, user.hashed_password):
             return None
         return user
+
+    @db.write_transaction
+    def set_subscription(self, db_obj: User, subreddit: Subreddit) -> Subreddit:
+        subscribed_subreddit = db_obj.subscription.connect(subreddit)
+        return subscribed_subreddit
+
+    @db.write_transaction
+    def delete_subscription(self, db_obj: User, subreddit: Subreddit) -> Subreddit:
+        unsubscribed_subreddit = db_obj.subscription.disconnect(subreddit)
+        return unsubscribed_subreddit
 
 
 user = CRUDUser(User)

@@ -9,6 +9,7 @@ class Vote(StructuredRel):
     """
     Abstract base class for ``Downvote`` and ``Upvote``.
     """
+
     timestamp = DateTimeProperty(default_now=True)
 
 
@@ -17,4 +18,8 @@ class Downvote(Vote):
 
 
 class Upvote(Vote):
+    pass
+
+
+class Subscription(Vote):
     pass
