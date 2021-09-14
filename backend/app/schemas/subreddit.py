@@ -9,6 +9,11 @@ from app.schemas.base import SubredditGetterDict
 from app.schemas.user import User
 
 
+class SubscriptionStatus(str, Enum):
+    subscribed = "subscribed"
+    unsubscribed = "unsubscribed"
+
+
 class SubredditType(str, Enum):
     archived = "archived"
     private = "private"

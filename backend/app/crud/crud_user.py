@@ -5,7 +5,7 @@ from pydantic import EmailStr
 
 from app.core.security import get_password_hash, verify_password
 from app.crud.base_neo import CRUDBaseNeo
-from app.models import Subreddit, User
+from app.models import User
 from app.schemas import UserCreate, UserUpdate
 
 
