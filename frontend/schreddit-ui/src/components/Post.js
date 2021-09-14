@@ -43,6 +43,7 @@ const useStyles = makeStyles({
     avatar: {
       backgroundColor: "rgb(0,180,200)",
     },
+    //this is okayish but could be better.
     img: {
       height: '50%',
       maxWidth: 700,
@@ -66,12 +67,6 @@ export default function Posts(props) {
   const [show_multiple_img, set_show_multiple_img] = React.useState(false);
   const [show_text, set_show_text] = React.useState(false);
   
-  // if(props.type === "video" || props.type === "videogif"){
-  //   set_show_vid(true);
-  // }
-  // else if(props.type === "self" ){
-  //   set_show_text(true);
-  // }
 
   let history = useHistory();
 
@@ -102,8 +97,6 @@ export default function Posts(props) {
           }
           action={
             <Grid container>
-              <Button size="small">+Join</Button>
-
               <Grid item>
                 <IconButton size="small" title="More" onClick={()=>{alert('Upvote') }}> 
                   <SvgIcon ><path d={mdiArrowUpBoldOutline} /></SvgIcon>
