@@ -26,7 +26,7 @@ def subscribe(
     # TODO
 
     # create subscription
-    crud.user.set_subscription(current_user, subreddit)
+    crud.subreddit.set_subscription(subreddit, current_user)
 
 
 @router.delete(
@@ -48,7 +48,7 @@ def unsubscribe(
     # TODO
 
     # delete subscription
-    crud.user.delete_subscription(current_user, subreddit)
+    crud.subreddit.end_subscription(subreddit, current_user)
 
 
 @router.get(

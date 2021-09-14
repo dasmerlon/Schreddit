@@ -28,6 +28,16 @@ class CRUDSubreddit(CRUDBaseNeo[Subreddit, SubredditCreate, SubredditUpdate]):
     def get_admin(self, db_obj: Subreddit) -> User:
         return db_obj.admin.single()
 
+    @db.write_transaction
+    def set_subscription(self, db_obj: Subreddit, user: User) -> Subreddit:
+        subscribed_subreddit = db_obj.subscriber.connect(user)
+        return subscribed_subreddit
+
+    @db.write_transaction
+    def end_subscription(self, db_obj: Subreddit, user: User) -> Subreddit:
+        unsubscribed_subreddit = db_obj.subscriber.disconnect(user)
+        return unsubscribed_subreddit
+
     @db.read_transaction
     def get_subscriber_count(self, db_obj: Subreddit) -> int:
         return len(db_obj.subscriber)

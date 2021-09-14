@@ -81,15 +81,5 @@ class CRUDUser(CRUDBaseNeo[User, UserCreate, UserUpdate]):
             return None
         return user
 
-    @db.write_transaction
-    def set_subscription(self, db_obj: User, subreddit: Subreddit) -> Subreddit:
-        subscribed_subreddit = db_obj.subscription.connect(subreddit)
-        return subscribed_subreddit
-
-    @db.write_transaction
-    def delete_subscription(self, db_obj: User, subreddit: Subreddit) -> Subreddit:
-        unsubscribed_subreddit = db_obj.subscription.disconnect(subreddit)
-        return unsubscribed_subreddit
-
 
 user = CRUDUser(User)
