@@ -23,9 +23,9 @@ const useStyles = makeStyles((theme) => ({
     },
   }));
 
-//TODO: - Sticky funktionalität vom Contact Component ist hardcoded über die höhe der Seite..
-//      - Infinit Scrolling einbauen
-export default function ForntpageBody() {
+//TODO: - Sticky funktionalität vom Back-To-Top Button muss überarbeitet werden
+//      - Infinit Scrolling überarbeiten
+export default function ForntpageBody(props) {
     const classes = useStyles();
 
     const [postList, setPostList] = useState({
@@ -50,10 +50,11 @@ export default function ForntpageBody() {
     useEffect(() => {
       // here we simulate adding new posts to List
       const newList = postList.list.concat([<Post/>, <Post/>, <Post/>, <Post/>]);
+      //console.log(props.cookies);
       setPostList({
         list: newList
       })
-    }, [page]);
+    }, [page]); // Do not add postList.list as a dependency.. It will start an infinite loop. Even though there is a warning
 
     // here we handle what happens when user scrolls to Load More div
     // in this case we just update page variable

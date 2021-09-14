@@ -8,7 +8,6 @@ import InputBase from '@material-ui/core/InputBase';
 import Badge from '@material-ui/core/Badge';
 import MenuItem from '@material-ui/core/MenuItem';
 import Menu from '@material-ui/core/Menu';
-import MenuIcon from '@material-ui/icons/Menu';
 import SearchIcon from '@material-ui/icons/Search';
 import AccountCircle from '@material-ui/icons/AccountCircle';
 import MailIcon from '@material-ui/icons/Mail';
@@ -17,6 +16,7 @@ import MoreIcon from '@material-ui/icons/MoreVert';
 import Login from './Login'
 import Register from './Register'
 import Dropdown from './SubredditSelector'
+import { CardActionArea } from '@material-ui/core';
 
 const useStyles = makeStyles((theme) => ({
     grow: {
@@ -83,6 +83,7 @@ const useStyles = makeStyles((theme) => ({
     },
     sectionDesktop: {
         display: 'none',
+        marginInlineEnd: "4%",
         [theme.breakpoints.up('md')]: {
             display: 'flex',
         },
@@ -92,6 +93,9 @@ const useStyles = makeStyles((theme) => ({
         [theme.breakpoints.up('md')]: {
             display: 'none',
         },
+    },
+    logo: {
+        width: 90,
     },
 }));
 
@@ -146,11 +150,22 @@ export default function PrimarySearchAppBar(props) {
             });
         }
     }
-
+    
     const handleUsernameChange = event => {
-        setUsername({
-            username: event.target.value,
-        })
+        if (/^[\wöüßä]{1,17}$/.test(username.username)) {
+            setUsername({
+                username: event.target.value,
+                errorMessage: "",
+                error: false
+            });
+
+        } else {
+            setUsername({
+                username: event.target.value,
+                errorMessage: "The username is not valid (no symbols and 1-17 characters).",
+                error: true
+            });
+        }
     }
 
     const handlePasswordChange = event => {
@@ -178,6 +193,7 @@ export default function PrimarySearchAppBar(props) {
         </Menu>
     );
 
+    //TODO: Edit mobile view
     const mobileMenuId = 'primary-search-account-menu-mobile';
     const renderMobileMenu = (
         <Menu
@@ -219,14 +235,17 @@ export default function PrimarySearchAppBar(props) {
         </Menu>
     );
 
+ 
     return (
         <div className={classes.grow}>
             <AppBar position="static" className={classes.appBar}>
                 <Toolbar>
-                    <img src={props.logo} className={classes.schredditIcon} />
-                    <Typography className={classes.title} variant="h6" noWrap>
-                        Schreddit
-                    </Typography>
+                    <img alt="" src={props.logo} className={classes.schredditIcon} />
+                    <CardActionArea href="/" className={classes.logo}>
+                        <Typography className={classes.title} variant="h6" noWrap>
+                            Schreddit
+                        </Typography>
+                    </CardActionArea>
                     <Dropdown
                         cookies={props.cookies}
                     />
@@ -234,15 +253,15 @@ export default function PrimarySearchAppBar(props) {
                         <div className={classes.searchIcon}>
                             <SearchIcon />
                         </div>
-                        <InputBase
-                            placeholder="Search…"
-                            classes={{
-                                root: classes.inputRoot,
-                                input: classes.inputInput,
-                            }}
-                            inputProps={{ 'aria-label': 'search' }}
-                        />
-                    </div>
+                            <InputBase
+                                placeholder="Search…"
+                                classes={{
+                                    root: classes.inputRoot,
+                                    input: classes.inputInput,
+                                }}
+                                inputProps={{ 'aria-label': 'search' }}
+                            />
+                        </div>
                     <div className={classes.grow} />
                     <div className={classes.sectionDesktop}>
                         <Login
@@ -268,18 +287,8 @@ export default function PrimarySearchAppBar(props) {
                             error={error}
                             setError={setError}
                         />
-
-                        <IconButton
-                            edge="end"
-                            aria-label="account of current user"
-                            aria-controls={menuId}
-                            aria-haspopup="true"
-                            onClick={handleProfileMenuOpen}
-                            color="inherit"
-                        >
-                            <AccountCircle />
-                        </IconButton>
                     </div>
+                        
                     <div className={classes.sectionMobile}>
                         <IconButton
                             aria-label="show more"

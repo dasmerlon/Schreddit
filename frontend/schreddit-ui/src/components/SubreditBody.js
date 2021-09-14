@@ -39,9 +39,9 @@ const useStyles = makeStyles((theme) => ({
 
   }));
 
-//TODO: - Sticky funktionalität vom Contact Component ist hardcoded über die höhe der Seite..
-//      - Infinit Scrolling einbauen
-export default function SubreditBody() {
+//TODO: - Sticky funktionalität vom Back-To-Top Button muss überarbeitet werden
+//      - Infinit Scrolling überarbeiten
+export default function SubreditBody(props) {
     const classes = useStyles();
 
     return (
