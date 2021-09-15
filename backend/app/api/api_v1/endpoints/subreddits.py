@@ -59,7 +59,6 @@ def get_subreddit(sr: str):
     "/r/{sr}",
     name="Edit Subreddit",
     response_class=Response,
-    status_code=status.HTTP_204_NO_CONTENT,
 )
 def update_subreddit(
     sr: str,
@@ -85,9 +84,7 @@ def update_subreddit(
     if old_sr.title != sr_update.title:
         to_update["title"] = sr_update.title
     if not to_update:
-        raise HTTPException(
-            status_code=status.HTTP_304_NOT_MODIFIED,
-            detail="No changes have been made.",
-        )
+        return Response(status_code=status.HTTP_304_NOT_MODIFIED)
+
     crud.subreddit.update(old_sr, sr_update)
     return Response(status_code=status.HTTP_204_NO_CONTENT)

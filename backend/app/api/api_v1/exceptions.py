@@ -17,6 +17,13 @@ class PaginationInvalidCursorException(HTTPException):
         )
 
 
+class UserNotFoundException(HTTPException):
+    def __init__(self):
+        super().__init__(
+            status_code=status.HTTP_404_NOT_FOUND, detail="This user does not exist."
+        )
+
+
 class PostNotFoundException(HTTPException):
     def __init__(self):
         super().__init__(
