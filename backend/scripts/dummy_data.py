@@ -154,8 +154,31 @@ def create_votes(
     print(f"Created {count} fake votes per user.")
 
 
+def create_subscriptions(
+    count: int, users: List[models.User], subreddits: List[models.Subreddit]
+) -> None:
+    """
+    Create random subreddit subscriptions for users
+    :param count: number of subscriptions per user
+    :param users: list of users for whom subscriptions are created
+    :param subreddits: list of subreddits that are subscribed by the users
+    """
+    for user in users:
+        for _ in range(count):
+            index = fake.unique.random_int(0, len(subreddits) - 1)
+            crud.subreddit.set_subscription(subreddits[index], user)
+        fake.unique.clear()
+    print(f"Created {count} fake subscriptions per user.")
+
+
 def fill(
-    users: int, subreddits: int, posts: int, comments: int, depth: int, votes: int
+    users: int,
+    subreddits: int,
+    posts: int,
+    comments: int,
+    depth: int,
+    votes: int,
+    subscriptions: int,
 ) -> None:
     """
     Fill the databases with random fake data.
@@ -166,6 +189,7 @@ def fill(
     :param comments: number of comments to create per level
     :param depth: maximum depth of comment tree
     :param votes: number of votes per user
+    :param subscriptions: number of subscriptions per user
     """
     init_dbs()
     fake_users = create_users(users)
@@ -179,6 +203,7 @@ def fill(
         fake_comments = create_comments(comments, fake_users, fake_comments)
         things.extend(fake_comments)
     create_votes(votes, fake_users, things)
+    create_subscriptions(subscriptions, fake_users, fake_subreddits)
 
 
 def clear():
@@ -232,6 +257,13 @@ if __name__ == "__main__":
         help="number of votes to create for each user",
         type=int,
     )
+    parser.add_argument(
+        "-a",
+        "--subscriptions",
+        default=5,
+        help="number of subscriptions to create for each user",
+        type=int,
+    )
 
     args = parser.parse_args()
     if args.action == "fill":
@@ -242,6 +274,7 @@ if __name__ == "__main__":
             args.comments,
             args.depth,
             args.votes,
+            args.subscriptions
         )
     elif args.action == "clear":
         clear()
