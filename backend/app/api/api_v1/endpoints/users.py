@@ -3,6 +3,7 @@ from neomodel import DeflateError
 
 from app import crud, models, schemas
 from app.api import deps
+from app.api.api_v1.exceptions import UserNotFoundException
 from app.core.security import verify_password
 
 router = APIRouter()
@@ -50,17 +51,13 @@ def get_user(username: str):
     except:
         user = crud.user.get_by_username(username)
     if user is None:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="User doesn't exist.",
-        )
+        raise UserNotFoundException
     return user
 
 
 @router.put(
     "/settings",
     name="Update User Data",
-    status_code=status.HTTP_204_NO_CONTENT,
 )
 def update_user(
     user_update: schemas.UserUpdate,
@@ -82,9 +79,7 @@ def update_user(
         to_update["password"] = user_update.password
 
     if not bool(to_update):
-        raise HTTPException(
-            status_code=status.HTTP_304_NOT_MODIFIED,
-        )
+        return Response(status_code=status.HTTP_304_NOT_MODIFIED)
 
     crud.user.update(current_user, to_update)
     return Response(status_code=status.HTTP_204_NO_CONTENT)
