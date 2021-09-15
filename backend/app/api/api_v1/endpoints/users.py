@@ -1,5 +1,4 @@
 from fastapi import APIRouter, Depends, HTTPException, Response, status
-from neomodel import DeflateError
 
 from app import crud, models, schemas
 from app.api import deps
@@ -45,10 +44,9 @@ def get_user(username: str):
     Get user data from an existing user via email or username.
     If everything succeeds, a user with matching email or username will be returned.
     """
-    try:
+    user = crud.user.get_by_username(username)
+    if user is None:
         user = crud.user.get_by_email(username)
-    except:
-        user = crud.user.get_by_username(username)
     if user is None:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
