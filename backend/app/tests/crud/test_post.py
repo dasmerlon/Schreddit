@@ -1,8 +1,11 @@
-from typing import List
+from typing import List, Tuple
 from uuid import uuid4
+
+import pytest
 
 from app import crud
 from app.models import PostContent, PostMeta, Subreddit, User
+from app.schemas import CursorDirection, PostSort
 from app.tests.utils.fake_schemas import PostSchemas
 
 
@@ -22,6 +25,68 @@ def test_get_post_by_uid_fail() -> None:
     post_content = crud.post_content.get(uuid4())
     assert post_meta is None
     assert post_content is None
+
+
+@pytest.mark.parametrize(
+    "sort",
+    [PostSort.new, PostSort.top, PostSort.hot],
+)
+@pytest.mark.parametrize("user_auth", [True, False])
+def test_get_posts(
+    posts_with_votes_in_db: List[Tuple[PostMeta, PostContent]],
+    subreddits_in_db: Subreddit,
+    users_in_db: List[User],
+    sort: PostSort,
+    user_auth: bool,
+) -> None:
+    def sort_post_list(post_list: List[Tuple[PostMeta, PostContent]], order: PostSort):
+        if order == PostSort.new:
+            post_list.append(post_list.pop(0))
+        elif order == PostSort.top:
+            pass
+        elif order == PostSort.hot:
+            post_list.insert(4, post_list.pop(0))
+        return post_list
+
+    # pick logged in user to get vote state for
+    if user_auth:
+        user = users_in_db[0]
+    else:
+        user = None
+
+    # set subreddit to get posts from
+    subreddit = subreddits_in_db[0]
+
+    # copy list of posts and order correctly according to `sort`
+    sorted_list = sort_post_list(posts_with_votes_in_db.copy(), sort)
+
+    # test sorting order
+    posts = crud.post_meta.get_posts(subreddit, user, None, None, sort, 25)
+
+    for i in range(len(posts) - 1):
+        assert posts[i]["uid"] == sorted_list[i][0].uid
+
+    # test vote state
+    for i in range(len(posts)):
+        if user_auth:
+            post = crud.post_meta.get(posts[i]["uid"])
+            assert posts[i]["state"] == crud.thing_meta.get_vote_state(post, user)
+        else:
+            assert posts[i]["state"] == 0
+
+    # test cursors
+    posts = crud.post_meta.get_posts(
+        subreddit, user, sorted_list[1][0], CursorDirection.after, sort, 3
+    )
+    for i in range(3):
+        assert posts[i]["uid"] == sorted_list[2 + i][0].uid
+    posts = crud.post_meta.get_posts(
+        subreddit, user, sorted_list[4][0], CursorDirection.before, sort, 3
+    )
+    print([meta.uid for meta, content in sorted_list])
+    print([post["uid"] for post in posts])
+    for i in range(3):
+        assert posts[i]["uid"] == sorted_list[1 + i][0].uid
 
 
 def test_create_post(

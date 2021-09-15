@@ -22,6 +22,12 @@ class UserSchemas:
         )
 
     @staticmethod
+    def get_create_enum_user(enum: int):
+        return schemas.UserCreate(
+            email=f"enum{enum}@user.com", username=f"enum{enum}", password="password"
+        )
+
+    @staticmethod
     def get_update():
         return schemas.UserUpdate(
             email="new@mail.com",
@@ -91,5 +97,14 @@ class SubredditSchemas:
         return schemas.SubredditUpdate(
             description="An updated subreddit description",
             title="An updated subreddit title",
+            type=type,
+        )
+
+    @staticmethod
+    def get_create_enum_sr(enum: int, *, type: str = "public"):
+        return schemas.SubredditCreate(
+            description="A subreddit description.",
+            sr=f"test{enum}",
+            title="A Subreddit Title",
             type=type,
         )

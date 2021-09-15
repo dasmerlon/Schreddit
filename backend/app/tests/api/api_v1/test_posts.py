@@ -1,4 +1,4 @@
-from typing import Dict, List
+from typing import Dict, List, Tuple
 from uuid import uuid4
 
 import pytest
@@ -7,6 +7,7 @@ from fastapi.testclient import TestClient
 
 from app.core.config import settings
 from app.models import PostContent, PostMeta, Subreddit, User
+from app.schemas import PostSort
 from app.tests.utils.fake_payloads import PostPayloads
 
 
@@ -25,6 +26,34 @@ def test_get_post_fail(
     r = client.get(f"{settings.API_V1_STR}/posts/{uuid4().hex}")
     assert r.status_code == status.HTTP_404_NOT_FOUND
     assert "detail" in r.json()
+
+
+@pytest.mark.parametrize("sort", [PostSort.new, PostSort.top, PostSort.hot])
+def test_get_posts_auth(
+    client: TestClient,
+    fake_auth: User,
+    sort: PostSort,
+    posts_with_votes_in_db: List[Tuple[PostMeta, PostContent]],
+    subreddit_in_db: Subreddit,
+) -> None:
+    r = client.get(f"{settings.API_V1_STR}/posts/list?sr={subreddit_in_db.sr}")
+    assert r.status_code == status.HTTP_200_OK
+    post_list = r.json()
+    for post in post_list["data"]:
+        assert post["metadata"]["uid"].replace("-", "") in [
+            post[0].uid for post in posts_with_votes_in_db
+        ]
+
+
+def test_get_posts_empty_subreddit(
+    client: TestClient, fake_auth: User, subreddit_in_db: Subreddit
+) -> None:
+    r = client.get(f"{settings.API_V1_STR}/posts/list?sr={subreddit_in_db.sr}")
+    assert r.status_code == status.HTTP_200_OK
+    post_list = r.json()
+    assert post_list["data"] is None
+    assert post_list["links"]["prev"] is None
+    assert post_list["links"]["after"] is None
 
 
 @pytest.mark.parametrize(
