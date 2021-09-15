@@ -47,7 +47,7 @@ class CRUDPostMeta(
         if user:
             params["user_uid"] = user.uid
         if cursor:
-            params["cursor_uid"] = cursor.uid
+            params["cursor_id"] = cursor.id
             if sort == schemas.PostSort.new:
                 params["cursor_prop"] = cursor.created_at.timestamp()
             elif sort == schemas.PostSort.hot:

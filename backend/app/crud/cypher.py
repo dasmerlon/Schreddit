@@ -117,7 +117,7 @@ class CypherGetPosts:
                     f"WHERE post.{created_at_prop} {s[0]} $cursor_prop "
                     f"OR ("
                     f"  post.{created_at_prop} = $cursor_prop AND "
-                    f"  post.uid {s[0]} $cursor_uid"
+                    f"  id(post) {s[0]} $cursor_id"
                     f") "
                 )
             order = (
@@ -142,7 +142,7 @@ class CypherGetPosts:
             if self.cursor:
                 where = (
                     f"WHERE hot {s[0]} $cursor_prop "
-                    f"OR (hot = $cursor_prop AND post.uid {s[0]} $cursor_uid) "
+                    f"OR (hot = $cursor_prop AND id(post) {s[0]} $cursor_id) "
                 )
             order = (
                 f"WITH post, sr, author, score, hot "
@@ -153,7 +153,7 @@ class CypherGetPosts:
             if self.cursor:
                 where = (
                     f"WHERE upvotes {s[0]} $cursor_prop "
-                    f"OR (upvotes = $cursor_prop AND post.uid {s[0]} $cursor_uid) "
+                    f"OR (upvotes = $cursor_prop AND id(post) {s[0]} $cursor_id) "
                 )
             order = (
                 f"WITH post, sr, author, score, upvotes "
