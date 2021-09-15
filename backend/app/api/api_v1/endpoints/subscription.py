@@ -27,7 +27,7 @@ def subscribe(
 
     state = crud.subreddit.get_subscription_status(subreddit, current_user)
 
-    # check if subreddit is already subscribed TODO
+    # check if subreddit is already subscribed
     if state == schemas.SubscriptionStatus.subscribed:
         raise SubredditAlreadySubscribed
 
@@ -54,7 +54,7 @@ def unsubscribe(
 
     state = crud.subreddit.get_subscription_status(subreddit, current_user)
 
-    # check if subreddit is already subscribed TODO
+    # check if subreddit is already subscribed
     if state == schemas.SubscriptionStatus.unsubscribed:
         raise SubredditNotSubscribed
 

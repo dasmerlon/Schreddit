@@ -74,7 +74,7 @@ class SubredditNotFoundException(HTTPException):
 class SubredditAlreadySubscribed(HTTPException):
     def __init__(self):
         super().__init__(
-            status_code=status.HTTP_304_NOT_MODIFIED,
+            status_code=status.HTTP_406_NOT_ACCEPTABLE,
             detail="This subreddit is already subscribed.",
         )
 
@@ -82,7 +82,7 @@ class SubredditAlreadySubscribed(HTTPException):
 class SubredditNotSubscribed(HTTPException):
     def __init__(self):
         super().__init__(
-            status_code=status.HTTP_304_NOT_MODIFIED,
+            status_code=status.HTTP_406_NOT_ACCEPTABLE,
             detail="This subreddit is already unsubscribed.",
         )
 
