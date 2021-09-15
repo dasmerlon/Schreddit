@@ -3,7 +3,7 @@ from pydantic import UUID4
 
 from app import crud, models, schemas
 from app.api import deps
-from app.api.api_v1.exceptions import ThingAlreadyVoted, ThingNotFoundException
+from app.api.api_v1.exceptions import ThingNotFoundException
 
 router = APIRouter()
 
@@ -11,8 +11,6 @@ router = APIRouter()
 @router.put(
     "/{uid}/{dir}",
     name="Vote on a thing",
-    response_class=Response,
-    status_code=status.HTTP_204_NO_CONTENT,
 )
 def vote(
     uid: UUID4,
@@ -33,7 +31,7 @@ def vote(
     state = crud.thing_meta.get_vote_state(thing_meta, current_user)
 
     if state == dir:
-        raise ThingAlreadyVoted
+        return Response(status_code=status.HTTP_304_NOT_MODIFIED)
 
     if dir == schemas.VoteOptions.upvote:
         crud.thing_meta.upvote(thing_meta, current_user, state)
@@ -41,6 +39,8 @@ def vote(
         crud.thing_meta.downvote(thing_meta, current_user, state)
     elif dir == schemas.VoteOptions.novote:
         crud.thing_meta.remove_vote(thing_meta, current_user, state)
+
+    return Response(status_code=status.HTTP_204_NO_CONTENT)
 
 
 @router.get(

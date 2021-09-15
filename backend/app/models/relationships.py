@@ -21,5 +21,5 @@ class Upvote(Vote):
     pass
 
 
-class Subscription(Vote):
+class Subscription(StructuredRel):
     pass

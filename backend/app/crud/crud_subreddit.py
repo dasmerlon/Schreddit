@@ -4,7 +4,7 @@ from neomodel import db
 
 from app.crud.base_neo import CRUDBaseNeo
 from app.models import Subreddit, User
-from app.schemas import SubredditCreate, SubredditUpdate, SubscriptionStatus
+from app.schemas import SubredditCreate, SubredditUpdate
 
 
 class CRUDSubreddit(CRUDBaseNeo[Subreddit, SubredditCreate, SubredditUpdate]):
@@ -43,13 +43,8 @@ class CRUDSubreddit(CRUDBaseNeo[Subreddit, SubredditCreate, SubredditUpdate]):
         return len(db_obj.subscriber)
 
     @db.read_transaction
-    def get_subscription_status(
-        self, db_obj: Subreddit, user: User
-    ) -> SubscriptionStatus:
-        if db_obj.subscriber.get_or_none(uid=user.uid):
-            return SubscriptionStatus.subscribed
-        else:
-            return SubscriptionStatus.unsubscribed
+    def is_subscribed(self, db_obj: Subreddit, user: User):
+        return db_obj.subscriber.is_connected(user)
 
 
 subreddit = CRUDSubreddit(Subreddit)

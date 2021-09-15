@@ -1,19 +1,15 @@
 from fastapi import APIRouter, Depends, Response, status
 
-from app import crud, models, schemas
+from app import crud, models
 from app.api import deps
-from app.api.api_v1.exceptions import (SubredditAlreadySubscribed,
-                                       SubredditNotFoundException,
-                                       SubredditNotSubscribed)
+from app.api.api_v1.exceptions import SubredditNotFoundException
 
 router = APIRouter()
 
 
-@router.post(
-    "/subscribe/{sr}",
+@router.put(
+    "/{sr}/sub",
     name="Subscribe to subreddit",
-    response_class=Response,
-    status_code=status.HTTP_204_NO_CONTENT,
 )
 def subscribe(
     sr: str,
@@ -25,22 +21,21 @@ def subscribe(
     if subreddit is None:
         raise SubredditNotFoundException
 
-    state = crud.subreddit.get_subscription_status(subreddit, current_user)
+    subscribed = crud.subreddit.is_subscribed(subreddit, current_user)
 
     # check if subreddit is already subscribed
-    if state == schemas.SubscriptionStatus.subscribed:
-        raise SubredditAlreadySubscribed
+    if subscribed:
+        return Response(status_code=status.HTTP_304_NOT_MODIFIED)
 
     # create subscription
-    elif state == schemas.SubscriptionStatus.unsubscribed:
+    elif not subscribed:
         crud.subreddit.set_subscription(subreddit, current_user)
+    return Response(status_code=status.HTTP_204_NO_CONTENT)
 
 
-@router.delete(
-    "/unsubscribe/{sr}",
+@router.put(
+    "/{sr}/unsub",
     name="Unsubscribe to subreddit",
-    response_class=Response,
-    status_code=status.HTTP_204_NO_CONTENT,
 )
 def unsubscribe(
     sr: str,
@@ -52,24 +47,24 @@ def unsubscribe(
     if subreddit is None:
         raise SubredditNotFoundException
 
-    state = crud.subreddit.get_subscription_status(subreddit, current_user)
+    subscribed = crud.subreddit.is_subscribed(subreddit, current_user)
 
     # check if subreddit is already subscribed
-    if state == schemas.SubscriptionStatus.unsubscribed:
-        raise SubredditNotSubscribed
+    if not subscribed:
+        return Response(status_code=status.HTTP_304_NOT_MODIFIED)
 
     # end subscription
-    elif state == schemas.SubscriptionStatus.subscribed:
+    elif subscribed:
         crud.subreddit.end_subscription(subreddit, current_user)
+    return Response(status_code=status.HTTP_204_NO_CONTENT)
 
 
 @router.get(
     "/{sr}/state",
     name="Get subscription state of a subreddit",
-    response_model=schemas.SubscriptionStatus,
     status_code=status.HTTP_200_OK,
 )
-def get_subscription_status(
+def is_subscribed(
     sr: str,
     current_user: models.User = Depends(deps.get_current_user),
 ):
@@ -79,7 +74,7 @@ def get_subscription_status(
     if subreddit is None:
         raise SubredditNotFoundException
 
-    return crud.subreddit.get_subscription_status(subreddit, current_user)
+    return crud.subreddit.is_subscribed(subreddit, current_user)
 
 
 @router.get(

@@ -38,14 +38,6 @@ class ThingNotFoundException(HTTPException):
         )
 
 
-class ThingAlreadyVoted(HTTPException):
-    def __init__(self):
-        super().__init__(
-            status_code=status.HTTP_304_NOT_MODIFIED,
-            detail="This thing is already voted in the specified direction.",
-        )
-
-
 class ParentNotFoundException(HTTPException):
     def __init__(self):
         super().__init__(
@@ -68,22 +60,6 @@ class SubredditNotFoundException(HTTPException):
         super().__init__(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="This subreddit does not exist.",
-        )
-
-
-class SubredditAlreadySubscribed(HTTPException):
-    def __init__(self):
-        super().__init__(
-            status_code=status.HTTP_406_NOT_ACCEPTABLE,
-            detail="This subreddit is already subscribed.",
-        )
-
-
-class SubredditNotSubscribed(HTTPException):
-    def __init__(self):
-        super().__init__(
-            status_code=status.HTTP_406_NOT_ACCEPTABLE,
-            detail="This subreddit is already unsubscribed.",
         )
 
 
