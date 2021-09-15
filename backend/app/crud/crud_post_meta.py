@@ -15,7 +15,7 @@ class CRUDPostMeta(
     @db.read_transaction
     def get_posts(
         self,
-        subreddit: models.Subreddit,
+        subreddit: Optional[models.Subreddit],
         user: Optional[models.User],
         cursor: Optional[models.PostMeta],
         direction: Optional[schemas.CursorDirection],
@@ -25,8 +25,10 @@ class CRUDPostMeta(
         """
         Get the posts after the cursor.
 
-        :param subreddit: the subreddit to get posts from
-        :param user: the user to get vote states for
+        :param subreddit: if specified, the subreddit to get posts from;
+        if ``None``, get all posts
+        :param user: if specified, the user to get vote states for;
+        if ``None``, don't get vote states
         :param cursor: a cursor for pagination
         :param direction: if ``after``, get posts after the cursor;
         if ``before``, get posts before the cursor;
@@ -36,10 +38,12 @@ class CRUDPostMeta(
         :return: a list of dicts containing PostMeta data,
         author, sr, vote count and vote state
         """
-        query = CypherGetPosts(sort, cursor, direction, user).get_query()
+        query = CypherGetPosts(sort, cursor, direction, subreddit, user).get_query()
 
         # set required parameters for query
-        params = {"sr_uid": subreddit.uid, "limit": limit}
+        params = {"limit": limit}
+        if subreddit:
+            params["sr_uid"] = subreddit.uid
         if user:
             params["user_uid"] = user.uid
         if cursor:

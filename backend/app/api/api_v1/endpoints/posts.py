@@ -16,14 +16,14 @@ router = APIRouter()
 
 
 @router.get(
-    "/r/{sr}",
+    "/list",
     name="Get Posts",
     response_model=schemas.PostList,
     status_code=status.HTTP_200_OK,
 )
 def get_posts(
     request: Request,
-    sr: str,
+    sr: Optional[str] = None,
     after: Optional[UUID4] = None,
     before: Optional[UUID4] = None,
     sort: Optional[schemas.PostSort] = schemas.PostSort.new,
@@ -37,15 +37,21 @@ def get_posts(
     `after` and `before` are cursors for pagination and refer to a post. Only one cursor
     should be specified.
 
-    - `sr` : sr of the subreddit to get posts from
+    If a user is authenticated, the vote state for that user is returned.
+
+    - `sr` : if specified, the subreddit to get posts from;
+      if not specified, get all posts
     - `after` : get posts including and after this cursor
     - `before` : get posts including and before this cursor
     - `sort` : sorting order, one of `best`, `hot`, `new`, `top`
     - `size` : maximum number of posts to return
     """
-    subreddit = crud.subreddit.get_by_sr(sr)
-    if not subreddit:
-        raise SubredditNotFoundException
+    if sr is not None:
+        subreddit = crud.subreddit.get_by_sr(sr)
+        if not subreddit:
+            raise SubredditNotFoundException
+    else:
+        subreddit = None
 
     # act depending on which cursor is passed
     if after and before:

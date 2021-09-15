@@ -54,6 +54,7 @@ class CypherGetPosts:
         sort: schemas.PostSort,
         cursor: Optional[models.PostMeta],
         direction: schemas.CursorDirection,
+        subreddit: Optional[models.Subreddit],
         user: Optional[models.User],
     ):
         """
@@ -62,13 +63,17 @@ class CypherGetPosts:
         :param sort: sorting order of the posts
         :param cursor: the pagination cursor if pagination is required, else ``None``
         :param direction: the direction of the cursor
-        :param user: the user to get the vote state for if required, else ``None``
+        :param subreddit: if specified, the subreddit to get posts from;
+        if ``None``, get all posts
+        :param user: if specified, the user to get vote states for;
+        if ``None``, don't get vote states
         """
         self.sort = sort
         self.cursor = True if isinstance(cursor, models.PostMeta) else False
         self.signs = (
             before_signs if direction == schemas.CursorDirection.before else after_signs
         )
+        self.subreddit = bool(subreddit)
         self.user = bool(user)
 
     def get_query(self):
@@ -80,6 +85,20 @@ class CypherGetPosts:
         :return: the Cypher query
         """
         s = self.signs  # shortcut
+
+        if self.subreddit:
+            base = (
+                # match posts in subreddit
+                f"MATCH (sr:{sr_lbl})-[:{posted_in_rel}]-(post:{post_lbl}) "
+                f"WHERE sr.uid = $sr_uid "
+            )
+        else:
+            base = (
+                # match all posts
+                f"MATCH (sr:{sr_lbl})-[:{posted_in_rel}]-(post:{post_lbl}) "
+            )
+        # match posts authors
+        base += f"OPTIONAL MATCH (post)-[:{authored_by_rel}]-(author:{user_lbl}) "
 
         addon = (
             # get upvote and downvote counts
@@ -145,7 +164,9 @@ class CypherGetPosts:
         if self.user:
             # match vote state of logged in user for every post
             state = (
-                f"OPTIONAL MATCH (post)-[vote:{upvoted_rel}|{downvoted_rel}]-(user:User) "
+                f"OPTIONAL MATCH (post)"
+                f"               -[vote:{upvoted_rel}|{downvoted_rel}]-"
+                f"               (user:User) "
                 f"WHERE user.uid = $user_uid "
                 f"WITH post, sr, author, score, CASE type(vote) "
                 f"  WHEN '{upvoted_rel}' THEN 1 "
