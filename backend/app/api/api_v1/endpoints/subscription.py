@@ -15,6 +15,11 @@ def subscribe(
     sr: str,
     current_user: models.User = Depends(deps.get_current_user),
 ):
+    """
+    Subscribe a subreddit.
+
+    - `sr` : the name of the subreddit that should be subscribed
+    """
     subreddit = crud.subreddit.get_by_sr(sr)
 
     # check if subreddit exists
@@ -41,6 +46,11 @@ def unsubscribe(
     sr: str,
     current_user: models.User = Depends(deps.get_current_user),
 ):
+    """
+    Unsubscribe a subreddit.
+
+    - `sr` : the name of the subreddit that should be unsubscribed
+    """
     subreddit = crud.subreddit.get_by_sr(sr)
 
     # check if subreddit exists
@@ -68,6 +78,12 @@ def is_subscribed(
     sr: str,
     current_user: models.User = Depends(deps.get_current_user),
 ):
+    """
+    Get the current subscription status of a subreddit.
+    If the user is subscribed to the subreddit we return `true` otherwise `false`.
+
+    - `sr` : the name of the subreddit
+    """
     subreddit = crud.subreddit.get_by_sr(sr)
 
     # check if subreddit exists
@@ -83,6 +99,11 @@ def is_subscribed(
     status_code=status.HTTP_200_OK,
 )
 def get_subscriber_count(sr: str):
+    """
+    Get current subscriber count of a subreddit.
+
+    - `sr` : the name of the subreddit
+    """
     subreddit = crud.subreddit.get_by_sr(sr)
 
     # check if subreddit exists
