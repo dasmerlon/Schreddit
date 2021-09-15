@@ -28,7 +28,7 @@ def get_posts(
     before: Optional[UUID4] = None,
     sort: Optional[schemas.PostSort] = schemas.PostSort.new,
     size: Optional[int] = Query(25, gt=0, le=100),
-    current_user: models.User = Depends(deps.get_current_user),
+    current_user: Optional[models.User] = Depends(deps.get_current_user_or_none),
 ):
     """
     Return a range of up to `size` posts with an optional sorting order.

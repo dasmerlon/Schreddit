@@ -26,16 +26,7 @@ base = (
     # match post authors
     f"OPTIONAL MATCH (post)-[:{authored_by_rel}]-(author:{user_lbl}) "
 )
-state = (
-    # match vote state of logged in user for every post
-    f"OPTIONAL MATCH (post)-[vote:{upvoted_rel}|{downvoted_rel}]-(user:User) "
-    f"WHERE user.uid = $user_uid "
-    f"WITH post, sr, author, score, CASE type(vote) "
-    f"  WHEN '{upvoted_rel}' THEN 1 "
-    f"  WHEN '{downvoted_rel}' THEN -1 "
-    f"  ELSE 0 "
-    f"END AS state "
-)
+
 unite = (
     # put post properties into a map
     # put author, sr and vote count into a map
@@ -63,6 +54,7 @@ class CypherGetPosts:
         sort: schemas.PostSort,
         cursor: Optional[models.PostMeta],
         direction: schemas.CursorDirection,
+        user: Optional[models.User],
     ):
         """
         Initialize the class.
@@ -70,12 +62,14 @@ class CypherGetPosts:
         :param sort: sorting order of the posts
         :param cursor: the pagination cursor if pagination is required, else ``None``
         :param direction: the direction of the cursor
+        :param user: the user to get the vote state for if required, else ``None``
         """
         self.sort = sort
         self.cursor = True if isinstance(cursor, models.PostMeta) else False
         self.signs = (
             before_signs if direction == schemas.CursorDirection.before else after_signs
         )
+        self.user = bool(user)
 
     def get_query(self):
         """
@@ -147,6 +141,20 @@ class CypherGetPosts:
                 f"ORDER BY upvotes {s[1]}, id(post) {s[1]} "
                 f"LIMIT $limit "
             )
+
+        if self.user:
+            # match vote state of logged in user for every post
+            state = (
+                f"OPTIONAL MATCH (post)-[vote:{upvoted_rel}|{downvoted_rel}]-(user:User) "
+                f"WHERE user.uid = $user_uid "
+                f"WITH post, sr, author, score, CASE type(vote) "
+                f"  WHEN '{upvoted_rel}' THEN 1 "
+                f"  WHEN '{downvoted_rel}' THEN -1 "
+                f"  ELSE 0 "
+                f"END AS state "
+            )
+        else:
+            state = "WITH post, sr, author, score, 0 AS state "
 
         # remove redundant whitespace and return query
         return re.sub(" +", " ", base + addon + where + order + state + unite)

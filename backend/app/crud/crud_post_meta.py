@@ -36,10 +36,12 @@ class CRUDPostMeta(
         :return: a list of dicts containing PostMeta data,
         author, sr, vote count and vote state
         """
-        query = CypherGetPosts(sort, cursor, direction).get_query()
+        query = CypherGetPosts(sort, cursor, direction, user).get_query()
 
         # set required parameters for query
-        params = {"sr_uid": subreddit.uid, "limit": limit, "user_uid": user.uid}
+        params = {"sr_uid": subreddit.uid, "limit": limit}
+        if user:
+            params["user_uid"] = user.uid
         if cursor:
             params["cursor_uid"] = cursor.uid
             if sort == schemas.PostSort.new:
