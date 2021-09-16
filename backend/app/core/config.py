@@ -23,7 +23,7 @@ class Settings(BaseSettings):
     TEST_USER_EMAIL: str
     TEST_USER_PASSWORD: str
 
-    FRONTEND_ORIGINS: Set[str] = {"http://localhost:3000", "https://kind-sea-014761903.azurestaticapps.net/"}
+    FRONTEND_ORIGINS: Set[str] = {"http://localhost:3000", "https://kind-sea-014761903.azurestaticapps.net"}
 
     class Config:
         case_sensitive = True
