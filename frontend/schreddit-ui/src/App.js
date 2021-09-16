@@ -27,8 +27,8 @@ const App = () => {
 
   const handleLogout = () => {
     removeCookie("token", { path: '/' });
-    removeCookie("loggedIn", { path: '/' })
-    removeCookie("username", { path: '/' })
+    removeCookie("loggedIn", { path: '/' });
+    removeCookie("username", { path: '/' });
     window.location.reload();
   };
 
