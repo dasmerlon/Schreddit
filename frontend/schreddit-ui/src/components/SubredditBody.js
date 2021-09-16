@@ -51,10 +51,17 @@ export default function SubreditBody(props) {
 
     const [posts, setPosts] = React.useState();
     const [error, setError] = React.useState("");
-
+    const [subreddit, setSubreddit] = React.useState();
 
     const [page, setPage] = useState(1);
     const loader = useRef(null);
+
+    const getSubreddit = () => {
+      axios.get(configData.SUBREDDIT_API_URL + '/' + window.location.pathname.split('/')[2]
+      ).then(response => {
+        console.log(response)
+      });
+    }
 
     useEffect(() => {
       getPosts();
@@ -93,11 +100,29 @@ export default function SubreditBody(props) {
     }
 
     const getPosts = () => {
-      const params = {size: 5, sr: window.location.pathname.split('/')[2]};
-      if(typeof posts !== "undefined"){
-        params.after = posts[posts.length-1].props.children.props.uid
+      let config = '';
+      if(typeof props.cookies.token !== "undefined"){
+        config = {
+          headers: {'Authorization': `Bearer ${props.cookies.token}`},
+          params: {
+            size: 5,
+            sr: window.location.pathname.split('/')[2]
+          },
+        };
       }
-      axios.get(configData.POSTS_API_URL , { params }
+      else {
+        config = {
+          params: {
+            size: 5,
+            sr: window.location.pathname.split('/')[2]
+          }
+        }
+      }
+
+      if(typeof posts !== "undefined"){
+        config.params.after = posts[posts.length-1].props.children.props.uid
+      }
+      axios.get(configData.POSTS_API_URL, config 
       ).then(response => {
               handlePosts(response.data.data.map((post) => 
                 <Grid item> 
@@ -109,6 +134,9 @@ export default function SubreditBody(props) {
                     type={post.metadata.type}
                     url={post.content.url}
                     text={post.content.text}
+                    voteCount={post.metadata.count}
+                    voteState={post.metadata.state}
+                    cookies={props.cookies}
                     /> 
                 </Grid>
               ));
