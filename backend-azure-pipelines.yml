@@ -31,4 +31,6 @@ stages:
         repository: 'backend'
         command: 'buildAndPush'
         Dockerfile: '**/backend/Dockerfile'
-        tags: '$(tag)'
+        tags: |
+          $(tag)
+          latest
