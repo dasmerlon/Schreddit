@@ -22,7 +22,7 @@ stages:
     steps:
     - bash: |
         touch $(Build.SourcesDirectory)/backend/app/.env
-        printf "NEO4J_USERNAME = neo4j \nNEO4J_PASSWORD = test \nNEO4J_BOLT_URL = \"bolt://neo4j:test@40.114.236.4:7687\" \nMONGODB_URI = \"mongodb://40.114.236.4:27017/schreddit\" \nJWT_SECRET_KEY = \"94a1bbc5f92730e7d49bf2389b1d1714afdcbf0e315492582d8f506a61f4e25e\" \nREDIS_DSN = \"redis://40.114.236.4:6379\"" > $(Build.SourcesDirectory)/backend/app/.env
+        printf "NEO4J_USERNAME = neo4j \nNEO4J_PASSWORD = test \nNEO4J_BOLT_URL = \"bolt://neo4j:test@40.114.236.4:7687\" \nMONGODB_URI = \"mongodb://40.114.236.4:27017/schreddit\" \nJWT_SECRET_KEY = \"94a1bbc5f92730e7d49bf2389b1d1714afdcbf0e315492582d8f506a61f4e25e\" \nREDIS_DSN = \"redis://40.114.236.4:6379\" \nNEO4J_TEST_USERNAME = neo4j \nNEO4J_TEST_PASSWORD = test \nNEO4J_TEST_BOLT_URL = \"bolt://neo4j:test@40.114.236.4:7687\" \nMONGODB_TEST_URI = \"mongodb://40.114.236.4:27017/test\" \nTEST_USER_EMAIL = \"testuser@example.com\" \nTEST_USER_USERNAME = \"testuser\" \nTEST_USER_PASSWORD = \"supersecure\"" > $(Build.SourcesDirectory)/backend/app/.env
 
     - task: Docker@2
       displayName: Build an image
