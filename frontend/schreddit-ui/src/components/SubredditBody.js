@@ -93,11 +93,11 @@ export default function SubreditBody(props) {
     }
 
     const getPosts = () => {
-      const params = {size: 5};
+      const params = {size: 5, sr: window.location.pathname.split('/')[2]};
       if(typeof posts !== "undefined"){
         params.after = posts[posts.length-1].props.children.props.uid
       }
-      axios.get(configData.POSTS_API_URL + '/r/' + "bb617bccf8e141d3874db86b8138c0d5", { params }
+      axios.get(configData.POSTS_API_URL , { params }
       ).then(response => {
               handlePosts(response.data.data.map((post) => 
                 <Grid item> 
