@@ -52,6 +52,7 @@ export default function SubreditBody(props) {
     const [posts, setPosts] = React.useState();
     const [error, setError] = React.useState("");
     const [subreddit, setSubreddit] = React.useState();
+    const [lastSortBy, setLastSortBy] = React.useState('new');
 
     const [page, setPage] = useState(1);
     const loader = useRef(null);
@@ -64,7 +65,7 @@ export default function SubreditBody(props) {
     }
 
     useEffect(() => {
-      getPosts();
+      getPosts(lastSortBy);
     }, [page])
 
     useEffect(() => {
@@ -90,8 +91,8 @@ export default function SubreditBody(props) {
     };
 
     // Add initial posts or concatinate new to existing ones
-    const handlePosts = (newPosts) => {
-      if(typeof posts === "undefined"){
+    const handlePosts = (newPosts, clear) => {
+      if(typeof posts === "undefined" || clear === true){
         setPosts(newPosts);
       }
       else{
@@ -99,14 +100,15 @@ export default function SubreditBody(props) {
       }
     }
 
-    const getPosts = () => {
+    const getPosts = (sortBy) => {
       let config = '';
       if(typeof props.cookies.token !== "undefined"){
         config = {
           headers: {'Authorization': `Bearer ${props.cookies.token}`},
           params: {
             size: 5,
-            sr: window.location.pathname.split('/')[2]
+            sr: window.location.pathname.split('/')[2],
+            sort: sortBy
           },
         };
       }
@@ -114,12 +116,13 @@ export default function SubreditBody(props) {
         config = {
           params: {
             size: 5,
-            sr: window.location.pathname.split('/')[2]
+            sr: window.location.pathname.split('/')[2],
+            sort: sortBy
           }
         }
       }
 
-      if(typeof posts !== "undefined"){
+      if(typeof posts !== "undefined" && lastSortBy === sortBy){
         config.params.after = posts[posts.length-1].props.children.props.uid
       }
       axios.get(configData.POSTS_API_URL, config 
@@ -139,16 +142,17 @@ export default function SubreditBody(props) {
                     cookies={props.cookies}
                     /> 
                 </Grid>
-              ));
-          }).catch(error => {
-              if (error.response.status === 422) {
-                  setError({ message: "Please check your input. Something is not valid." });
-              }
-              else {
-                  setError({ message: "Something went wrong, please try again later." });
-              }
-              console.log(error.response);
-          })
+              ), ((lastSortBy !== sortBy) ? true : false))
+              setLastSortBy(sortBy);
+           })//.catch(error => {
+          //     if (error.response.status === 422) {
+          //         setError({ message: "Please check your input. Something is not valid." });
+          //     }
+          //     else {
+          //         setError({ message: "Something went wrong, please try again later." });
+          //     }
+          //     console.log(error.response);
+          // })
   };
 
     return (
@@ -190,7 +194,7 @@ export default function SubreditBody(props) {
              <CreatePost />
             </Grid>
             <Grid item>
-             <SortByBar />           
+             <SortByBar getPosts={getPosts}/>           
             </Grid>
             {posts}
             <div className="loading" ref={loader}>

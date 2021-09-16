@@ -10,14 +10,14 @@ import TrendingUpRoundedIcon from '@material-ui/icons/TrendingUpRounded';
 import { mdiRocket, mdiAlertDecagram, mdiFormatVerticalAlignTop } from '@mdi/js';
 
 //Bonus TODO: - Die verschiedenen Ansichten implementieren. ("Classic" und "Compact")
-export default function SortByBar() {
+export default function SortByBar(props) {
     return (
         <Card>
             <CardActions>
-                <Button size="medium" title="test" startIcon={ <SvgIcon ><path d={mdiRocket} /></SvgIcon>}>Best</Button>
+                <Button size="medium" title="Best" startIcon={ <SvgIcon ><path d={mdiRocket} /></SvgIcon>}>Best</Button>
                 <Button size="medium" title="Hot" startIcon={<WhatshotSharpIcon />} onClick={()=>{alert('Show Hot') }}>Hot</Button>
-                <Button size="medium" title="New" startIcon={ <SvgIcon ><path d={mdiAlertDecagram} /></SvgIcon>} onClick={()=>{alert('Show New') }}>New</Button>
-                <Button size="medium" title="Top" startIcon={ <SvgIcon ><path d={mdiFormatVerticalAlignTop} /></SvgIcon>} onClick={()=>{alert('Show Top') }}>Top</Button>
+                <Button size="medium" title="New" startIcon={ <SvgIcon ><path d={mdiAlertDecagram} /></SvgIcon>} onClick={()=>{props.getPosts('new') }}>New</Button>
+                <Button size="medium" title="Top" startIcon={ <SvgIcon ><path d={mdiFormatVerticalAlignTop} /></SvgIcon>} onClick={()=>{props.getPosts('top') }}>Top</Button>
                 <Button size="medium" title="Rising" startIcon={<TrendingUpRoundedIcon />} onClick={()=>{alert('Show Rising') }}>Rising</Button>
             </CardActions>
         </Card>
