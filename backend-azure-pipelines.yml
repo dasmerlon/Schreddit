@@ -29,6 +29,6 @@ stages:
       inputs:
         containerRegistry: 'SchredditRegistry'
         repository: 'backend'
-        command: 'build'
+        command: 'buildAndPush'
         Dockerfile: '**/backend/Dockerfile'
         tags: '$(tag)'
