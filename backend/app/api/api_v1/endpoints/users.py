@@ -1,5 +1,4 @@
 from fastapi import APIRouter, Depends, HTTPException, Response, status
-from neomodel import DeflateError
 
 from app import crud, models, schemas
 from app.api import deps

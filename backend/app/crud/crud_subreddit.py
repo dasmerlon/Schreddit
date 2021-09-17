@@ -1,6 +1,6 @@
 from typing import List, Optional
 
-from neomodel import db, Q
+from neomodel import Q, db
 
 from app.crud.base_neo import CRUDBaseNeo
 from app.models import Subreddit, User
@@ -34,7 +34,9 @@ class CRUDSubreddit(CRUDBaseNeo[Subreddit, SubredditCreate, SubredditUpdate]):
         :return: a list of matching subreddits
         """
         if include_title:
-            return Subreddit.nodes.filter(Q(sr__contains=q) | Q(title__contains=q)).all()
+            return Subreddit.nodes.filter(
+                Q(sr__contains=q) | Q(title__contains=q)
+            ).all()
         else:
             return Subreddit.nodes.filter(Q(sr__contains=q)).all()
 
