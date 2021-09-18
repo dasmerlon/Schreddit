@@ -87,7 +87,6 @@ def update_user(
 @router.get(
     "/subscriptions/",
     name="Get subscribed subreddits of a user",
-    response_model=list[schemas.Subreddit],
     status_code=status.HTTP_200_OK,
 )
 def get_subscriptions(
