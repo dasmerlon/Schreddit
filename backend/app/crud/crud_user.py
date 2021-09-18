@@ -1,4 +1,4 @@
-from typing import Any, Dict, Optional, Union
+from typing import Any, Dict, List, Optional, Union
 
 from neomodel import db
 from pydantic import EmailStr
@@ -80,6 +80,16 @@ class CRUDUser(CRUDBaseNeo[User, UserCreate, UserUpdate]):
         if not verify_password(password, user.hashed_password):
             return None
         return user
+
+    def get_subscriptions(self, db_obj: User) -> List[Dict]:
+        query = (
+            "MATCH (user:User {username: $username}) -[:SUBSCRIBED_TO]-> "
+            "(subreddit:Subreddit) RETURN subreddit ORDER BY subreddit.sr"
+        )
+        params = {"username": db_obj.username}
+        results, columns = db.cypher_query(query, params)
+        subreddit_list = [row[0] for row in results]
+        return subreddit_list
 
 
 user = CRUDUser(User)

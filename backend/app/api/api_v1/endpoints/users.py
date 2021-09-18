@@ -82,3 +82,17 @@ def update_user(
 
     crud.user.update(current_user, to_update)
     return Response(status_code=status.HTTP_204_NO_CONTENT)
+
+
+@router.get(
+    "/subscriptions",
+    name="Get subscribed subreddits of a user",
+    status_code=status.HTTP_200_OK,
+)
+def get_subscriptions(
+    current_user: models.User = Depends(deps.get_current_user),
+):
+    """
+    Get subscribed subreddits of a user in alphabetical order.
+    """
+    return crud.user.get_subscriptions(current_user)
