@@ -40,14 +40,14 @@ def test_register_existing_username(client: TestClient, test_user_in_db: User) -
 
 def test_get_user(client: TestClient, test_user_in_db: User) -> None:
     payload = client.get(
-        f"{settings.API_V1_STR}/users/{test_user_in_db.username}"
+        f"{settings.API_V1_STR}/users/u/{test_user_in_db.username}"
     ).json()
     assert payload["email"] == test_user_in_db.email
     assert payload["username"] == test_user_in_db.username
 
 
 def test_get_not_existing_user(client: TestClient) -> None:
-    response = client.get(f"{settings.API_V1_STR}/users/not_existing")
+    response = client.get(f"{settings.API_V1_STR}/users/u/not_existing")
     assert response.status_code == status.HTTP_404_NOT_FOUND
     assert "detail" in response.json()
 
