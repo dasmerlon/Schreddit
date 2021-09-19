@@ -1,3 +1,5 @@
+import re
+
 from fastapi import APIRouter, Depends, HTTPException, Response, status
 
 from app import crud, models, schemas
@@ -44,9 +46,13 @@ def get_user(username: str):
     Get user data from an existing user via email or username.
     If everything succeeds, a user with matching email or username will be returned.
     """
-    user = crud.user.get_by_username(username)
-    if user is None:
+    # check if `username` is valid email
+    if re.fullmatch(r"[^@]+@[^@]+\.[^@]+", username):
         user = crud.user.get_by_email(username)
+        if user is None:
+            user = crud.user.get_by_username(username)
+    else:
+        user = crud.user.get_by_username(username)
     if user is None:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,

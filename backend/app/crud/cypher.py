@@ -137,7 +137,7 @@ class CypherGetPosts:
                 f"     END AS sign, "
                 f"     log10(apoc.coll.max([abs(score), 1])) AS ord "
                 f"WITH post, sr, author, upvotes, downvotes, score, "
-                f"     sign * ord + seconds / 45000 AS hot "
+                f"     round(sign * ord + seconds / 45000, 7) AS hot "
             )
             if self.cursor:
                 where = (
@@ -152,12 +152,12 @@ class CypherGetPosts:
         elif self.sort == schemas.PostSort.top:
             if self.cursor:
                 where = (
-                    f"WHERE upvotes {s[0]} $cursor_prop "
-                    f"OR (upvotes = $cursor_prop AND id(post) {s[0]} $cursor_id) "
+                    f"WHERE score {s[0]} $cursor_prop "
+                    f"OR (score = $cursor_prop AND id(post) {s[0]} $cursor_id) "
                 )
             order = (
-                f"WITH post, sr, author, score, upvotes "
-                f"ORDER BY upvotes {s[1]}, id(post) {s[1]} "
+                f"WITH post, sr, author, score "
+                f"ORDER BY score {s[1]}, id(post) {s[1]} "
                 f"LIMIT $limit "
             )
 

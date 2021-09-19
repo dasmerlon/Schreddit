@@ -53,7 +53,7 @@ class CRUDPostMeta(
             elif sort == schemas.PostSort.hot:
                 params["cursor_prop"] = cursor.hot_score()
             elif sort == schemas.PostSort.top:
-                params["cursor_prop"] = cursor.upvote_count()
+                params["cursor_prop"] = cursor.vote_count()
             elif sort == schemas.PostSort.best:  # TODO: implement best sorting order
                 pass
 

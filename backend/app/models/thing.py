@@ -21,14 +21,6 @@ class ThingMeta(StructuredNode):
     downvotes = RelationshipTo(".user.User", "DOWNVOTED_BY", model=Downvote)
     upvotes = RelationshipTo(".user.User", "UPVOTED_BY", model=Upvote)
 
-    def upvote_count(self):
-        """
-        Get the number of upvotes for a thing.
-
-        :return: upvote count
-        """
-        return len(self.upvotes)
-
     def vote_count(self):
         """
         Get the vote count for a thing.
@@ -54,7 +46,7 @@ class ThingMeta(StructuredNode):
         else:
             sign = 0
         seconds = self.created_at.timestamp() - 1134028003
-        return sign * order + seconds / 45000
+        return round(sign * order + seconds / 45000, 7)
 
 
 class ThingContent(Document):
