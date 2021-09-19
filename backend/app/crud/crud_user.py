@@ -83,7 +83,7 @@ class CRUDUser(CRUDBaseNeo[User, UserCreate, UserUpdate]):
 
     @db.read_transaction
     def get_subscriptions(self, db_obj: User) -> List[Subreddit]:
-        return db_obj.subscription.all()
+        return db_obj.subscription.order_by("sr").all()
 
 
 user = CRUDUser(User)

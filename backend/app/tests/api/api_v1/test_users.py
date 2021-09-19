@@ -13,7 +13,7 @@ from app.tests.utils.fake_payloads import UserPayloads
 
 def test_register_user(client: TestClient, remove_users: List) -> None:
     payload = UserPayloads.get_create()
-    r = client.post(f"{settings.API_V1_STR}/users/register/", json=payload)
+    r = client.post(f"{settings.API_V1_STR}/users/register", json=payload)
     registered_user = r.json()
     remove_users.append(registered_user["uid"])
     assert r.status_code == status.HTTP_201_CREATED
@@ -25,7 +25,7 @@ def test_register_user(client: TestClient, remove_users: List) -> None:
 def test_register_existing_email(client: TestClient, test_user_in_db: User) -> None:
     payload = UserPayloads.get_create()
     payload["username"] = "newuser-samemail"
-    r = client.post(f"{settings.API_V1_STR}/users/register/", json=payload)
+    r = client.post(f"{settings.API_V1_STR}/users/register", json=payload)
     assert r.status_code == status.HTTP_403_FORBIDDEN
     assert "detail" in r.json()
 
@@ -33,21 +33,21 @@ def test_register_existing_email(client: TestClient, test_user_in_db: User) -> N
 def test_register_existing_username(client: TestClient, test_user_in_db: User) -> None:
     payload = UserPayloads.get_create()
     payload["email"] = "newmail@sameuser.com"
-    r = client.post(f"{settings.API_V1_STR}/users/register/", json=payload)
+    r = client.post(f"{settings.API_V1_STR}/users/register", json=payload)
     assert r.status_code == status.HTTP_403_FORBIDDEN
     assert "detail" in r.json()
 
 
 def test_get_user(client: TestClient, test_user_in_db: User) -> None:
     payload = client.get(
-        f"{settings.API_V1_STR}/users/{test_user_in_db.username}"
+        f"{settings.API_V1_STR}/users/u/{test_user_in_db.username}"
     ).json()
     assert payload["email"] == test_user_in_db.email
     assert payload["username"] == test_user_in_db.username
 
 
 def test_get_not_existing_user(client: TestClient) -> None:
-    response = client.get(f"{settings.API_V1_STR}/users/not_existing")
+    response = client.get(f"{settings.API_V1_STR}/users/u/not_existing")
     assert response.status_code == status.HTTP_404_NOT_FOUND
     assert "detail" in response.json()
 
@@ -61,7 +61,7 @@ def test_get_not_existing_user(client: TestClient) -> None:
     ],
 )
 def test_update_user(client: TestClient, fake_auth: User, payload: Dict) -> None:
-    response = client.put(f"{settings.API_V1_STR}/users/settings/", json=payload)
+    response = client.put(f"{settings.API_V1_STR}/users/settings", json=payload)
     assert response.status_code == status.HTTP_204_NO_CONTENT
 
     updated_user = crud.user.get_by_username(settings.TEST_USER_USERNAME)
@@ -86,5 +86,5 @@ def test_update_user(client: TestClient, fake_auth: User, payload: Dict) -> None
 def test_update_user_not_modified(
     client: TestClient, fake_auth: User, payload: Dict
 ) -> None:
-    response = client.put(f"{settings.API_V1_STR}/users/settings/", json=payload)
+    response = client.put(f"{settings.API_V1_STR}/users/settings", json=payload)
     assert response.status_code == status.HTTP_304_NOT_MODIFIED

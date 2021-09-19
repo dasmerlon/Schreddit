@@ -9,7 +9,7 @@ router = APIRouter()
 
 
 @router.post(
-    "/register/",
+    "/register",
     name="Register User",
     response_model=schemas.User,
     status_code=status.HTTP_201_CREATED,
@@ -35,7 +35,7 @@ def register(user: schemas.UserCreate):
 
 
 @router.get(
-    "/{username}",
+    "/u/{username}",
     name="Get User Data",
     response_model=schemas.User,
     status_code=status.HTTP_200_OK,
@@ -55,7 +55,7 @@ def get_user(username: str):
 
 
 @router.put(
-    "/settings/",
+    "/settings",
     name="Update User Data",
 )
 def update_user(
@@ -85,7 +85,7 @@ def update_user(
 
 
 @router.get(
-    "/subscriptions/",
+    "/subscriptions",
     name="Get subscribed subreddits of a user",
     response_model=schemas.SubscriptionList,
     status_code=status.HTTP_200_OK,
