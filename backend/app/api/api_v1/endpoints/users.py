@@ -87,6 +87,7 @@ def update_user(
 @router.get(
     "/subscriptions/",
     name="Get subscribed subreddits of a user",
+    response_model=schemas.SubscriptionList,
     status_code=status.HTTP_200_OK,
 )
 def get_subscriptions(
@@ -95,4 +96,6 @@ def get_subscriptions(
     """
     Get subscribed subreddits of a user in alphabetical order.
     """
-    return crud.user.get_subscriptions(current_user)
+    return schemas.SubscriptionList(
+        subscriptions=crud.user.get_subscriptions(current_user)
+    )

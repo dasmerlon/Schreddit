@@ -5,7 +5,7 @@ from pydantic import EmailStr
 
 from app.core.security import get_password_hash, verify_password
 from app.crud.base_neo import CRUDBaseNeo
-from app.models import User
+from app.models import Subreddit, User
 from app.schemas import UserCreate, UserUpdate
 
 
@@ -81,15 +81,9 @@ class CRUDUser(CRUDBaseNeo[User, UserCreate, UserUpdate]):
             return None
         return user
 
-    def get_subscriptions(self, db_obj: User) -> List[Dict]:
-        query = (
-            "MATCH (user:User {username: $username}) -[:SUBSCRIBED_TO]-> "
-            "(subreddit:Subreddit) RETURN subreddit ORDER BY subreddit.sr"
-        )
-        params = {"username": db_obj.username}
-        results, columns = db.cypher_query(query, params)
-        subreddit_list = [row[0] for row in results]
-        return subreddit_list
+    @db.read_transaction
+    def get_subscriptions(self, db_obj: User) -> List[Subreddit]:
+        return db_obj.subscription.all()
 
 
 user = CRUDUser(User)
