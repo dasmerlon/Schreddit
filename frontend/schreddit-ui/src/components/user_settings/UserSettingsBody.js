@@ -87,7 +87,7 @@ export default function UserSettingsBody(props) {
 
     useEffect(() => {
         if(props.cookies.loggedIn) { //if(email !== "")?
-            axios.get(configData.USER_API_URL + "/" + props.cookies.username)
+            axios.get(configData.USER_API_URL + "/u/" + props.cookies.username)
             .then(userResponse => {
                 setEmail(userResponse.data.email);
             })
