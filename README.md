@@ -5,6 +5,8 @@ This is the best Reddit clone you'll ever see.
 ### Backend
 Install [Neo4j](https://neo4j.com/download/), [MongoDB](https://www.mongodb.com/try/download/community) and [Redis](https://redis.io/download).
 
+Install the [Neo4j APOC Core library](https://neo4j.com/labs/apoc/4.3/installation/).
+
 Install [poetry](https://python-poetry.org/docs/#installation) and run `poetry install` from the `backend` directory (where the `pyproject.toml` file is located).
 
 Copy the contents of the `dot_env_example` to a new file called `.env` in the same directory and adjust credentials for production DB.

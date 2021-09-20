@@ -16,66 +16,84 @@ router = APIRouter()
 
 
 @router.get(
-    "/r/{sr_uid}",
+    "/list",
     name="Get Posts",
     response_model=schemas.PostList,
     status_code=status.HTTP_200_OK,
 )
 def get_posts(
     request: Request,
-    sr_uid: UUID4,
+    sr: Optional[str] = None,
     after: Optional[UUID4] = None,
     before: Optional[UUID4] = None,
     sort: Optional[schemas.PostSort] = schemas.PostSort.new,
     size: Optional[int] = Query(25, gt=0, le=100),
+    current_user: Optional[models.User] = Depends(deps.get_current_user_or_none),
 ):
     """
-    Return a range of up to `limit` posts with an optional sorting order.
+    Return a range of up to `size` posts with an optional sorting order.
     If `sort` is not passed, posts are returned in descending order of their creation.
 
     `after` and `before` are cursors for pagination and refer to a post. Only one cursor
     should be specified.
 
+    If a user is authenticated, the vote state for that user is returned.
+
+    - `sr` : if specified, the subreddit to get posts from;
+      if not specified, get all posts
     - `after` : get posts including and after this cursor
     - `before` : get posts including and before this cursor
     - `sort` : sorting order, one of `best`, `hot`, `new`, `top`
-    - `limit` : maximum number of posts to return
+    - `size` : maximum number of posts to return
     """
-    subreddit = crud.subreddit.get(sr_uid)
-    if not subreddit:
-        raise SubredditNotFoundException
+    if sr is not None:
+        subreddit = crud.subreddit.get_by_sr(sr)
+        if not subreddit:
+            raise SubredditNotFoundException
+    else:
+        subreddit = None
 
     # act depending on which cursor is passed
     if after and before:
         raise PaginationAfterAndBeforeException
     elif not after and not before:
-        results = crud.post_meta.get_posts_after(subreddit, None, sort, size)
+        results = crud.post_meta.get_posts(
+            subreddit, current_user, None, None, sort, size
+        )
     elif after:
         cursor = crud.post_meta.get(after)
         if cursor is None:
             raise PaginationInvalidCursorException
-        results = crud.post_meta.get_posts_after(subreddit, cursor, sort, size)
+        results = crud.post_meta.get_posts(
+            subreddit, current_user, cursor, schemas.CursorDirection.after, sort, size
+        )
     elif before:
         cursor = crud.post_meta.get(before)
         if cursor is None:
             raise PaginationInvalidCursorException
-        results = crud.post_meta.get_posts_before(subreddit, cursor, sort, size)
+        results = crud.post_meta.get_posts(
+            subreddit, current_user, cursor, schemas.CursorDirection.before, sort, size
+        )
 
-    basepath = f"{request.url.path}?sort={sort}"
-    next = f"{basepath}&after={results[-1].uid}" if results else None
-    prev = f"{basepath}&before={results[0].uid}" if results else None
+    # convert list of dicts to list of PostMeta schemas
+    meta_list = [schemas.PostMeta(**row) for row in results]
 
     # retrieve post content
-    contents = crud.post_content.filter_by_uids([r.uid for r in results])
+    content_list = crud.post_content.filter_by_uids([meta.uid for meta in meta_list])
 
-    # set pagination
+    # build new cursors for pagination
+    basepath = f"{request.url.path}?sort={sort}"
+    next = f"{basepath}&after={meta_list[-1].uid}" if meta_list else None
+    prev = f"{basepath}&before={meta_list[0].uid}" if meta_list else None
     links = schemas.Pagination(next=next, prev=prev)
-    return schemas.PostList(
-        links=links,
-        data=[
-            schemas.Post(metadata=r, content=contents.get(uid=r.uid)) for r in results
-        ],
-    )
+
+    # create list of Post schemas by matching metadata and content
+    post_list = [
+        schemas.Post(metadata=meta, content=content_list.get(uid=meta.uid))
+        for meta in meta_list
+    ]
+
+    return schemas.PostList(links=links, data=post_list)
 
 
 @router.get(
