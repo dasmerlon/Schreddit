@@ -46,7 +46,7 @@ export default function Login(props) {
             .then(response => {
                 const token = response.data.access_token;
 
-                axios.get(configData.USER_API_URL + "/" + props.email.email)
+                axios.get(configData.USER_API_URL + "/u/" + props.email.email)
                     .then(userResponse => {
                         props.handleLogin(token, userResponse.data.username);
                         handleLoginDialogClose();
