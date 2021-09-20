@@ -9,10 +9,26 @@ trigger:
 pool:
   vmImage: ubuntu-latest
 
+variables:
+- name: USER_API_URL
+  value: https://schreddit.azurewebsites.net/api/v1/users
+- name: USER_SETTINGS_API_URL
+  value: https://schreddit.azurewebsites.net/api/v1/users/settings
+- name: LOGIN_API_URL
+  value: https://schreddit.azurewebsites.net/api/v1/auth/login
+- name: SUBREDDIT_API_URL
+  value: https://schreddit.azurewebsites.net/api/v1/subreddits/r/
+
 
 steps:
   - checkout: self
     submodules: true
+
+  - task: FileTransform@1
+    inputs:
+      folderPath: '$(Build.SourcesDirectory)/frontend/schreddit-ui/src/components'
+      fileType: 'json'
+      targetFiles: 'config.json'
   - task: AzureStaticWebApp@0
     env:
       CI: false
