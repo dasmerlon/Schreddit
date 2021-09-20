@@ -92,7 +92,7 @@ def update_user(
 @router.get(
     "/subscriptions",
     name="Get subscribed subreddits of a user",
-    response_model=schemas.SubscriptionList,
+    response_model=schemas.SubredditList,
     status_code=status.HTTP_200_OK,
 )
 def get_subscriptions(
@@ -101,6 +101,22 @@ def get_subscriptions(
     """
     Get subscribed subreddits of a user in alphabetical order.
     """
-    return schemas.SubscriptionList(
-        subscriptions=crud.user.get_subscriptions(current_user)
+    return schemas.SubredditList(subreddits=crud.user.get_subscriptions(current_user))
+
+
+@router.get(
+    "/recommendations",
+    name="Get recommended subreddits for a user",
+    response_model=schemas.SubredditList,
+    status_code=status.HTTP_200_OK,
+)
+def get_recommendations(
+    limit: int,
+    current_user: models.User = Depends(deps.get_current_user),
+):
+    """
+    Get recommended subreddits for a user.
+    """
+    return schemas.SubredditList(
+        subreddits=crud.user.get_recommendations(current_user, limit)
     )

@@ -52,5 +52,5 @@ class Subreddit(SubredditCreate):
         getter_dict = SubredditGetterDict
 
 
-class SubscriptionList(BaseModel):
-    subscriptions: List[Subreddit]
+class SubredditList(BaseModel):
+    subreddits: List[Subreddit]
