@@ -85,5 +85,19 @@ class CRUDUser(CRUDBaseNeo[User, UserCreate, UserUpdate]):
     def get_subscriptions(self, db_obj: User) -> List[Subreddit]:
         return db_obj.subscription.order_by("sr").all()
 
+    @db.read_transaction
+    def get_recommendations(self, db_obj: User, limit: int) -> List[Subreddit]:
+        query = (
+            "MATCH(user: User{username: $username})-[: SUBSCRIBED_TO]->(s1:Subreddit)"
+            "<-[: SUBSCRIBED_TO]-(others:User)-[: SUBSCRIBED_TO]->(s2:Subreddit) "
+            "WHERE NOT(user) - [: SUBSCRIBED_TO]-> (s2) "
+            "RETURN s2, count(s2) as occurrence "
+            "ORDER BY occurrence DESC "
+            "LIMIT $limit"
+        )
+        params = {"username": db_obj.username, "limit": limit}
+        results, columns = db.cypher_query(query, params)
+        return [row[0] for row in results]
+
 
 user = CRUDUser(User)
