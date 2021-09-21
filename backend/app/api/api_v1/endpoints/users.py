@@ -117,6 +117,6 @@ def get_recommendations(
     """
     Get recommended subreddits for a user.
     """
-    return schemas.SubredditList(
-        subreddits=crud.user.get_recommendations(current_user, limit)
-    )
+    results = crud.user.get_recommendations(current_user, limit)
+    recommendations = [schemas.Subreddit(**row) for row in results]
+    return schemas.SubredditList(subreddits=recommendations)
