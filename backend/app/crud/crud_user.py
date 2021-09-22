@@ -98,7 +98,6 @@ class CRUDUser(CRUDBaseNeo[User, UserCreate, UserUpdate]):
             "ORDER BY occurrence DESC "
             "LIMIT $limit"
         )
-
         params = {"username": db_obj.username, "limit": limit}
         results, columns = db.cypher_query(query, params)
         return [row[0] for row in results]

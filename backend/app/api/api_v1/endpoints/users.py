@@ -1,6 +1,7 @@
 import re
+from typing import Optional
 
-from fastapi import APIRouter, Depends, HTTPException, Response, status
+from fastapi import APIRouter, Depends, HTTPException, Query, Response, status
 
 from app import crud, models, schemas
 from app.api import deps
@@ -111,11 +112,13 @@ def get_subscriptions(
     status_code=status.HTTP_200_OK,
 )
 def get_recommendations(
-    limit: int,
+    limit: Optional[int] = Query(5, gt=0, le=100),
     current_user: models.User = Depends(deps.get_current_user),
 ):
     """
-    Get recommended subreddits for a user.
+    Get recommended subreddits for a user, sorted by the best recommendations.
+
+    - `limit` : maximum number of recommendations to return
     """
     results = crud.user.get_recommendations(current_user, limit)
     recommendations = [schemas.Subreddit(**row) for row in results]
