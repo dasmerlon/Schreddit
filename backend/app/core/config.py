@@ -19,6 +19,8 @@ class Settings(BaseSettings):
 
     MAX_TITLE_LENGTH = 300
     MAX_USERNAME_LENGTH = 20
+    MAX_SR_LENGTH = 21
+    MAX_DESCRIPTION_LENGTH = 500
 
     TEST_USER_USERNAME: str
     TEST_USER_EMAIL: str
