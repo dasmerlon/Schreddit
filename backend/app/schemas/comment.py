@@ -9,12 +9,9 @@ from app.schemas.thing import Thing, ThingCreate, ThingUpdate
 
 
 class CommentSort(str, Enum):
-    confidence = "confidence"
     top = "top"
     new = "new"
     old = "old"
-    # controversial = "controversial"
-    # qa = "qa"
 
 
 class CommentCreate(ThingCreate[CommentMetaCreate, CommentContentCreate]):
