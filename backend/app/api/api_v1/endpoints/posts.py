@@ -116,6 +116,87 @@ def get_post(uid: UUID4):
     return schemas.Post(metadata=post_meta, content=post_content)
 
 
+@router.get(
+    "/{uid}/tree",
+    name="Get Post Tree",
+    response_model=schemas.PostTree,
+    status_code=status.HTTP_200_OK,
+)
+def get_post_tree(
+    uid: UUID4,
+    sort: Optional[schemas.CommentSort] = schemas.CommentSort.top,
+    current_user: Optional[models.User] = Depends(deps.get_current_user_or_none),
+):
+    """
+    Return the post tree for a post by its UUID.
+
+    - `uid` : the UUID of the post whose post tree to return
+    - `sort` : sorting order, one of `new`, `old`, `top`
+    """
+    post_meta = crud.post_meta.get(uid)
+    if not post_meta:
+        raise PostNotFoundException
+
+    # get nested metadata tree-like dict and list of thing uids
+    meta_tree, thing_uids = crud.post_meta.get_post_tree(post_meta, current_user)
+
+    # add subreddit sr to post
+    subreddit = crud.post_meta.get_subreddit(post_meta)
+    meta_tree["sr"] = subreddit.sr
+
+    # get associated contents of things
+    thing_contents = crud.thing_content.filter_by_uids(thing_uids)
+
+    # restructure dict to match schema and match content to metadata
+    stack = [meta_tree]
+    while stack:
+        thing = stack.pop()
+        meta_list = list(thing)  # assign all metadata keys to a list
+        thing["metadata"] = dict()  # new key for holding all metadata
+        thing["content"] = thing_contents.get(uid=thing["uid"])  # match content
+        for i in meta_list:
+            if i != "parent":  # move metadata to 'metadata' dict
+                thing["metadata"][i] = thing[i]
+                del thing[i]
+            if i == "parent":  # rename 'parent' key to 'children' key
+                thing["children"] = thing.pop(i)
+                for child in thing["children"]:
+                    stack.append(child)
+
+    # sort tree
+    stack = [meta_tree]
+    while stack:
+        thing = stack.pop()
+        if isinstance(thing.get("children"), list):
+            if sort == schemas.CommentSort.new:
+                thing["children"].sort(
+                    key=lambda child: (
+                        child["metadata"]["created_at"],
+                        child["metadata"]["_id"],
+                    ),
+                    reverse=True,
+                )
+            elif sort == schemas.CommentSort.old:
+                thing["children"].sort(
+                    key=lambda child: (
+                        child["metadata"]["created_at"],
+                        child["metadata"]["_id"],
+                    )
+                )
+            elif sort == schemas.CommentSort.top:
+                thing["children"].sort(
+                    key=lambda child: (
+                        child["metadata"]["count"],
+                        child["metadata"]["_id"],
+                    ),
+                    reverse=True,
+                )
+            for child in thing["children"]:
+                stack.append(child)
+
+    return meta_tree
+
+
 @router.post(
     "",
     name="Submit Post",
