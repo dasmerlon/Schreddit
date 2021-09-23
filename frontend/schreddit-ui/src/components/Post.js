@@ -78,7 +78,8 @@ export default function Posts(props) {
   const maxSteps = tutorialSteps.length;
   const [upArrowColor, setUpArrowColor] = React.useState("");
   const [downArrowColor, setDownArrowColor] = React.useState("");
-  const [newState, setNewState] = React.useState(props.voteState); 
+  const [newState, setNewState] = React.useState(props.voteState);
+  const [currentVotes, setCurrentVotes] = React.useState(props.voteCount)
   
   let createdAtType = "";
   let createdAt = new Date(props.createdAt);
@@ -94,7 +95,6 @@ export default function Posts(props) {
   }
   else{
     createdAt = createdAt.toDateString()
-    console.log(typeof createdAt)
   }
 
   useEffect(() => {
@@ -110,6 +110,10 @@ export default function Posts(props) {
   };
 
   const handleVote = (direction) => {
+    axios.get(configData.VOTE_API_URL + '/' + props.uid + '/count'
+    ).then(response => 
+      setCurrentVotes(response.data)
+    )
     if (direction === 1) {
       setUpArrowColor('orange');
       setDownArrowColor('unset');
@@ -135,7 +139,6 @@ export default function Posts(props) {
     else if (newState === -1 && direction === -1) {
       direction = 0
     }
-    console.log(props.voteState);
     axios.put(configData.VOTE_API_URL + '/' + props.uid + '/' + direction, {}, {
       headers: {
         Authorization: `Bearer ${props.cookies.token}`
@@ -161,7 +164,7 @@ export default function Posts(props) {
                 <SvgIcon ><path d={mdiArrowUpBoldOutline} style={{ color: upArrowColor }} /></SvgIcon>
               </IconButton>
               <Typography component="h2" style={{ textAlign: 'center' }}>
-                {props.voteCount}
+                {currentVotes}
               </Typography>
               <IconButton size="small" title="More" onClick={() => { vote(-1) }}>
                 <SvgIcon ><path d={mdiArrowDownBoldOutline} style={{ color: downArrowColor }} /></SvgIcon>
