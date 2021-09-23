@@ -51,7 +51,8 @@ export default function SubreditBody(props) {
 
     const [posts, setPosts] = React.useState();
     const [error, setError] = React.useState("");
-    const [subreddit, setSubreddit] = React.useState();
+    const [subreddit, setSubreddit] = React.useState("");
+    const [subredditOneLetter, setSubredditOneLetter] = React.useState("");
     const [lastSortBy, setLastSortBy] = React.useState('new');
 
     const [page, setPage] = useState(1);
@@ -66,10 +67,10 @@ export default function SubreditBody(props) {
       ).then(response => {
         console.log(response.data)
         setSubreddit(response.data);
+        setSubredditOneLetter(response.data.sr[0])
       });
       axios.get(configData.SUBSCRIPTION_API_URL + '/' + subreddit.sr + '/subscriber'
       ).then(response => {
-        setSubreddit({...subreddit, ["subscriberCount"]: response.data})
         console.log(response)
       })
     }
@@ -176,7 +177,7 @@ export default function SubreditBody(props) {
               <Grid container alignItems="center" justify="flex-start" spacing={2}>
                 <Grid item>
                   <Avatar className={classes.avatarSizeLarg}>
-                    {subreddit.sr[0]}  
+                    {subredditOneLetter}  
                   </Avatar>
                 </Grid>
 
