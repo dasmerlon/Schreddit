@@ -182,3 +182,78 @@ class CypherGetPosts:
 
         # remove redundant whitespace and return query
         return re.sub(" +", " ", base + addon + where + order + state + unite)
+
+
+class CypherGetTree:
+    """
+    Build the Cypher query for retrieving the comment tree for a post.
+    """
+
+    def __init__(self, user: Optional[models.User]):
+        """
+        Initialize the class.
+
+        :param user: if specified, the user to get vote states for;
+        if ``None``, don't get vote states
+        """
+        self.user = bool(user)
+
+    @staticmethod
+    def get_tree_query():
+        """
+        Get the Cypher query for retrieving the post tree for a post.
+
+        :return: the Cypher query
+        """
+        query = (
+            # match post
+            f"MATCH path = (post:{post_lbl})-[:{parent_rel}*0..]-()  "
+            f"WHERE post.uid = $post_uid "
+            # collect all paths and transform them to one list
+            f"WITH collect(path) AS paths "
+            # transform the list of paths to a tree
+            f"CALL apoc.convert.toTree(paths) "
+            f"YIELD value "
+            f"RETURN value"
+        )
+        return query
+
+    def get_votes_query(self):
+        """
+        Get the Cypher query for retrieving vote state and vote count.
+
+        :return: the Cypher query
+        """
+        base = (
+            # match things with a list of uids
+            f"MATCH (thing:{thing_lbl}) "
+            f"WHERE thing.uid IN $thing_uids "
+            # match thing authors
+            f"OPTIONAL MATCH (thing)-[:{authored_by_rel}]-(author:{user_lbl}) "
+            # match vote score
+            f"WITH thing, author, "
+            f"     size((thing)-[:{upvoted_rel}]-(:{user_lbl})) AS upvotes, "
+            f"     size((thing)-[:{downvoted_rel}]-(:{user_lbl})) AS downvotes "
+            f"WITH thing, author, upvotes-downvotes AS score "
+        )
+        # match vote state
+        if self.user:
+            state = (
+                f"OPTIONAL MATCH (thing)"
+                f"               -[vote:{upvoted_rel}|{downvoted_rel}]-"
+                f"               (user:User) "
+                f"WHERE user.uid = $user_uid "
+                f"WITH thing, author, score, CASE type(vote) "
+                f"  WHEN '{upvoted_rel}' THEN 1 "
+                f"  WHEN '{downvoted_rel}' THEN -1 "
+                f"  ELSE 0 "
+                f"END AS state "
+            )
+        else:
+            state = "WITH thing, author, score, 0 AS state "
+        ret = (
+            f"RETURN thing.uid AS thing, "
+            f"       author.{username_prop} AS author, "
+            f"       score, state"
+        )
+        return re.sub(" +", " ", base + state + ret)
