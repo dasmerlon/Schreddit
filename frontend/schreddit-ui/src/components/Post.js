@@ -79,6 +79,23 @@ export default function Posts(props) {
   const [upArrowColor, setUpArrowColor] = React.useState("");
   const [downArrowColor, setDownArrowColor] = React.useState("");
   const [newState, setNewState] = React.useState(props.voteState); 
+  
+  let createdAtType = "";
+  let createdAt = new Date(props.createdAt);
+  if(createdAt > new Date(new Date().setDate(new Date().getDate()-1))){
+    if(createdAt > new Date(new Date().setHours(new Date().getHours()-1))){
+      createdAt = new Date(new Date().getTime() - createdAt.getTime()).getMinutes()
+      createdAtType = " Minutes ago"
+    }
+    else{
+      createdAt = new Date(new Date().getTime() - createdAt.getTime()).getHours()
+      createdAtType = " Hours ago"
+    }
+  }
+  else{
+    createdAt = createdAt.toDateString()
+    console.log(typeof createdAt)
+  }
 
   useEffect(() => {
     handleVote(props.voteState);
@@ -164,7 +181,8 @@ export default function Posts(props) {
               {" u/" + props.author}
             </Link>
             <br />
-            {props.createdAt}
+            {createdAt + createdAtType }
+            {/* {((typeof createdAt === "number") ? createdAt + ' Minutes ago': createdAt)} */}
           </Typography>
         }
       />
