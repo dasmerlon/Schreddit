@@ -17,12 +17,15 @@ class UserCreate(UserBase):
 
     @validator("username")
     def username_limitations(cls, value):
-        if len(value) < 3 or len(value) > settings.MAX_USERNAME_LENGTH:
+        if (
+            len(value) < settings.MIN_USERNAME_LENGTH
+            or len(value) > settings.MAX_USERNAME_LENGTH
+        ):
             raise ValueError(
-                f"Username must be between 3 and {settings.MAX_USERNAME_LENGTH} "
-                f"characters."
+                f"Username must be between {settings.MIN_USERNAME_LENGTH} and "
+                f"{settings.MAX_USERNAME_LENGTH} characters."
             )
-        elif re.match("^[a-zA-Z0-9_-]+$", value) is None:
+        elif not re.fullmatch(r"[\w-]+", value):
             raise ValueError(
                 "Username must only consist of letters, numbers, dashes, "
                 "and underscores."

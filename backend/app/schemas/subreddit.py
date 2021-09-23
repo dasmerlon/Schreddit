@@ -38,12 +38,12 @@ class SubredditCreate(SubredditBase):
 
     @validator("sr")
     def sr_limitations(cls, value):
-        if len(value) < 3 or len(value) > settings.MAX_SR_LENGTH:
+        if len(value) < settings.MIN_SR_LENGTH or len(value) > settings.MAX_SR_LENGTH:
             raise ValueError(
-                f"Subreddit name must be between 3 and {settings.MAX_SR_LENGTH} "
-                f"characters."
+                f"Subreddit name must be between {settings.MIN_SR_LENGTH} and "
+                f"{settings.MAX_SR_LENGTH} characters."
             )
-        elif re.match("^[a-zA-Z0-9_]+$", value) is None:
+        elif not re.fullmatch(r"\w+", value):
             raise ValueError(
                 "Subreddit name must only consist of letters, numbers, and underscores."
             )

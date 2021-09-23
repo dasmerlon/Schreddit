@@ -22,6 +22,9 @@ class Settings(BaseSettings):
     MAX_SR_LENGTH = 21
     MAX_DESCRIPTION_LENGTH = 500
 
+    MIN_USERNAME_LENGTH = 3
+    MIN_SR_LENGTH = 3
+
     TEST_USER_USERNAME: str
     TEST_USER_EMAIL: str
     TEST_USER_PASSWORD: str

@@ -23,8 +23,8 @@ def init_dbs():
 
 def create_username():
     username = fake.unique.user_name()
-    if (
-        re.match("^[a-zA-Z0-9_-]+$", username) is None
+    while (
+        not re.fullmatch(r"[\w-]+", username)
         or len(username) < 3
         or len(username) > settings.MAX_USERNAME_LENGTH
     ):
@@ -35,8 +35,8 @@ def create_username():
 
 def create_sr():
     sr = fake.unique.word(),
-    if (
-        re.match("^[a-zA-Z0-9_]+$", sr[0]) is None
+    while (
+        not re.fullmatch(r"\w+", sr[0])
         or len(sr[0]) < 3
         or len(sr[0]) > settings.MAX_SR_LENGTH
     ):
