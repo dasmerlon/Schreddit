@@ -202,7 +202,7 @@ export default function SubreditBody(props) {
         <Grid container spacing={2} direction='row' className={classes.grid}>
           <Grid item container spacing={3} direction='column' className={classes.grid} xs={12} md={7}>
             <Grid item>
-             <CreatePost />
+             <CreatePost cookies={props.cookies}/>
             </Grid>
             <Grid item>
              <SortByBar getPosts={getPosts}/>           

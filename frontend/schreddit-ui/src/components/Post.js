@@ -154,7 +154,7 @@ export default function Posts(props) {
       <CardHeader
         avatar={
           <Avatar className={classes.avatar}>
-            E
+          {props.author[0]}     
             </Avatar>
         }
         action={
