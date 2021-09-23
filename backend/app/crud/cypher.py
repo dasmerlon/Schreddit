@@ -4,20 +4,23 @@ from typing import Optional
 from app import models, schemas
 
 # label names
-sr_lbl = models.Subreddit.__name__
+comment_lbl = models.CommentMeta.__name__
 post_lbl = models.PostMeta.__name__
+sr_lbl = models.Subreddit.__name__
+thing_lbl = models.ThingMeta.__name__
 user_lbl = models.User.__name__
 
 # property names
-username_prop = models.User.username.name
-sr_prop = models.Subreddit.sr.name
 created_at_prop = models.PostMeta.created_at.name
+sr_prop = models.Subreddit.sr.name
+username_prop = models.User.username.name
 
 # relationship names
-posted_in_rel = models.PostMeta.subreddit.definition["relation_type"]
 authored_by_rel = models.PostMeta.author.definition["relation_type"]
-upvoted_rel = models.User.upvotes.definition["relation_type"]
 downvoted_rel = models.User.downvotes.definition["relation_type"]
+parent_rel = models.CommentMeta.parent.definition["relation_type"]
+posted_in_rel = models.PostMeta.subreddit.definition["relation_type"]
+upvoted_rel = models.User.upvotes.definition["relation_type"]
 
 base = (
     # match posts in subreddit
