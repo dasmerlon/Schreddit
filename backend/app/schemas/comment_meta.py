@@ -17,6 +17,10 @@ class CommentMetaUpdate(CommentMetaBase, ThingMetaUpdate):
     pass
 
 
+class CommentMetaNoParent(CommentMetaBase, ThingMeta):
+    pass
+
+
 class CommentMeta(CommentMetaBase, ThingMeta):
     parent: UUID4
 
