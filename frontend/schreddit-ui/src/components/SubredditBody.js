@@ -57,11 +57,21 @@ export default function SubreditBody(props) {
     const [page, setPage] = useState(1);
     const loader = useRef(null);
 
+    useEffect(() => {
+      getSubreddit();
+    }, [])
+
     const getSubreddit = () => {
-      axios.get(configData.SUBREDDIT_API_URL + '/' + window.location.pathname.split('/')[2]
+      axios.get(configData.SUBREDDIT_API_URL + window.location.pathname.split('/')[2]
       ).then(response => {
-        console.log(response)
+        console.log(response.data)
+        setSubreddit(response.data);
       });
+      axios.get(configData.SUBSCRIPTION_API_URL + '/' + subreddit.sr + '/subscriber'
+      ).then(response => {
+        setSubreddit({...subreddit, ["subscriberCount"]: response.data})
+        console.log(response)
+      })
     }
 
     useEffect(() => {
@@ -166,16 +176,16 @@ export default function SubreditBody(props) {
               <Grid container alignItems="center" justify="flex-start" spacing={2}>
                 <Grid item>
                   <Avatar className={classes.avatarSizeLarg}>
-                    E  
+                    {subreddit.sr[0]}  
                   </Avatar>
                 </Grid>
 
                 <Grid item>
                   <Typography component="h2">
-                    Catchphrase
+                    {subreddit.title}
                   </Typography>            
                   <Typography component="h2">
-                    r/shortCatchphrase
+                    {'r/' + subreddit.sr}
                   </Typography>
                 </Grid>
                 <Grid item>
@@ -204,7 +214,7 @@ export default function SubreditBody(props) {
           <Grid item container spacing={3} direction='column' className={classes.grid} xs={1}>
             <Hidden smDown>
               <Grid item>
-                <AboutCom />
+                <AboutCom members={subreddit.subscriberCount} createdAt={subreddit.created_at} description={subreddit.description} />
               </Grid>
               <Grid item>
                 <Rules />
