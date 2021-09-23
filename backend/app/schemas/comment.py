@@ -1,9 +1,10 @@
 from enum import Enum
+from typing import ForwardRef, List, Optional
 
 from app.schemas.comment_content import (CommentContent, CommentContentCreate,
                                          CommentContentUpdate)
 from app.schemas.comment_meta import (CommentMeta, CommentMetaCreate,
-                                      CommentMetaUpdate)
+                                      CommentMetaNoParent, CommentMetaUpdate)
 from app.schemas.thing import Thing, ThingCreate, ThingUpdate
 
 
@@ -26,3 +27,17 @@ class CommentUpdate(ThingUpdate[CommentMetaUpdate, CommentContentUpdate]):
 
 class Comment(Thing[CommentMeta, CommentContent]):
     pass
+
+
+class CommentNoParent(Thing[CommentMetaNoParent, CommentContent]):
+    pass
+
+
+CommentTree = ForwardRef("CommentTree")
+
+
+class CommentTree(CommentNoParent):
+    children: Optional[List[CommentTree]]
+
+
+CommentTree.update_forward_refs()
