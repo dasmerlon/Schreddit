@@ -120,6 +120,5 @@ def get_recommendations(
 
     - `limit` : maximum number of recommendations to return
     """
-    results = crud.user.get_recommendations(current_user, limit)
-    recommendations = [schemas.Subreddit(**row) for row in results]
-    return schemas.SubredditList(subreddits=recommendations)
+    sr_list = crud.user.get_recommendations(current_user, limit)
+    return schemas.SubredditList(subreddits=sr_list)
