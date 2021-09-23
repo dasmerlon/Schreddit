@@ -22,27 +22,23 @@ def init_dbs():
 
 
 def create_username():
-    username = fake.unique.user_name()
-    while (
-        not re.fullmatch(r"[\w-]+", username)
-        or len(username) < 3
-        or len(username) > settings.MAX_USERNAME_LENGTH
-    ):
-        create_username()
-    else:
-        return username
+    while True:
+        username = fake.unique.user_name()
+        if (
+            settings.MIN_USERNAME_LENGTH
+            <= len(username)
+            <= settings.MAX_USERNAME_LENGTH
+        ):
+            break
+    return username
 
 
 def create_sr():
-    sr = fake.unique.word(),
-    while (
-        not re.fullmatch(r"\w+", sr[0])
-        or len(sr[0]) < 3
-        or len(sr[0]) > settings.MAX_SR_LENGTH
-    ):
-        create_sr()
-    else:
-        return sr[0]
+    while True:
+        sr = fake.unique.word()
+        if settings.MIN_SR_LENGTH <= len(sr) <= settings.MAX_SR_LENGTH:
+            break
+    return sr
 
 
 def create_users(count: int) -> List[models.User]:
