@@ -1,12 +1,14 @@
 #!/usr/bin/env python3
 
 import argparse
+import re
 from typing import List, Union
 
 from faker import Faker
 from neomodel import clear_neo4j_database, db
 
 from app import crud, models, schemas
+from app.core.config import settings
 from app.db.init_db import init_neo4j, init_mongodb
 
 
@@ -17,6 +19,26 @@ def init_dbs():
     """Initialize databases."""
     init_neo4j()
     init_mongodb()
+
+
+def create_username():
+    while True:
+        username = fake.unique.user_name()
+        if (
+            settings.MIN_USERNAME_LENGTH
+            <= len(username)
+            <= settings.MAX_USERNAME_LENGTH
+        ):
+            break
+    return username
+
+
+def create_sr():
+    while True:
+        sr = fake.unique.word()
+        if settings.MIN_SR_LENGTH <= len(sr) <= settings.MAX_SR_LENGTH:
+            break
+    return sr
 
 
 def create_users(count: int) -> List[models.User]:
@@ -40,7 +62,7 @@ def create_users(count: int) -> List[models.User]:
     for _ in range(count - 1):
         schema = schemas.UserCreate(
             email=fake.unique.ascii_safe_email(),
-            username=fake.unique.user_name(),
+            username=create_username(),
             password=fake.password(),
         )
         users.append(crud.user.create(schema))
@@ -60,7 +82,7 @@ def create_subreddits(count, users: List[models.User]) -> List[models.Subreddit]
     for _ in range(count):
         schema = schemas.SubredditCreate(
             description=" ".join(fake.words()),
-            sr=fake.unique.word(),
+            sr=create_sr(),
             title=" ".join(fake.words()),
             type=fake.random_element(schemas.SubredditType),
         )
