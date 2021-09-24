@@ -24,7 +24,7 @@ export default function CreatePost(props) {
         <Card>
             <CardActions>
                 <Avatar className={classes.avatar}>
-                    {props.cookies.username[0]}
+                    {((typeof props.cookies.username !== "undefined") ? props.cookies.username[0] : "")}
                 </Avatar>
                 <Link className={classes.link} to={{ pathname:'/submit', state: [{id: 1, name: 'Ford', color: 'red'}] }}>
                     <TextField id="outlined-basic" label="Create Post" variant="outlined" fullWidth className={classes.textField} />
