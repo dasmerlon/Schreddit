@@ -17,6 +17,13 @@ class PaginationInvalidCursorException(HTTPException):
         )
 
 
+class UserNotFoundException(HTTPException):
+    def __init__(self):
+        super().__init__(
+            status_code=status.HTTP_404_NOT_FOUND, detail="This user does not exist."
+        )
+
+
 class PostNotFoundException(HTTPException):
     def __init__(self):
         super().__init__(
@@ -35,14 +42,6 @@ class ThingNotFoundException(HTTPException):
     def __init__(self):
         super().__init__(
             status_code=status.HTTP_404_NOT_FOUND, detail="This thing does not exist."
-        )
-
-
-class ThingAlreadyVoted(HTTPException):
-    def __init__(self):
-        super().__init__(
-            status_code=status.HTTP_304_NOT_MODIFIED,
-            detail="This thing is already voted in the specified direction.",
         )
 
 

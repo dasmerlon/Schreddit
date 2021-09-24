@@ -51,9 +51,9 @@ def test_get_posts_empty_subreddit(
     r = client.get(f"{settings.API_V1_STR}/posts/list?sr={subreddit_in_db.sr}")
     assert r.status_code == status.HTTP_200_OK
     post_list = r.json()
-    assert post_list["data"] is None
+    assert not post_list["data"]
     assert post_list["links"]["prev"] is None
-    assert post_list["links"]["after"] is None
+    assert post_list["links"]["next"] is None
 
 
 @pytest.mark.parametrize(

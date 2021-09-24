@@ -1,7 +1,10 @@
+import re
+
 from fastapi import APIRouter, Depends, HTTPException, Response, status
 
 from app import crud, models, schemas
 from app.api import deps
+from app.api.api_v1.exceptions import UserNotFoundException
 from app.core.security import verify_password
 
 router = APIRouter()
@@ -34,7 +37,7 @@ def register(user: schemas.UserCreate):
 
 
 @router.get(
-    "/{username}",
+    "/u/{username}",
     name="Get User Data",
     response_model=schemas.User,
     status_code=status.HTTP_200_OK,
@@ -44,21 +47,21 @@ def get_user(username: str):
     Get user data from an existing user via email or username.
     If everything succeeds, a user with matching email or username will be returned.
     """
-    user = crud.user.get_by_username(username)
-    if user is None:
+    # check if `username` is valid email
+    if re.fullmatch(r"[^@]+@[^@]+\.[^@]+", username):
         user = crud.user.get_by_email(username)
+        if user is None:
+            user = crud.user.get_by_username(username)
+    else:
+        user = crud.user.get_by_username(username)
     if user is None:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="User doesn't exist.",
-        )
+        raise UserNotFoundException
     return user
 
 
 @router.put(
     "/settings",
     name="Update User Data",
-    status_code=status.HTTP_204_NO_CONTENT,
 )
 def update_user(
     user_update: schemas.UserUpdate,
@@ -80,9 +83,24 @@ def update_user(
         to_update["password"] = user_update.password
 
     if not bool(to_update):
-        raise HTTPException(
-            status_code=status.HTTP_304_NOT_MODIFIED,
-        )
+        return Response(status_code=status.HTTP_304_NOT_MODIFIED)
 
     crud.user.update(current_user, to_update)
     return Response(status_code=status.HTTP_204_NO_CONTENT)
+
+
+@router.get(
+    "/subscriptions",
+    name="Get subscribed subreddits of a user",
+    response_model=schemas.SubscriptionList,
+    status_code=status.HTTP_200_OK,
+)
+def get_subscriptions(
+    current_user: models.User = Depends(deps.get_current_user),
+):
+    """
+    Get subscribed subreddits of a user in alphabetical order.
+    """
+    return schemas.SubscriptionList(
+        subscriptions=crud.user.get_subscriptions(current_user)
+    )

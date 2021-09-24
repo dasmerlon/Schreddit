@@ -1,6 +1,6 @@
 from datetime import datetime
 from enum import Enum
-from typing import Optional
+from typing import List, Optional
 
 from pydantic import UUID4, BaseModel, constr
 
@@ -50,3 +50,7 @@ class Subreddit(SubredditCreate):
     class Config:
         orm_mode = True
         getter_dict = SubredditGetterDict
+
+
+class SubscriptionList(BaseModel):
+    subscriptions: List[Subreddit]

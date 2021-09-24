@@ -1,11 +1,11 @@
-from typing import Any, Dict, Optional, Union
+from typing import Any, Dict, List, Optional, Union
 
 from neomodel import db
 from pydantic import EmailStr
 
 from app.core.security import get_password_hash, verify_password
 from app.crud.base_neo import CRUDBaseNeo
-from app.models import User
+from app.models import Subreddit, User
 from app.schemas import UserCreate, UserUpdate
 
 
@@ -80,6 +80,10 @@ class CRUDUser(CRUDBaseNeo[User, UserCreate, UserUpdate]):
         if not verify_password(password, user.hashed_password):
             return None
         return user
+
+    @db.read_transaction
+    def get_subscriptions(self, db_obj: User) -> List[Subreddit]:
+        return db_obj.subscription.order_by("sr").all()
 
 
 user = CRUDUser(User)

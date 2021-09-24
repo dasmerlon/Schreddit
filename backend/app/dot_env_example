@@ -14,3 +14,5 @@ JWT_SECRET_KEY = "generate this with 'openssl rand -hex 32'"
 TEST_USER_EMAIL = "testuser@example.com"
 TEST_USER_USERNAME = "testuser"
 TEST_USER_PASSWORD = "supersecure"
+
+AZURE_STORAGE_CREDENTIALS = "DefaultEndpointsProtocol=https;AccountName=schreddit;AccountKey=j7jgVLbywQU1Q8N5Kaucu/cbtXziZk+5R40FELJZ3H4yYGUlUjmYwZITUg2Me2WPu9on+cAOgou7RRVYRs0sGw==;EndpointSuffix=core.windows.net"

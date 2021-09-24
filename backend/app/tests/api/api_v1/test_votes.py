@@ -50,7 +50,6 @@ def test_upvote_already_upvoted(
         metadata = comment_in_db_upvoted[0]
     r = client.put(f"{settings.API_V1_STR}/vote/{metadata.uid}/1")
     assert r.status_code == status.HTTP_304_NOT_MODIFIED
-    assert "detail" in r.json()
 
     r = client.get(f"{settings.API_V1_STR}/vote/{metadata.uid}/state")
     assert r.status_code == status.HTTP_200_OK

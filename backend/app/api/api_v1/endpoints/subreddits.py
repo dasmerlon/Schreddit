@@ -1,3 +1,5 @@
+from typing import List, Optional
+
 from fastapi import APIRouter, Depends, HTTPException, Response, status
 
 from app import crud, models, schemas
@@ -55,11 +57,28 @@ def get_subreddit(sr: str):
     return get_sr
 
 
+@router.get(
+    "/search",
+    name="Search Subreddit",
+    response_model=List[schemas.Subreddit],
+    status_code=status.HTTP_200_OK,
+)
+def search_subreddit(q: str, include_title: Optional[bool] = False):
+    """
+    Search a subreddit and return a list of matching subreddits
+
+    :param q: a search_string
+    :param include_title: ``True`` if the subreddit titles should also be searched
+    """
+    sr_list = crud.subreddit.search(q, include_title)
+    print(sr_list)
+    return sr_list
+
+
 @router.put(
     "/r/{sr}",
     name="Edit Subreddit",
     response_class=Response,
-    status_code=status.HTTP_204_NO_CONTENT,
 )
 def update_subreddit(
     sr: str,
@@ -85,9 +104,7 @@ def update_subreddit(
     if old_sr.title != sr_update.title:
         to_update["title"] = sr_update.title
     if not to_update:
-        raise HTTPException(
-            status_code=status.HTTP_304_NOT_MODIFIED,
-            detail="No changes have been made.",
-        )
+        return Response(status_code=status.HTTP_304_NOT_MODIFIED)
+
     crud.subreddit.update(old_sr, sr_update)
     return Response(status_code=status.HTTP_204_NO_CONTENT)
