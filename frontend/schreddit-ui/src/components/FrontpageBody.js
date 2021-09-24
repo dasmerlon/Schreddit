@@ -9,6 +9,7 @@ import Premium from "./Premium";
 import CommunitiesByCategory from "./PopularComs";
 import Info from "./Info";
 import TopComs from "./TopComs";
+import CommentsPageBody from './comments/CommentsPageDialog';
 
 // InfiniteScrolling source:
 // https://dev.to/hunterjsbit/react-infinite-scroll-in-few-lines-588f
@@ -28,11 +29,17 @@ const useStyles = makeStyles((theme) => ({
 export default function ForntpageBody(props) {
     const classes = useStyles();
 
-    const [postList, setPostList] = useState({
-      list: [<Post/>,<Post/>,<Post/>,<Post/>]
-    }); 
+    const [open, setOpen] = React.useState(false);
+
+    const [postList, setPostList] = useState({ list: [<Post setOpen={setOpen}/>,<Post setOpen={setOpen}/>,<Post setOpen={setOpen}/>,<Post setOpen={setOpen}/>] }); 
     const [page, setPage] = useState(1);
     const loader = useRef(null);
+
+
+    const handleClose = () => {
+      setOpen(false);
+      console.log(open)
+    };
 
     useEffect(() => {
       var options = {
@@ -49,7 +56,7 @@ export default function ForntpageBody(props) {
 
     useEffect(() => {
       // here we simulate adding new posts to List
-      const newList = postList.list.concat([<Post/>, <Post/>, <Post/>, <Post/>]);
+      const newList = postList.list.concat([<Post setOpen={setOpen}/>,<Post setOpen={setOpen}/>,<Post setOpen={setOpen}/>,<Post setOpen={setOpen}/>]);
       //console.log(props.cookies);
       setPostList({
         list: newList
@@ -113,8 +120,10 @@ export default function ForntpageBody(props) {
           </Grid>
         </Grid>
       </Container>
-
+      <CommentsPageBody handleClose={handleClose} open={open}/>
     </React.Fragment>
     </div>
     );
 } 
+
+
