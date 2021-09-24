@@ -6,8 +6,8 @@ from .comment_meta import CommentMeta, CommentMetaCreate, CommentMetaUpdate
 from .post import Post, PostCreate, PostList, PostSort, PostUpdate
 from .post_content import PostContent, PostContentCreate, PostContentUpdate
 from .post_meta import PostMeta, PostMetaCreate, PostMetaUpdate, PostType
-from .subreddit import (Subreddit, SubredditCreate, SubredditType,
-                        SubredditUpdate, SubscriptionList)
+from .subreddit import (Subreddit, SubredditCreate, SubredditList,
+                        SubredditType, SubredditUpdate)
 from .thing import Thing, ThingCreate, ThingUpdate, VoteOptions
 from .thing_content import ThingContent, ThingContentCreate, ThingContentUpdate
 from .thing_meta import ThingMeta, ThingMetaCreate, ThingMetaUpdate

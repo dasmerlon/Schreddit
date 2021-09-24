@@ -58,10 +58,9 @@ class SubredditUpdate(SubredditBase):
     pass
 
 
-class Subreddit(SubredditCreate):
+class SubredditNoAdmin(SubredditCreate):
     created_at: Optional[datetime]
     updated_at: Optional[datetime]
-    admin: User
     uid: UUID4
 
     class Config:
@@ -69,5 +68,9 @@ class Subreddit(SubredditCreate):
         getter_dict = SubredditGetterDict
 
 
-class SubscriptionList(BaseModel):
-    subscriptions: List[Subreddit]
+class Subreddit(SubredditNoAdmin):
+    admin: User
+
+
+class SubredditList(BaseModel):
+    subreddits: List[SubredditNoAdmin]
