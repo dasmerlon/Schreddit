@@ -2,7 +2,7 @@ import os
 from uuid import uuid4
 
 from azure.storage.blob import BlobClient, ContentSettings
-from fastapi import APIRouter, File, UploadFile, status
+from fastapi import APIRouter, File, HTTPException, UploadFile, status
 from pydantic import HttpUrl
 
 from app.core.config import settings
@@ -29,6 +29,11 @@ def upload(file: UploadFile = File(...)):
         container = "images"
     elif file.content_type.startswith("video"):
         container = "videos"
+    else:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="You can only upload an image, gif or video.",
+        )
     blob = BlobClient.from_connection_string(
         conn_str=settings.AZURE_STORAGE_CREDENTIALS,
         container_name=container,
