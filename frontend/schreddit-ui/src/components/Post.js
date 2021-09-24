@@ -1,6 +1,6 @@
 import React from 'react';
 import {makeStyles, useTheme} from "@material-ui/core/styles";
-import {Card, CardHeader, Avatar, SvgIcon, Link, Grid, CardActionArea, Chip, MobileStepper} from "@material-ui/core";
+import {Card, CardHeader, Avatar, SvgIcon, Link, Grid, CardActionArea as ButtonBase, Chip, MobileStepper} from "@material-ui/core";
 import CardActions from '@material-ui/core/CardActions';
 import CardContent from '@material-ui/core/CardContent';
 import IconButton from '@material-ui/core/IconButton';
@@ -44,6 +44,9 @@ const useStyles = makeStyles({
     avatar: {
       backgroundColor: "rgb(0,180,200)",
     },
+    button: {
+        textTransform:"none",
+    },
     img: {
       height: '50%',
       maxWidth: 700,
@@ -58,7 +61,7 @@ const useStyles = makeStyles({
 //             <CardMedia component='iframe' className={classes.media} src={vid} />
 //      - Für den Avatar auch ein richtiges Bild und nicht nur einen Buchstaben 
 //        mit Hintergrund verwenden.
-export default function Posts() {
+export default function Posts(props) {
   const classes = useStyles();
 
   const show_vid = false; 
@@ -69,7 +72,7 @@ export default function Posts() {
   const theme = useTheme();
   const [activeStep, setActiveStep] = React.useState(0);
   const maxSteps = tutorialSteps.length;
-
+  
   const handleNext = () => {
     setActiveStep((prevActiveStep) => prevActiveStep + 1);
   };
@@ -78,8 +81,13 @@ export default function Posts() {
     setActiveStep((prevActiveStep) => prevActiveStep - 1);
   };
 
+  function handleClickOpen(e) {
+    e.preventDefault();
+    props.setOpen(true);
+  };
+
   return (
-      <Card useStyles={classes.root}>
+      <Card elevation={0} useStyles={classes.root}>
         <CardHeader
           avatar={
             <Avatar className={classes.avatar}>
@@ -88,19 +96,23 @@ export default function Posts() {
           }
           action={
             <Grid container>
-              <Button size="small">+Join</Button>
-
-              <Grid item>
-                <IconButton size="small" title="More" onClick={()=>{alert('Upvote') }}> 
-                  <SvgIcon ><path d={mdiArrowUpBoldOutline} /></SvgIcon>
-                </IconButton>
-                <Typography component="h2">
-                  200
-                </Typography> 
-                <IconButton size="small" title="More" onClick={()=>{alert('Downvote') }}> 
-                  <SvgIcon ><path d={mdiArrowDownBoldOutline} /></SvgIcon>
-                </IconButton>
-              </Grid>
+              { props.showJoin == null || props.showVotes == true ?   
+                <Button size="small">+Join</Button>
+              : null}
+              
+              { props.showVotes == null || props.showVotes == true ?          
+                <Grid item>
+                  <IconButton size="small" title="More" > 
+                    <SvgIcon ><path d={mdiArrowUpBoldOutline} /></SvgIcon>
+                  </IconButton>
+                  <Typography component="h2">
+                    200
+                  </Typography> 
+                  <IconButton size="small" title="More" > 
+                    <SvgIcon ><path d={mdiArrowDownBoldOutline} /></SvgIcon>
+                  </IconButton>
+                </Grid> 
+              : null }
             </Grid>
           }
           title={
@@ -119,7 +131,7 @@ export default function Posts() {
           }
         />
 
-        <CardActionArea href="http://localhost:3000/r/HowToPictures">
+        <ButtonBase onClick={handleClickOpen}>
           <CardContent>
             <Typography variant="h5" component="h2">
               How does Shutter, ISO & Apature effect your pictures? 
@@ -145,7 +157,7 @@ export default function Posts() {
               <Typography>Internal Error... (Filetype has multiple types)</Typography>
             </CardContent>
           : null}
-        </CardActionArea>
+        </ButtonBase>
 
         { show_multiple_img && !show_vid && !show_text ? 
           <MobileStepper
@@ -168,16 +180,16 @@ export default function Posts() {
           /> 
         : null}
         
-        <CardActionArea href="http://localhost:3000/r/HowToPictures">
+        <ButtonBase onClick={handleClickOpen}>
           {show_vid && !show_multiple_img && !show_text ? 
             <video className={classes.img} controls src={vid} type={'video/mp4'} id="myVideo"/> 
           : null}
-        </CardActionArea>
+        </ButtonBase>
         <CardActions>
-          <Button size="small" title="Comments" startIcon={<SvgIcon ><path d={mdiCommentOutline} /></SvgIcon>} onClick={()=>{alert('Go to comments') }} >Comments</Button>
-          <Button size="small" title="Give Award" startIcon={<SvgIcon ><path d={mdiGiftOutline} /></SvgIcon>} onClick={()=>{alert('Give Award') }}>Award</Button>
-          <Button size="small" title="Share" startIcon={<ShareRoundedIcon />} onClick={()=>{alert('Share with') }}>Share</Button>
-          <Button size="small" title="Save" startIcon={<BookmarkBorderRoundedIcon />} onClick={()=>{alert('Saved') }}>Save</Button>
+          <Button size="small" className={classes.button} title="Comments" startIcon={<SvgIcon ><path d={mdiCommentOutline} /></SvgIcon>} >Comments</Button>
+          <Button size="small" className={classes.button} title="Give Award" startIcon={<SvgIcon ><path d={mdiGiftOutline} /></SvgIcon>} >Award</Button>
+          <Button size="small" className={classes.button} title="Share" startIcon={<ShareRoundedIcon />} >Share</Button>
+          <Button size="small" className={classes.button} title="Save" startIcon={<BookmarkBorderRoundedIcon />} >Save</Button>
           <IconButton size="small" title="More" onClick={()=>{alert('More') }}> 
             <MoreHorizRoundedIcon /> 
           </IconButton>
