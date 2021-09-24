@@ -19,6 +19,8 @@ def upload(file: UploadFile = File(...)):
     """
     Upload a video or image as a Blob to Azure Storage.
     Returns the URL of the saved file.
+
+    :param file: the file to be uploaded
     """
     if file.content_type.startswith("image"):
         container = "images"

@@ -3,8 +3,6 @@ from typing import Optional
 from fastapi import APIRouter, Depends, Query, Request, Response, status
 from pydantic import UUID4
 
-from app.core.config import settings
-
 from app import crud, models, schemas
 from app.api import deps
 from app.api.api_v1.exceptions import (PaginationAfterAndBeforeException,
