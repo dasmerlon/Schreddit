@@ -6,7 +6,7 @@ from app.api.api_v1.endpoints import (account, auth, blob, comments, posts,
 router = APIRouter()
 router.include_router(account.router, prefix="/account")
 router.include_router(auth.router, prefix="/auth")
-router.include_router(blob.router, prefix="/upload")
+router.include_router(blob.router, prefix="/blob")
 router.include_router(comments.router, prefix="/comments")
 router.include_router(posts.router, prefix="/posts")
 router.include_router(subreddits.router, prefix="/subreddits")
