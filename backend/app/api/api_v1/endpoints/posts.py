@@ -3,7 +3,6 @@ from typing import Optional
 from fastapi import APIRouter, Depends, Query, Request, Response, status
 from pydantic import UUID4
 
-from azure.storage.blob import BlobClient
 from app.core.config import settings
 
 from app import crud, models, schemas
@@ -151,18 +150,6 @@ def submit_post(
     created_post_content = crud.post_content.create(created_post_meta.uid, post.content)
     crud.post_meta.set_author(created_post_meta, current_user)
     crud.post_meta.set_subreddit(created_post_meta, sr)
-
-    # upload to azure blob if post-type is img/video
-    if created_post_meta.type == "image":
-        blob = BlobClient.from_connection_string(conn_str=settings.AZURE_STORAGE_CREDENTIALS, container_name="images",
-                                                 blob_name="img_blob")
-        with open(SOURCE_FILE, "rb") as data:
-            blob.upload_blob(data)
-    elif created_post_meta.type == "video":
-        blob = BlobClient.from_connection_string(conn_str=settings.AZURE_STORAGE_CREDENTIALS, container_name="videos",
-                                                 blob_name="video_blob")
-        with open(SOURCE_FILE, "rb") as data:
-            blob.upload_blob(data)
 
     return schemas.Post(metadata=created_post_meta, content=created_post_content)
 
