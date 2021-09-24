@@ -48,7 +48,7 @@ const useStyles = makeStyles({
   //this is okayish but could be better.
   img: {
     height: '50%',
-    maxWidth: 700,
+    maxWidth: 500,
     overflow: 'hidden',
     display: 'block',
     // width: '100%',
@@ -199,8 +199,8 @@ export default function Posts(props) {
         </CardContent>
 
 
-        {!show_multiple_img && (!props.type === "video" || !props.type === "videogif") && !props.type === "self" ?
-          <img alt="" className={classes.img} src={tutorialSteps[activeStep].imgPath} />
+        {props.type === "image" ?
+          <img alt="" className={classes.img} src={props.url} />
           : null}
 
         {props.type === "self" ?
@@ -215,7 +215,7 @@ export default function Posts(props) {
           : null}
       </CardActionArea>
 
-      {show_multiple_img && (!props.type === "video" || !props.type === "videogif") && !props.type === "self" ?
+      {show_multiple_img && props.type === "image" ?
         <MobileStepper
           steps={maxSteps}
           position="static"
@@ -236,9 +236,9 @@ export default function Posts(props) {
         />
         : null}
 
-      <CardActionArea href="http://localhost:3000/r/HowToPictures">
+      <CardActionArea href={"" + props.uid}>
         {(props.type === "video" || props.type === "videogif") ?
-          <video className={classes.img} controls src={vid} type={'video/mp4'} id="myVideo" />
+          <video className={classes.img} controls src={props.url} type={'video/mp4'} id="myVideo" />
           : null}
       </CardActionArea>
       <CardActions>
