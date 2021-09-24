@@ -69,7 +69,9 @@ export default function CreatePostBody(props) {
     const [value, setValue] = React.useState(0);
     const [subreddit, setSubreddit] = React.useState('');
     const [titleValue, setTitleValue] = React.useState('');
-    
+    const [file, setFile] = React.useState(null);
+    const [url, setUrl] = React.useState();
+
     const [textLink, makeTextLink] = React.useState(false);
     const [textValue, setTextFieldValue] = React.useState('');
 
@@ -90,7 +92,10 @@ export default function CreatePostBody(props) {
         axios.get(configData.USER_API_URL + '/subscriptions', config
         ).then(response => {
             setSubscribedSubreddits(response.data.subscriptions);
-            setSubreddit('r/' + response.data.subscriptions[0].sr);
+            console.log(response.data.subscriptions)
+            if(response.data.subscriptions.length !== 0){
+              setSubreddit('r/' + response.data.subscriptions[0].sr);
+            }
         });
     }
 
@@ -118,21 +123,47 @@ export default function CreatePostBody(props) {
       { textLink ? setTextFieldValue(textValue + '[') : setTextFieldValue(textValue + '](' +  ')')};
     }
 
-    const createPost = (type) => {
+    const handlePost = (type) => {
       console.log(titleValue)
       let parameters = {
         metadata: {
           "nsfw": nsfw,
           "spoiler": spoiler,
           sr: subreddit.substring(2,subreddit.length),
-          type: navigationFocus,
         },
         content: {
-          text: textValue,
           title: titleValue
         }
       }
-
+      if(type === "self"){
+        parameters.content.text = textValue;
+        parameters.metadata.type = 'self';
+      }
+      else if(type === "imageOrVideo"){
+        var formData = new FormData();
+        formData.append("file", file)
+        axios.post(configData.UPLOAD_API_URL, formData, {
+          headers: {
+            'Authorization': `Bearer ${props.cookies.token}`,
+            'Content-Type': 'multipart/form-data'
+          }
+        }).then(response => {
+          parameters.content.url = response.data
+          if(file.type.startsWith('image')){
+            parameters.metadata.type = 'image';
+          }
+          else if(file.type.startsWith('video')){
+            parameters.metadata.type = "video";
+          }
+          createPost(parameters)
+        })
+      }
+      else{
+        
+      } 
+    }
+    const createPost = (parameters) => {
+      
       axios.post(configData.POST_API_URL, parameters, {
         headers: {'Authorization': `Bearer ${props.cookies.token}`}
       }).then(response => {
@@ -176,11 +207,11 @@ export default function CreatePostBody(props) {
                     <Grid item>
                         <Paper>
                           <BottomNavigation value={value} onChange={(event, newValue) => {setValue(newValue);}} showLabels >
-                            <BottomNavigationAction label="post" icon={<NotesIcon />} onClick={() => setnavigationFocus("self")} />
+                            <BottomNavigationAction label="Post" icon={<NotesIcon />} onClick={() => setnavigationFocus("self")} />
                             <Divider orientation="vertical"/>
-                            <BottomNavigationAction label="Image & Video" icon={<ImageOutlinedIcon />} onClick={() => setnavigationFocus("Image & Video")} />
+                            <BottomNavigationAction label="Image & Video" icon={<ImageOutlinedIcon />} onClick={() => setnavigationFocus("imageOrVideo")} />
                             <Divider orientation="vertical"/>
-                            <BottomNavigationAction label="Link" icon={<SvgIcon ><path d={mdiLinkVariant} /></SvgIcon>} onClick={() => setnavigationFocus("Link")} />
+                            <BottomNavigationAction label="Link" icon={<SvgIcon ><path d={mdiLinkVariant} /></SvgIcon>} onClick={() => setnavigationFocus("link")} />
                           </BottomNavigation>
                           <Divider />
                           <Grid container spacing={2} direction='column' className={classes.grid}>
@@ -241,11 +272,11 @@ export default function CreatePostBody(props) {
                             <Grid item>
                               <TextareaAutosize className={classes.grid} rowsMin={10} placeholder=" Text (optional)" onChange={handleTextfieldChange}/>
                             </Grid> 
-                              : navigationFocus==="Image & Video" ? 
+                              : navigationFocus=== "imageOrVideo" ? 
                             <Grid item>
                               <Paper variant="outlined">
                                 <Grid container alignItems="center" justify="center" className={classes.upload} >
-                                  <input accept="image/*" className={classes.input} id="contained-button-file" multiple type="file" />
+                                  <input accept="image/*,video/*" className={classes.input} id="contained-button-file" type="file" onChange={(e) => setFile(e.target.files[0])} />
                                 </Grid>
                               </Paper>
                             </Grid>
@@ -267,7 +298,7 @@ export default function CreatePostBody(props) {
                             <Divider />
                             <Grid item container alignItems="flex-end">
                               <Grid item>
-                                <Button onClick={() => createPost(navigationFocus)}>Post</Button>
+                                <Button onClick={() => handlePost(navigationFocus)}>Post</Button>
                                 </Grid>
                             </Grid>
                           </Grid>
