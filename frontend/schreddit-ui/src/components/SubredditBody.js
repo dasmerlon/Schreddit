@@ -155,16 +155,16 @@ export default function SubreditBody(props) {
                 </Grid>
               ), ((lastSortBy !== sortBy) ? true : false))
               setLastSortBy(sortBy);
-           })//.catch(error => {
-          //     if (error.response.status === 422) {
-          //         setError({ message: "Please check your input. Something is not valid." });
-          //     }
-          //     else {
-          //         setError({ message: "Something went wrong, please try again later." });
-          //     }
-          //     console.log(error.response);
-          // })
-  };
+           }).catch(error => {
+              if (error.response.status === 422) {
+                  setError({ message: "Please check your input. Something is not valid." });
+              }
+              else {
+                  setError({ message: "Something went wrong, please try again later." });
+              }
+              console.log(error.response);
+          })
+    };
 
     return (
     <div className={classes.root}> 

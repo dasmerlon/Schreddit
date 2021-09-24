@@ -9,6 +9,9 @@ import Premium from "./Premium";
 import CommunitiesByCategory from "./PopularComs";
 import Info from "./Info";
 import TopComs from "./TopComs";
+import axios from 'axios';
+import { useHistory } from "react-router-dom"
+import configData from './config.json'
 
 // InfiniteScrolling source:
 // https://dev.to/hunterjsbit/react-infinite-scroll-in-few-lines-588f
@@ -28,11 +31,54 @@ const useStyles = makeStyles((theme) => ({
 export default function ForntpageBody(props) {
     const classes = useStyles();
 
-    const [postList, setPostList] = useState({
-      list: [<Post/>,<Post/>,<Post/>,<Post/>]
-    }); 
+    // const [postList, setPostList] = useState({
+    //   list: [<Post/>,<Post/>,<Post/>,<Post/>]
+    // }); 
+    // const [page, setPage] = useState(1);
+    // const loader = useRef(null);
+
+    // useEffect(() => {
+    //   var options = {
+    //     root: null,
+    //     rootMargin: "20px",
+    //     threshold: 1.0
+    //   };
+    //   // initialize IntersectionObserver and attaching to Load More div
+    //   const observer = new IntersectionObserver(handleObserver, options);
+    //   if (loader.current) {
+    //     observer.observe(loader.current)
+    //   }
+    // }, []);
+
+    // useEffect(() => {
+    //   // here we simulate adding new posts to List
+    //   const newList = postList.list.concat([<Post/>, <Post/>, <Post/>, <Post/>]);
+    //   //console.log(props.cookies);
+    //   setPostList({
+    //     list: newList
+    //   })
+    // }, [page]); // Do not add postList.list as a dependency.. It will start an infinite loop. Even though there is a warning
+
+    // // here we handle what happens when user scrolls to Load More div
+    // // in this case we just update page variable
+    // const handleObserver = (entities) => {
+    //   const target = entities[0];
+    //   if (target.isIntersecting) {   
+    //     setPage((page) => page + 1)
+    //   }
+    // };
+
+    const [posts, setPosts] = React.useState();
+    const [error, setError] = React.useState("");
+    const [subredditOneLetter, setSubredditOneLetter] = React.useState("");
+    const [lastSortBy, setLastSortBy] = React.useState('new');
+
     const [page, setPage] = useState(1);
     const loader = useRef(null);
+
+    useEffect(() => {
+      getPosts(lastSortBy);
+    }, [page])
 
     useEffect(() => {
       var options = {
@@ -47,15 +93,6 @@ export default function ForntpageBody(props) {
       }
     }, []);
 
-    useEffect(() => {
-      // here we simulate adding new posts to List
-      const newList = postList.list.concat([<Post/>, <Post/>, <Post/>, <Post/>]);
-      //console.log(props.cookies);
-      setPostList({
-        list: newList
-      })
-    }, [page]); // Do not add postList.list as a dependency.. It will start an infinite loop. Even though there is a warning
-
     // here we handle what happens when user scrolls to Load More div
     // in this case we just update page variable
     const handleObserver = (entities) => {
@@ -64,6 +101,73 @@ export default function ForntpageBody(props) {
         setPage((page) => page + 1)
       }
     };
+
+    // Add initial posts or concatinate new to existing ones
+    const handlePosts = (newPosts, clear) => {
+      if(typeof posts === "undefined" || clear === true){
+        setPosts(newPosts);
+      }
+      else{
+        setPosts((posts) => posts.concat(newPosts))
+      }
+    }
+
+    const getPosts = (sortBy) => {
+      let config = '';
+      if(typeof props.cookies.token !== "undefined"){
+        config = {
+          headers: {'Authorization': `Bearer ${props.cookies.token}`},
+          params: {
+            size: 5,
+            sr: window.location.pathname.split('/')[2],
+            sort: sortBy
+          },
+        };
+      }
+      else {
+        config = {
+          params: {
+            size: 5,
+            sr: window.location.pathname.split('/')[2],
+            sort: sortBy
+          }
+        }
+      }
+
+      if(typeof posts !== "undefined" && lastSortBy === sortBy){
+        config.params.after = posts[posts.length-1].props.children.props.uid
+      }
+      axios.get(configData.POSTS_API_URL, config 
+      ).then(response => {
+              handlePosts(response.data.data.map((post) => 
+                <Grid item> 
+                  <Post uid={post.metadata.uid} 
+                    author={post.metadata.author} 
+                    sr={post.metadata.sr} 
+                    createdAt={post.metadata.created_at}
+                    title={post.content.title}
+                    type={post.metadata.type}
+                    url={post.content.url}
+                    text={post.content.text}
+                    voteCount={post.metadata.count}
+                    voteState={post.metadata.state}
+                    cookies={props.cookies}
+                    /> 
+                </Grid>
+              ), ((lastSortBy !== sortBy) ? true : false))
+              setLastSortBy(sortBy);
+           }).catch(error => {
+              if (error.response.status === 422) {
+                  setError({ message: "Please check your input. Something is not valid." });
+              }
+              else {
+                  setError({ message: "Something went wrong, please try again later." });
+              }
+              console.log(error.response);
+          })
+    };
+
+
 
     return (
     <div className={classes.root}> 
@@ -77,20 +181,14 @@ export default function ForntpageBody(props) {
               <CreatePost />
             </Grid>
             <Grid item>
-              <SortByBar />
+              <SortByBar getPosts={getPosts}/>
             </Grid>
-            <Grid item>
-              {
-                postList.list.map((post, index) => {
-                  return (<div key={index} className="post" >
-                    <h2> {post } </h2>
-                  </div>)
-                })
-              }
+
+             {posts}
               <div className="loading" ref={loader}>
                 <h2>Loading Posts ...</h2>
               </div>
-            </Grid>
+
           </Grid>
           <Grid item container spacing={3} direction='column' className={classes.grid} xs={1}>
             <Hidden smDown>
