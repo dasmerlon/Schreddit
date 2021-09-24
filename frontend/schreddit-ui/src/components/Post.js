@@ -154,7 +154,7 @@ export default function Posts(props) {
       <CardHeader
         avatar={
           <Avatar className={classes.avatar}>
-          {props.author[0]}     
+          {(typeof props.author !== "undefined") ? props.author[0] : ""}     
             </Avatar>
         }
         action={
