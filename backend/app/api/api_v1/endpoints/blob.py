@@ -23,7 +23,7 @@ def upload(file: UploadFile = File(...)):
 
     - `file` : the file to be uploaded
     """
-    split = os.path.splitext(file)
+    split = os.path.splitext(file.filename)
     file_extension = split[1]
     if file.content_type.startswith("image"):
         container = "images"
