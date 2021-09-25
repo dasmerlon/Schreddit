@@ -180,11 +180,19 @@ export default function Posts(props) {
           /> 
         : null}
         
-        <ButtonBase onClick={handleClickOpen}>
-          {show_vid && !show_multiple_img && !show_text ? 
-            <video className={classes.img} controls src={vid} type={'video/mp4'} id="myVideo"/> 
-          : null}
-        </ButtonBase>
+        {props.clickable? 
+          <ButtonBase onClick={handleClickOpen}>
+            {show_vid && !show_multiple_img && !show_text ? 
+              <video className={classes.img} controls src={vid} type={'video/mp4'} id="myVideo"/> 
+            : null}
+          </ButtonBase> 
+        :
+          <div>
+            {show_vid && !show_multiple_img && !show_text ? 
+              <video className={classes.img} controls src={vid} type={'video/mp4'} id="myVideo"/> 
+            : null}
+          </div>
+        }
         <CardActions>
           <Button size="small" className={classes.button} title="Comments" startIcon={<SvgIcon ><path d={mdiCommentOutline} /></SvgIcon>} >Comments</Button>
           <Button size="small" className={classes.button} title="Give Award" startIcon={<SvgIcon ><path d={mdiGiftOutline} /></SvgIcon>} >Award</Button>
