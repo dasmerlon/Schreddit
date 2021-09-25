@@ -91,10 +91,10 @@ export default function CreatePostBody(props) {
         };
         axios.get(configData.USER_API_URL + '/subscriptions', config
         ).then(response => {
-            setSubscribedSubreddits(response.data.subscriptions);
-            console.log(response.data.subscriptions)
-            if(response.data.subscriptions.length !== 0){
-              setSubreddit('r/' + response.data.subscriptions[0].sr);
+            setSubscribedSubreddits(response.data.subreddits);
+            console.log(response.data.subreddits)
+            if(response.data.subreddits.length !== 0){
+              setSubreddit('r/' + response.data.subreddits[0].sr);
             }
         });
     }
