@@ -1,16 +1,19 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import {makeStyles} from "@material-ui/core/styles";
 import { IconButton, Chip, TextareaAutosize, BottomNavigation, BottomNavigationAction, FormControl, InputLabel, OutlinedInput, InputAdornment, Divider, TextField, MenuItem, SvgIcon, Grid, Container, Hidden, CssBaseline, Paper, Button, Avatar, Typography} from "@material-ui/core";
 import Rules from "./Rules";
 import AboutCom from "./AboutCom";
 import ImageOutlinedIcon from '@material-ui/icons/ImageOutlined';
 import NotesIcon from '@material-ui/icons/Notes';
-import { mdiLinkVariant, mdiPlus, mdiCodeBraces, mdiFormatStrikethroughVariant, mdiExponent, mdiAlertCircleOutline, mdiFormatSize } from '@mdi/js';
+import { mdiLinkVariant, mdiPlus, mdiMinus, mdiCodeBraces, mdiFormatStrikethroughVariant, mdiExponent, mdiAlertCircleOutline, mdiFormatSize } from '@mdi/js';
 import FormatBoldIcon from '@material-ui/icons/FormatBold';
 import FormatItalicIcon from '@material-ui/icons/FormatItalic';
 import ListIcon from '@material-ui/icons/List';
 import FormatListNumberedIcon from '@material-ui/icons/FormatListNumbered';
 import FormatQuoteIcon from '@material-ui/icons/FormatQuote';
+import axios from 'axios';
+import configData from './config.json'
+import { useHistory } from "react-router-dom"
 
 //TODO: - Code aufräumen
 //      - Textfeldgröße an Fenstergröße anpassen
@@ -56,39 +59,56 @@ const useStyles = makeStyles((theme) => ({
   }));
 
 
-const subredits = [
-    {
-      value: "r/AnimalsBeingBros",
-    },
-    {
-      value: "r/space",
-    }
-];
 
-export default function CreatePostBody() {
+
+export default function CreatePostBody(props) {
     const classes = useStyles();
-    
-    const [navigationFokus, setNavigationFokus] = React.useState("Post");
-    const [chipValue1, setChipValue1] = React.useState(false);
-    const [chipValue2, setChipValue2] = React.useState(false);
+    const [navigationFocus, setnavigationFocus] = React.useState("self");
+    const [spoiler, setSpoilerValue] = React.useState(false);
+    const [nsfw, setNsfwValue] = React.useState(false);
     const [value, setValue] = React.useState(0);
-    const [subredit, setSubredit] = React.useState("r/AnimalsBeingBros");
+    const [subreddit, setSubreddit] = React.useState('');
     const [titleValue, setTitleValue] = React.useState('');
-    
+    const [file, setFile] = React.useState(null);
+    const [url, setUrl] = React.useState();
+
     const [textLink, makeTextLink] = React.useState(false);
     const [textValue, setTextFieldValue] = React.useState('');
 
+    const [subscribedSubreddits, setSubscribedSubreddits] = React.useState([])
+
+    let history = useHistory();
+
+    useEffect(() => {
+        if(props.cookies.loggedIn){
+            getSubscribedSubreddits();
+        }
+    }, [props.cookies.loggedIn]);
+
+    const getSubscribedSubreddits = () => {
+        let config = {
+            headers: {'Authorization': `Bearer ${props.cookies.token}`}
+        };
+        axios.get(configData.USER_API_URL + '/subscriptions', config
+        ).then(response => {
+            setSubscribedSubreddits(response.data.subscriptions);
+            console.log(response.data.subscriptions)
+            if(response.data.subscriptions.length !== 0){
+              setSubreddit('r/' + response.data.subscriptions[0].sr);
+            }
+        });
+    }
 
     const handleTitleChange = (event) => {
       setTitleValue(event.target.value);
     };
 
     const handleChange = (event) => {
-      setSubredit(event.target.value);
+      setSubreddit(event.target.value);
     };
 
     const handleTextfieldChange = (event) => {
-      { textValue.slice(-9, 0) === 'undefine' ? setTextFieldValue(' ') : setTextFieldValue(textValue + event.target.value[event.target.value.length-1])}
+      setTextFieldValue(event.target.value)
     };
 
     // Dies soll ein anfang sein für die verschiedenen Textmanipulationen, die in einem Texteditor möglich sind (not done yet)
@@ -101,6 +121,55 @@ export default function CreatePostBody() {
     const handleLinkText = (event) => {
       makeTextLink(!textLink);
       { textLink ? setTextFieldValue(textValue + '[') : setTextFieldValue(textValue + '](' +  ')')};
+    }
+
+    const handlePost = (type) => {
+      console.log(titleValue)
+      let parameters = {
+        metadata: {
+          "nsfw": nsfw,
+          "spoiler": spoiler,
+          sr: subreddit.substring(2,subreddit.length),
+        },
+        content: {
+          title: titleValue
+        }
+      }
+      if(type === "self"){
+        parameters.content.text = textValue;
+        parameters.metadata.type = 'self';
+        createPost(parameters)
+      }
+      else if(type === "imageOrVideo"){
+        var formData = new FormData();
+        formData.append("file", file)
+        axios.post(configData.UPLOAD_API_URL, formData, {
+          headers: {
+            'Authorization': `Bearer ${props.cookies.token}`,
+            'Content-Type': 'multipart/form-data'
+          }
+        }).then(response => {
+          parameters.content.url = response.data
+          if(file.type.startsWith('image')){
+            parameters.metadata.type = 'image';
+          }
+          else if(file.type.startsWith('video')){
+            parameters.metadata.type = "video";
+          }
+          createPost(parameters)
+        })
+      }
+      else{
+        
+      } 
+    }
+    const createPost = (parameters) => {
+      
+      axios.post(configData.POST_API_URL, parameters, {
+        headers: {'Authorization': `Bearer ${props.cookies.token}`}
+      }).then(response => {
+        history.push('/' + subreddit)
+      })
     }
 
 
@@ -117,36 +186,33 @@ export default function CreatePostBody() {
                     <Grid item >
                       <Typography variant="h5"> Create a post</Typography>
                     </Grid>
-                    <Grid item >
-                      <Button>Drafts 0</Button>
-                    </Grid>
                   </Grid>
                   <Divider/>
                   <Grid container spacing={2} direction="column" className={classes.grid}>
                     <Grid item>
-                      <TextField className={classes.dropDown} id="outlined-select-currency" select value={subredit} onChange={handleChange} variant="outlined">
-                        {subredits.map((option) => (
-                          <MenuItem value={option.value}>
+                      <TextField className={classes.dropDown} id="outlined-select-currency" select value={subreddit} onChange={handleChange} variant="outlined"> */}
+                        {subscribedSubreddits.map((option, i) => (
+                          <MenuItem key={i} value={"r/" + option.sr}>
                             <Grid container direction="row" spacing={1}>
                               <Grid item>
-                                <Avatar className={classes.avatarSizeSmall}>{option.value[2]}</Avatar>
+                                <Avatar className={classes.avatarSizeSmall}>{option.sr[0]}</Avatar>
                               </Grid>
                               <Grid item>
-                                {option.value}
+                                {"r/" + option.sr}
                               </Grid>
                             </Grid>
                           </MenuItem>
                         ))}
-                      </TextField>
-                      </Grid>
-                      <Grid item>
+                       </TextField>
+                    </Grid>
+                    <Grid item>
                         <Paper>
                           <BottomNavigation value={value} onChange={(event, newValue) => {setValue(newValue);}} showLabels >
-                            <BottomNavigationAction label="Post" icon={<NotesIcon />} onClick={() => setNavigationFokus("Post")} />
+                            <BottomNavigationAction label="Post" icon={<NotesIcon />} onClick={() => setnavigationFocus("self")} />
                             <Divider orientation="vertical"/>
-                            <BottomNavigationAction label="Image & Video" icon={<ImageOutlinedIcon />} onClick={() => setNavigationFokus("Image & Video")} />
-                            <Divider orientation="vertical"/>
-                            <BottomNavigationAction label="Link" icon={<SvgIcon ><path d={mdiLinkVariant} /></SvgIcon>} onClick={() => setNavigationFokus("Link")} />
+                            <BottomNavigationAction label="Image & Video" icon={<ImageOutlinedIcon />} onClick={() => setnavigationFocus("imageOrVideo")} />
+                            {/* <Divider orientation="vertical"/>
+                            <BottomNavigationAction label="Link" icon={<SvgIcon ><path d={mdiLinkVariant} /></SvgIcon>} onClick={() => setnavigationFocus("link")} /> */}
                           </BottomNavigation>
                           <Divider />
                           <Grid container spacing={2} direction='column' className={classes.grid}>
@@ -163,7 +229,7 @@ export default function CreatePostBody() {
                                 />
                               </FormControl>
                             </Grid>
-                              { navigationFokus=== "Post" ? 
+                              {/* { navigationFocus=== "Post" ? 
                             <Grid item>
                               <Grid container alignItems="center" className={classes.toolbar}>
                                 <IconButton className={classes.button} onClick={handleBold}>
@@ -202,16 +268,16 @@ export default function CreatePostBody() {
                                 </IconButton>
                               </Grid>
                             </Grid>
-                              : null }
-                              { navigationFokus=== "Post" ? 
+                              : null } */}
+                              { navigationFocus=== "self" ? 
                             <Grid item>
                               <TextareaAutosize className={classes.grid} rowsMin={10} placeholder=" Text (optional)" onChange={handleTextfieldChange}/>
                             </Grid> 
-                              : navigationFokus==="Image & Video" ? 
+                              : navigationFocus=== "imageOrVideo" ? 
                             <Grid item>
                               <Paper variant="outlined">
                                 <Grid container alignItems="center" justify="center" className={classes.upload} >
-                                  <input accept="image/*" className={classes.input} id="contained-button-file" multiple type="file" />
+                                  <input accept="image/*,video/*" className={classes.input} id="contained-button-file" type="file" onChange={(e) => setFile(e.target.files[0])} />
                                 </Grid>
                               </Paper>
                             </Grid>
@@ -223,20 +289,17 @@ export default function CreatePostBody() {
                             <Grid item>
                               <Grid container spacing={1} direction='row' className={classes.grid}>
                                 <Grid item>
-                                  <Chip variant={chipValue1 ? "outlined" : "default"} onClick={() => setChipValue1(!chipValue1)} label="SPOILER" icon={<SvgIcon ><path d={mdiPlus} /></SvgIcon>} />
+                                  <Chip variant={spoiler ? "outlined" : "default"} onClick={() => setSpoilerValue(!spoiler)} label="SPOILER" icon={<SvgIcon ><path d={spoiler ? mdiMinus : mdiPlus} /></SvgIcon>} />
                                 </Grid>
                                 <Grid item>
-                                  <Chip variant={chipValue2 ? "outlined" : "default"} onClick={() => setChipValue2(!chipValue2)} label="NSFW" icon={<SvgIcon ><path d={mdiPlus} /></SvgIcon>} />
+                                  <Chip variant={nsfw ? "outlined" : "default"} onClick={() => setNsfwValue(!nsfw)} label="NSFW" icon={<SvgIcon ><path d={nsfw ? mdiMinus : mdiPlus} /></SvgIcon>} />
                                 </Grid>
                               </Grid>
                             </Grid>
                             <Divider />
                             <Grid item container alignItems="flex-end">
                               <Grid item>
-                                <Button>Save Draft</Button>
-                              </Grid>
-                              <Grid item>
-                                <Button>Post</Button>
+                                <Button onClick={() => handlePost(navigationFocus)}>Post</Button>
                                 </Grid>
                             </Grid>
                           </Grid>
