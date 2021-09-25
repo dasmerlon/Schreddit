@@ -8,10 +8,11 @@ import { useCookies } from 'react-cookie';
 
 
 
+
 // Pages
 import FrontpageBody from './components/FrontpageBody';
 import CreateSubreddit from './components/subreddit/CreateSubreddit'
-import SubreditBody from './components/SubreditBody';
+import SubredditBody from './components/SubredditBody';
 import CreatePostBody from './components/CreatePostBody';
 import ErrorPage from './components/ErrorPage';
 
@@ -25,9 +26,9 @@ const App = () => {
   };
 
   const handleLogout = () => {
-    removeCookie("loggedIn");
-    removeCookie("token");
-    removeCookie("username");
+    removeCookie("token", { path: '/' });
+    removeCookie("loggedIn", { path: '/' });
+    removeCookie("username", { path: '/' });
     window.location.reload();
   };
 
@@ -39,7 +40,7 @@ const App = () => {
         <Route path={"/createSubreddit"} component={() => <CreateSubreddit cookies={cookies}/>}/>
         <Route path={"/submit"} component={() => <CreatePostBody cookies={cookies}/>} />
         <Route path={"/settings/account"} component={() => <UserSettingsBody cookies={cookies}/>}/>
-        <Route path={"/r/"} component={() => <SubreditBody cookies={cookies}/>} />
+        <Route path={"/r/"} component={() => <SubredditBody cookies={cookies}/>} />
         <Route exact path={"/404"} component={ErrorPage} />
           <Redirect to="/404" />
       </Switch>

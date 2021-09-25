@@ -17,14 +17,14 @@ const useStyles = makeStyles({
     }
 });
 
-export default function CreatePost() {
+export default function CreatePost(props) {
     const classes = useStyles();
 
     return (
         <Card>
             <CardActions>
                 <Avatar className={classes.avatar}>
-                    P
+                    {((typeof props !== "undefined" && typeof props.cookies !== "undefined" && typeof props.cookies.username !== "undefined" ) ? props.cookies.username[0] : "")}
                 </Avatar>
                 <Link className={classes.link} to={{ pathname:'/submit', state: [{id: 1, name: 'Ford', color: 'red'}] }}>
                     <TextField id="outlined-basic" label="Create Post" variant="outlined" fullWidth className={classes.textField} />

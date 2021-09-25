@@ -24,8 +24,9 @@ const useStyles = makeStyles({
     }
   });
 
-export default function AboutCom() {
+export default function AboutCom(props) {
   const classes = useStyles();
+  let date = new Date(props.createdAt).toDateString();
 
   return (
     <Box>
@@ -41,7 +42,7 @@ export default function AboutCom() {
         <CardContent>
           <Box className={classes.box}>
             <Typography variant="subtitle1" component="h2">
-              It's about..
+              {props.description}
             </Typography>
           </Box>
 
@@ -49,18 +50,10 @@ export default function AboutCom() {
             <Grid container direction='row'>
               <Grid item direction='column'>
                 <Grid item>
-                  <Typography>4.3m</Typography>
+                  <Typography>{props.members}</Typography>
                 </Grid>
                 <Grid item className={classes.padding}>
                   Members
-                </Grid>
-              </Grid>
-              <Grid item direction='column'>
-                <Grid item>
-                  <Typography>2.7k</Typography>
-                </Grid>
-                <Grid item>
-                  Online
                 </Grid>
               </Grid>
             </Grid>
@@ -74,7 +67,7 @@ export default function AboutCom() {
                 <SvgIcon ><path d={mdiCakeVariant} /></SvgIcon>
               </Grid>
               <Grid item>
-                <Typography>Created 15.Mai 2013</Typography>
+                <Typography>Created at {date}</Typography>
               </Grid>
             </Grid>
           </Box>

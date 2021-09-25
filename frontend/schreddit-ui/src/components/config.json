@@ -3,6 +3,8 @@
     "USER_SETTINGS_API_URL": "http://127.0.0.1:8000/api/v1/users/settings",
     "LOGIN_API_URL": "http://127.0.0.1:8000/api/v1/auth/login",
     "SUBREDDIT_API_URL": "http://127.0.0.1:8000/api/v1/subreddits/r/",
-    "POST_API_URL": "http://127.0.0.1:8000/api/v1/posts",
+    "POSTS_API_URL": "http://127.0.0.1:8000/api/v1/posts/list",
+    "VOTE_API_URL": "http://127.0.0.1:8000/api/v1/vote",
+    "SUBSCRIPTION_API_URL": "http://127.0.0.1:8000/api/v1/subscription",
     "UPLOAD_API_URL": "http://127.0.0.1:8000/api/v1/blob/upload"
 }
