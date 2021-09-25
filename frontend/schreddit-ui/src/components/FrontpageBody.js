@@ -31,43 +31,6 @@ const useStyles = makeStyles((theme) => ({
 export default function ForntpageBody(props) {
     const classes = useStyles();
 
-    // const [postList, setPostList] = useState({
-    //   list: [<Post/>,<Post/>,<Post/>,<Post/>]
-    // }); 
-    // const [page, setPage] = useState(1);
-    // const loader = useRef(null);
-
-    // useEffect(() => {
-    //   var options = {
-    //     root: null,
-    //     rootMargin: "20px",
-    //     threshold: 1.0
-    //   };
-    //   // initialize IntersectionObserver and attaching to Load More div
-    //   const observer = new IntersectionObserver(handleObserver, options);
-    //   if (loader.current) {
-    //     observer.observe(loader.current)
-    //   }
-    // }, []);
-
-    // useEffect(() => {
-    //   // here we simulate adding new posts to List
-    //   const newList = postList.list.concat([<Post/>, <Post/>, <Post/>, <Post/>]);
-    //   //console.log(props.cookies);
-    //   setPostList({
-    //     list: newList
-    //   })
-    // }, [page]); // Do not add postList.list as a dependency.. It will start an infinite loop. Even though there is a warning
-
-    // // here we handle what happens when user scrolls to Load More div
-    // // in this case we just update page variable
-    // const handleObserver = (entities) => {
-    //   const target = entities[0];
-    //   if (target.isIntersecting) {   
-    //     setPage((page) => page + 1)
-    //   }
-    // };
-
     const [posts, setPosts] = React.useState();
     const [error, setError] = React.useState("");
     const [subredditOneLetter, setSubredditOneLetter] = React.useState("");
