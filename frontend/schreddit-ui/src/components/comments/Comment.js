@@ -35,7 +35,7 @@ const useStyles = makeStyles((theme) => ({
 export default function Comment(props) {
     const classes = useStyles();
 
-    const paddingLeft = props.commentOn *50;
+    const paddingLeft = props.commentOnLevel *50;
 
     return (
         <Card elevation={0} style={{paddingLeft: paddingLeft}}>
