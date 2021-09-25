@@ -211,8 +211,8 @@ export default function CreatePostBody(props) {
                             <BottomNavigationAction label="Post" icon={<NotesIcon />} onClick={() => setnavigationFocus("self")} />
                             <Divider orientation="vertical"/>
                             <BottomNavigationAction label="Image & Video" icon={<ImageOutlinedIcon />} onClick={() => setnavigationFocus("imageOrVideo")} />
-                            <Divider orientation="vertical"/>
-                            <BottomNavigationAction label="Link" icon={<SvgIcon ><path d={mdiLinkVariant} /></SvgIcon>} onClick={() => setnavigationFocus("link")} />
+                            {/* <Divider orientation="vertical"/>
+                            <BottomNavigationAction label="Link" icon={<SvgIcon ><path d={mdiLinkVariant} /></SvgIcon>} onClick={() => setnavigationFocus("link")} /> */}
                           </BottomNavigation>
                           <Divider />
                           <Grid container spacing={2} direction='column' className={classes.grid}>
