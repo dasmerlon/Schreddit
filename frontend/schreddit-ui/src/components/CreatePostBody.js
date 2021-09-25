@@ -138,6 +138,7 @@ export default function CreatePostBody(props) {
       if(type === "self"){
         parameters.content.text = textValue;
         parameters.metadata.type = 'self';
+        createPost(parameters)
       }
       else if(type === "imageOrVideo"){
         var formData = new FormData();
