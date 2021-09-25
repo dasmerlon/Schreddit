@@ -9,11 +9,11 @@ from app.models.relationships import Subscription
 # Nodes
 class Subreddit(StructuredNode):
     # Properties
-    description = StringProperty()
+    description = StringProperty(max_length=settings.MAX_DESCRIPTION_LENGTH)
     # over_18 = BooleanProperty(default=False)
     # public_description = StringProperty()
     # spoilers_enable = BooleanProperty(default=False)
-    sr = StringProperty(unique_index=True)
+    sr = StringProperty(unique_index=True, max_length=settings.MAX_SR_LENGTH)
     title = StringProperty(max_length=settings.MAX_TITLE_LENGTH)
     type = StringProperty()
     uid = UniqueIdProperty()

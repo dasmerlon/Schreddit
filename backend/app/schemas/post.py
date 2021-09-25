@@ -1,9 +1,10 @@
 from enum import Enum
-from typing import List
+from typing import List, Optional
 
 from pydantic import BaseModel, validator
 
 from app.schemas.base import Pagination
+from app.schemas.comment import CommentTree
 from app.schemas.post_content import (PostContent, PostContentCreate,
                                       PostContentUpdate)
 from app.schemas.post_meta import (PostMeta, PostMetaCreate, PostMetaUpdate,
@@ -42,3 +43,7 @@ class Post(Thing[PostMeta, PostContent]):
 class PostList(BaseModel):
     links: Pagination
     data: List[Post]
+
+
+class PostTree(Post):
+    children: Optional[List[CommentTree]]

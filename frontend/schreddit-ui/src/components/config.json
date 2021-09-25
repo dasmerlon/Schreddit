@@ -5,5 +5,6 @@
     "SUBREDDIT_API_URL": "http://127.0.0.1:8000/api/v1/subreddits/r/",
     "POSTS_API_URL": "http://127.0.0.1:8000/api/v1/posts/list",
     "VOTE_API_URL": "http://127.0.0.1:8000/api/v1/vote",
-    "SUBSCRIPTION_API_URL": "http://127.0.0.1:8000/api/v1/subscription"
+    "SUBSCRIPTION_API_URL": "http://127.0.0.1:8000/api/v1/subscription",
+    "UPLOAD_API_URL": "http://127.0.0.1:8000/api/v1/blob/upload"
 }
