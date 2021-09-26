@@ -1,8 +1,9 @@
 import React, { useEffect } from 'react';
 import {makeStyles} from "@material-ui/core/styles";
-import {Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Divider, Grid, IconButton, SvgIcon, Typography} from "@material-ui/core";
+import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Divider, Grid, IconButton, SvgIcon, Typography} from "@material-ui/core";
 import Post from "../Post";
 import Comment from "./Comment";
+import CreateComment from "./CreateComment";
 import configData from '../config.json';
 import axios from 'axios';
 
@@ -27,24 +28,10 @@ const useStyles = makeStyles((theme) => ({
 
 export default function CommentsPageBody(props) {
     const classes = useStyles();
+    const [postID, setPostID] = React.useState("4a2c8573-9d1e-49f2-8665-3fbefa32834e");
 
-    const [sortBy, setSortByValue] = React.useState("?sort=top"); 
     const [comInfo, setComInfo] = React.useState("");
     const [list, setList] = React.useState("");
-
-    useEffect(() => {
-        if(props.open) {
-            axios.get(configData.POST_API_URL + "4a2c8573-9d1e-49f2-8665-3fbefa32834e" + "/tree" + sortBy)
-            .then(userResponse => {
-                console.log("list ", list, "; userResponse ", userResponse)
-                setComInfo(commentMaker(userResponse.data, setList, list));
-                console.log("list", list)
-            })
-            .catch(error => {
-                setComInfo("Post could not load... Please try again later.");
-            })
-        } else {}
-    }, [props.open]);
 
     const commentInfos = [
         {
@@ -117,6 +104,26 @@ export default function CommentsPageBody(props) {
             <Comment commenterName={entry["commenterName"]} commentText={entry["commentText"]} commentOn={entry["indent"]}/>
         </Grid>);
 
+
+    useEffect(() => {
+        sendGetCommentsRequest("?sort=top");
+    }, [props.open]);
+
+    function sendGetCommentsRequest(sortBy) {
+        if(props.open) {
+            axios.get(configData.POST_API_URL + postID + "/tree" + sortBy)
+            .then(userResponse => {
+                //console.log("list ", list)
+                console.log("userResponse ", userResponse.config.url)
+                setComInfo(commentMaker(userResponse.data, setList, list));
+                //console.log("list", list)
+            })
+            .catch(error => {
+                setComInfo("Comments could not load... Please try again later.");
+            })
+        }
+    }
+
     return (
         <Dialog
             open={props.open}
@@ -141,6 +148,11 @@ export default function CommentsPageBody(props) {
                         <Grid item>
                             <Post clickable={false} showVotes={false} showJoin={false}/>
                         </Grid>
+                        <Grid item> 
+                                    <CreateComment postID={postID} sendGetCommentsRequest={sendGetCommentsRequest} cookies={props.cookies}/>
+                                
+                            <Divider style={{marginTop: 15, marginRight: 13}}/>
+                        </Grid>
                         {comInfo}
                         
                     </Grid>
@@ -157,27 +169,27 @@ export default function CommentsPageBody(props) {
 function commentMaker(postTree, setList, list) {
     setList();
     var a = postTree.children;
-    console.log("commentmaker")
+    //console.log("commentmaker")
 
     for (var i = 0; i < postTree.children.length; i++) {
       var b = a[i];
       whileLoop(b, setList, list);
-      console.log("back to mainLoop")
+      //console.log("back to mainLoop")
     }
 
     return 0;
   }
 
   function forLoop(b, setList, list) {
-    console.log("newFor", b)
+    //console.log("newFor", b)
     setList(list=>[list, b.content.text]);
 
     for (var j = 0; j < b.children.length; j++) {
-      console.log("j" + j + "; b-length" + b.children.length)
+      //console.log("j" + j + "; b-length" + b.children.length)
       
-      console.log("for", b)
+      //console.log("for", b)
       whileLoop(b.children[j], setList, list);
-      console.log("back from while")
+      //console.log("back from while")
     }
     return 0;
   }
@@ -186,21 +198,21 @@ function commentMaker(postTree, setList, list) {
     var bLength = b.children.length;
 
     while (bLength > 0) {
-        console.log("while", b)
+        //console.log("while", b)
       if (b.children.length === 1) {
         setList(list=>[list, b.content.text]);
-        console.log(b.content.text)
-        console.log(list)
+        //console.log(b.content.text)
+        //console.log(list)
         b = b.children[0];
         bLength = b.children.length
       } else if (b.children.length > 1) {
-        console.log("while elif")
+        //console.log("while elif")
         forLoop(b, setList, list);
         bLength = -1
       }
     }
     if (b.children.length === 0) {
-        console.log("while 0children", b)
+        //console.log("while 0children", b)
         setList(list=>[list, b.content.text]);
     }
     return 0;
