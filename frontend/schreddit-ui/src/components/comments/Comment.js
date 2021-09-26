@@ -28,7 +28,7 @@ const useStyles = makeStyles((theme) => ({
         height: "40px",
     },
     text: {
-        paddingLeft: "25px"
+        paddingLeft: "13px"
     },
   }));
 
@@ -37,8 +37,12 @@ export default function Comment(props) {
 
     const paddingLeft = props.commentOnLevel *50;
 
+    function handleClick() {
+        props.buildComments(props.commentID);
+    }
+
     return (
-        <Card elevation={0} style={{paddingLeft: paddingLeft}}>
+        <Card fullWidth elevation={0} style={{paddingLeft: paddingLeft }}>
             <CardHeader className={classes.header}
             avatar={
                 <Avatar className={classes.avatar}>
@@ -71,7 +75,7 @@ export default function Comment(props) {
                 <IconButton size="small" title="More"> 
                     <SvgIcon ><path d={mdiArrowDownBoldOutline} /></SvgIcon>
                 </IconButton>
-                <Button className={classes.button} size="small" startIcon={<SvgIcon ><path d={mdiCommentOutline} /></SvgIcon>} >Reply</Button>
+                <Button className={classes.button} size="small" onClick={handleClick} startIcon={<SvgIcon ><path d={mdiCommentOutline} /></SvgIcon>} >Reply</Button>
                 <Button className={classes.button} size="small" >Give Award</Button>
                 <Button className={classes.button} size="small" >Share</Button>
                 <Button className={classes.button} size="small" >Report</Button>
