@@ -119,7 +119,7 @@ export default function ForntpageBody(props) {
           </Grid>
         </Grid>
       </Container>
-      <CommentsPageBody handleClose={handleClose} open={open}/>
+      <CommentsPageBody handleClose={handleClose} open={open} cookies={props.cookies}/>
     </React.Fragment>
     </div>
     );
