@@ -3,5 +3,6 @@
     "USER_SETTINGS_API_URL": "http://127.0.0.1:8000/api/v1/users/settings",
     "LOGIN_API_URL": "http://127.0.0.1:8000/api/v1/auth/login",
     "SUBREDDIT_API_URL": "http://127.0.0.1:8000/api/v1/subreddits/r/",
-    "POST_API_URL": "http://127.0.0.1:8000/api/v1/posts/"
+    "POST_API_URL": "http://127.0.0.1:8000/api/v1/posts/",
+    "COMMENT_API_URL": "http://127.0.0.1:8000/api/v1/comments/"
 }
