@@ -83,7 +83,7 @@ export default function Dropdown(props) {
         };
         axios.get(configData.USER_API_URL + '/subscriptions', config
         ).then(response => {
-            setSubscribedSubreddits(response.data.subscriptions.map((subscribedSubreddit, i) => 
+            setSubscribedSubreddits(response.data.subreddits.map((subscribedSubreddit, i) =>
                 <StyledMenuItem key={i} onClick={handleChange}>
                     <ListItemIcon>
                         <ImageIcon fontSize="small" />
