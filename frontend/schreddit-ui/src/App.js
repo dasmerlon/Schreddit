@@ -5,7 +5,6 @@ import './App.css';
 import Header from './components/header/Header';
 import UserSettingsBody from './components/user_settings/UserSettingsBody';
 import { useCookies } from 'react-cookie';
-import createHistory from 'history/createBrowserHistory';
 
 
 
@@ -19,8 +18,6 @@ import ErrorPage from './components/ErrorPage';
 
 const App = () => {
   const [cookies, setCookie, removeCookie] = useCookies(["token", "loggedIn", "username"]);
-
-  const history = createHistory();
   
   const handleLogin = (token, username) => {
     setCookie("token", token, { path: '/' });
@@ -36,7 +33,7 @@ const App = () => {
   };
 
   return (
-    <Router history={history}>
+    <Router>
       <Header cookies={cookies} handleLogin={handleLogin} handleLogout={handleLogout} history={history} />
       <Switch>
         <Route exact path={"/"} component={() => <FrontpageBody cookies={cookies}/>} />
