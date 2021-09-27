@@ -68,15 +68,28 @@ export default function SubreditBody(props) {
         console.log(response.data)
         setSubreddit(response.data);
         setSubredditOneLetter(response.data.sr[0])
+        getSubredditSubscriber();
       });
-      axios.get(configData.SUBSCRIPTION_API_URL + '/' + subreddit.sr + '/subscriber'
+
+    }
+
+    const getSubredditSubscriber = () => {
+      axios.get(configData.SUBSCRIPTION_API_URL + '/' + window.location.pathname.split('/')[2] + '/subscriber'
       ).then(response => {
         console.log(response)
       })
     }
 
     useEffect(() => {
-      getPosts(lastSortBy);
+      if(page !== 1){
+        setPage(1);
+        getSubreddit();
+        getPosts(lastSortBy, true);
+      }
+    }, [window.location.pathname])
+
+    useEffect(() => {
+      getPosts(lastSortBy, false);
     }, [page])
 
     useEffect(() => {
@@ -111,7 +124,7 @@ export default function SubreditBody(props) {
       }
     }
 
-    const getPosts = (sortBy) => {
+    const getPosts = (sortBy, clear) => {
       let config = '';
       if(typeof props.cookies.token !== "undefined"){
         config = {
@@ -133,7 +146,7 @@ export default function SubreditBody(props) {
         }
       }
 
-      if(typeof posts !== "undefined" && lastSortBy === sortBy){
+      if(typeof posts !== "undefined" && lastSortBy === sortBy && !clear){
         config.params.after = posts[posts.length-1].props.children.props.uid
       }
       axios.get(configData.POSTS_API_URL, config 
@@ -153,7 +166,7 @@ export default function SubreditBody(props) {
                     cookies={props.cookies}
                     /> 
                 </Grid>
-              ), ((lastSortBy !== sortBy) ? true : false))
+              ), ((lastSortBy !== sortBy || clear) ? true : false))
               setLastSortBy(sortBy);
            }).catch(error => {
               if (error.response.status === 422) {

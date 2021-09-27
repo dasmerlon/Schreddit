@@ -256,7 +256,7 @@ export default function PrimarySearchAppBar(props) {
                         </Typography>
                     </CardActionArea>
                     <Dropdown
-                        cookies={props.cookies}
+                        cookies={props.cookies} history={props.history}
                     />
                     <div className={classes.search}>
                         <div className={classes.searchIcon}>
