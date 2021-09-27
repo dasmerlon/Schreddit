@@ -22,7 +22,7 @@ const useStyles = makeStyles((theme) => ({
 
 export default function CommentsPageBody(props) {
     const classes = useStyles();
-    const [postID, setPostID] = React.useState("4a2c8573-9d1e-49f2-8665-3fbefa32834e");
+    const postID = props.postInfo.uid;
 
     var comRequestResponse = "";
     const [comments, setComments] = React.useState("");
@@ -32,6 +32,7 @@ export default function CommentsPageBody(props) {
     }, [props.open]);
 
     function sendGetCommentsRequest(sortBy) {
+        console.log(props.postInfo)
         if(props.open) {
             axios.get(configData.POST_API_URL + postID + "/tree" + sortBy)
             .then(userResponse => {
@@ -74,23 +75,37 @@ export default function CommentsPageBody(props) {
             aria-describedby="scroll-dialog-description"
         >
             <DialogTitle id="scroll-dialog-title">
-                        <IconButton size="small" title="More" onClick={()=>{buildComments("b9837c50-178c-46b3-a74a-495c83290da5") }}> 
-                            <SvgIcon ><path d={mdiArrowUpBoldOutline} /></SvgIcon>
+                        <IconButton size="small" title="More" onClick={()=>{ props.postInfo.vote(1) }}> 
+                            <SvgIcon ><path d={mdiArrowUpBoldOutline} style={{ color: props.postInfo.upArrowColor }} /></SvgIcon>
                         </IconButton>
-                        200
-                        <IconButton size="small" title="More" onClick={()=>{alert('Downvote') }}> 
-                            <SvgIcon ><path d={mdiArrowDownBoldOutline} /></SvgIcon>
+                        {props.postInfo.currentVotes}
+                        <IconButton size="small" title="More" onClick={()=>{ props.postInfo.vote(-1) }}> 
+                            <SvgIcon ><path d={mdiArrowDownBoldOutline} style={{ color: props.postInfo.downArrowColor }} /></SvgIcon>
                         </IconButton>
             </DialogTitle>
             <DialogContent >
                 <DialogContentText id="scroll-dialog-description" tabIndex={-1}>
                     <Grid container spacing={3} direction='column' className={classes.grid} >
                         <Grid item style={{paddingLeft:20}}>
-                            <Post clickable={false} showVotes={false} showJoin={false}/>
+                            <Post 
+                                uid={props.postInfo.uid} 
+                                author={props.postInfo.author} 
+                                sr={props.postInfo.sr} 
+                                createdAt={props.postInfo.created_at}
+                                title={props.postInfo.title}
+                                type={props.postInfo.type}
+                                url={props.postInfo.url}
+                                text={props.postInfo.text}
+                                voteCount={props.postInfo.count}
+                                voteState={props.postInfo.state}
+                                cookies={props.postInfo.cookies}
+                                clickable={false}
+                                showVotes={false}
+                            />
                         </Grid>
                         <Grid item style={{paddingLeft:20}}> 
                             <CreateComment postID={postID} sendGetCommentsRequest={sendGetCommentsRequest} cookies={props.cookies} withSortingBar={true}/>   
-                            <Divider style={{marginTop: 15, marginRight: 13}}/>
+                            <Divider style={{marginTop: 15, marginRight: 13, minWidth:700}}/>
                         </Grid>
                         {comments}
                         

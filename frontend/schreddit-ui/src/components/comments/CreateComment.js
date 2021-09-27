@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import { makeStyles } from "@material-ui/core/styles";
 import { Card, Grid, Typography } from "@material-ui/core";
 import { TextareaAutosize } from "@material-ui/core";
@@ -24,6 +24,8 @@ const useStyles = makeStyles((theme) => ({
 export default function CreateComment(props) {
     const classes = useStyles();
 
+    const textField = useRef(null);
+
     const [textValue, setTextFieldValue] = React.useState('');
     const [requestError, setRequestError] = React.useState('');
     const [sortByValue, setSortByValue] = React.useState('Top');
@@ -47,6 +49,8 @@ export default function CreateComment(props) {
                 console.log(response)
                 setRequestError("Succesfull!")
                 props.sendGetCommentsRequest("?sort=" + sortByValue.toLowerCase());
+                textField.current.value = "";
+                setTextFieldValue("");
             }).catch(error => {
                 console.log(error)
                 if (error.response.status === 422) {
@@ -61,16 +65,16 @@ export default function CreateComment(props) {
         <Card elevation={0} style={{paddingLeft: paddingLeft}} >
             <Grid container direction="column">
                 <Grid item className={classes.text}>
-                    <TextareaAutosize className={classes.grid} rowsMin={5} placeholder="Here could be your comment!" onChange={handleTextfieldChange}/>
+                    <TextareaAutosize ref={textField} className={classes.grid} rowsMin={5} placeholder="Here could be your comment!" onChange={handleTextfieldChange}/>
                 </Grid>
                 <Grid item>
                     <Grid container justify="space-between">
                         <Grid item>
-                            <Grid container spacing={4}>
+                            <Grid container spacing={1}>
                                 <Grid item>
                                     <Button className={classes.button} onClick={sendComment} size="small"> Comment</Button>
                                 </Grid>
-                                <Grid item>
+                                <Grid item style={{paddingRight: 30}}>
                                     {requestError}
                                 </Grid>
                             </Grid>

@@ -1,4 +1,5 @@
 import React from 'react';
+import { useEffect, useState } from 'react';
 import { useHistory } from "react-router-dom"
 import { withStyles } from '@material-ui/core/styles';
 import Button from '@material-ui/core/Button';
@@ -10,6 +11,8 @@ import AddIcon from '@material-ui/icons/Add';
 import ImageIcon from '@material-ui/icons/Image';
 import HomeIcon from '@material-ui/icons/Home';
 import DropDownArrowIcon from '@material-ui/icons/ArrowDropDown'
+import axios from 'axios';
+import configData from '../config.json'
 
 const StyledButton = withStyles({
     contained: {
@@ -66,6 +69,33 @@ export default function Dropdown(props) {
         setAnchorEl(null);
     };
 
+    const [subscribedSubreddits, setSubscribedSubreddits] = React.useState()
+
+    useEffect(() => {
+        if(props.cookies.loggedIn){
+            getSubscribedSubreddits();
+        }
+    }, [props.cookies.loggedIn]);
+
+    const getSubscribedSubreddits = () => {
+        let config = {
+            headers: {'Authorization': `Bearer ${props.cookies.token}`}
+        };
+        axios.get(configData.USER_API_URL + '/subscriptions', config
+        ).then(response => {
+            setSubscribedSubreddits(response.data.subreddits.map((subscribedSubreddit, i) =>
+                <StyledMenuItem key={i} onClick={handleChange}>
+                    <ListItemIcon>
+                        <ImageIcon fontSize="small" />
+                    </ListItemIcon>
+                    <ListItemText primary={subscribedSubreddit.sr} />
+                </StyledMenuItem>
+            ));
+        });
+    }
+
+
+
     const [subreddit, setSubreddit] = React.useState('Open Menu');
 
     let history = useHistory();
@@ -75,6 +105,9 @@ export default function Dropdown(props) {
         }
         else if (event.target.innerText === "Home") {
             history.push("/");
+        }
+        else {
+            history.push("/r/" + event.target.innerText)
         }
         handleClose();
         setSubreddit(event.target.innerText);
@@ -120,12 +153,7 @@ export default function Dropdown(props) {
                         </ListItemIcon>
                         <ListItemText primary="Create Subreddit" />
                     </StyledMenuItem>
-                    <StyledMenuItem onClick={handleChange}>
-                        <ListItemIcon>
-                            <ImageIcon fontSize="small" />
-                        </ListItemIcon>
-                        <ListItemText primary="Subreddit1" />
-                    </StyledMenuItem>
+                    {subscribedSubreddits}
                 </StyledMenu>
             </div>
         );

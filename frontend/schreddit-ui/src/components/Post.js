@@ -1,11 +1,14 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import {makeStyles, useTheme} from "@material-ui/core/styles";
-import {Card, CardHeader, Avatar, SvgIcon, Link, Grid, CardActionArea as ButtonBase, Chip, MobileStepper} from "@material-ui/core";
+import {Card, CardHeader, Avatar, SvgIcon, Link, Grid, CardActionArea, Chip, MobileStepper} from "@material-ui/core";
 import CardActions from '@material-ui/core/CardActions';
 import CardContent from '@material-ui/core/CardContent';
 import IconButton from '@material-ui/core/IconButton';
 import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
+import { useHistory } from "react-router-dom"
+import configData from './config.json'
+import axios from 'axios';
 import imA from '../images/a.png'; //import vom Bild
 import imB from '../images/e.jpg'; //import vom Bild
 import vid from '../images/a.mp4'; //import vom Bild
@@ -15,7 +18,7 @@ import BookmarkBorderRoundedIcon from '@material-ui/icons/BookmarkBorderRounded'
 import ShareRoundedIcon from '@material-ui/icons/ShareRounded';
 import MoreHorizRoundedIcon from '@material-ui/icons/MoreHorizRounded';
 // Source: https://materialdesignicons.com/
-import { mdiGiftOutline, mdiCommentOutline, mdiArrowUpBoldOutline, mdiArrowDownBoldOutline} from '@mdi/js';
+import { mdiGiftOutline, mdiCommentOutline, mdiArrowUpBoldOutline, mdiArrowDownBoldOutline } from '@mdi/js';
 
 import KeyboardArrowLeft from '@material-ui/icons/KeyboardArrowLeft';
 import KeyboardArrowRight from '@material-ui/icons/KeyboardArrowRight';
@@ -31,30 +34,31 @@ const tutorialSteps = [
   },
 ];
 
-const text = "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.";
-
 const useStyles = makeStyles({
-    root: { 
-      display: "flex",
-    },
-    media: {
-      height: 0,
-      paddingTop: '50%', // 16:9 56.25%
-    },
-    avatar: {
-      backgroundColor: "rgb(0,180,200)",
-    },
-    button: {
-        textTransform:"none",
-    },
-    img: {
-      height: '50%',
-      maxWidth: 700,
-      overflow: 'hidden',
-      display: 'block',
-      width: '100%',
-    },
-  });
+  root: {
+    display: "flex",
+  },
+  media: {
+    height: 0,
+    paddingTop: '50%', // 16:9 56.25%
+  },
+  avatar: {
+    backgroundColor: "rgb(0,180,200)",
+  },
+  button: {
+      textTransform:"none",
+  },
+  //this is okayish but could be better.
+  img: {
+    height: '50%',
+    maxWidth: 500,
+    overflow: 'hidden',
+    display: 'block',
+    // width: '100%',
+    marginLeft: 'auto',
+    marginRight: 'auto'
+  },
+});
 
 //TODO: - Wie sollen Mehrere Bilder/ Videos/ Paragraphe gehandhabt werden?
 //          -> Folgendes spielt das Video ab, aber ohne Bild...
@@ -64,15 +68,43 @@ const useStyles = makeStyles({
 export default function Posts(props) {
   const classes = useStyles();
 
-  const show_vid = false; 
-  const show_multiple_img = false;
-  const show_text = false;
+  const [show_vid, set_show_vid] = React.useState(false);
+  const [show_multiple_img, set_show_multiple_img] = React.useState(false);
+  const [show_text, set_show_text] = React.useState(false);
+
+
+  let history = useHistory();
 
   // Alles hier runter ist dafür Zuständig, um bei mehreren Bildern durch alle durch zu blättern:
   const theme = useTheme();
   const [activeStep, setActiveStep] = React.useState(0);
   const maxSteps = tutorialSteps.length;
+
+  const [upArrowColor, setUpArrowColor] = React.useState("");
+  const [downArrowColor, setDownArrowColor] = React.useState("");
+  const [newState, setNewState] = React.useState(props.voteState);
+  const [currentVotes, setCurrentVotes] = React.useState(props.voteCount)
   
+  let createdAtType = "";
+  let createdAt = new Date(props.createdAt);
+  if(createdAt > new Date(new Date().setDate(new Date().getDate()-1))){
+    if(createdAt > new Date(new Date().setHours(new Date().getHours()-1))){
+      createdAt = new Date(new Date().getTime() - createdAt.getTime()).getMinutes()
+      createdAtType = " Minutes ago"
+    }
+    else{
+      createdAt = new Date(new Date().getTime() - createdAt.getTime()).getHours()
+      createdAtType = " Hours ago"
+    }
+  }
+  else{
+    createdAt = createdAt.toDateString()
+  }
+
+  useEffect(() => {
+    handleVote(props.voteState);
+  }, []);
+
   const handleNext = () => {
     setActiveStep((prevActiveStep) => prevActiveStep + 1);
   };
@@ -81,127 +113,174 @@ export default function Posts(props) {
     setActiveStep((prevActiveStep) => prevActiveStep - 1);
   };
 
+  const handleVote = (direction) => {
+    axios.get(configData.VOTE_API_URL + '/' + props.uid + '/count'
+    ).then(response => 
+      setCurrentVotes(response.data)
+    )
+    if (direction === 1) {
+      setUpArrowColor('orange');
+      setDownArrowColor('unset');
+    }
+    else if (direction === 0) {
+      setUpArrowColor('unset');
+      setDownArrowColor('unset');
+    }
+    else {
+      setUpArrowColor('unset');
+      setDownArrowColor('orange');
+    }
+  }
+
+  const goToSubreddit = () => {
+    history.push("/" + props.srName)
+  }
+
+  const vote = (direction) => {
+    if (newState === 1 && direction === 1) {
+      direction = 0
+    }
+    else if (newState === -1 && direction === -1) {
+      direction = 0
+    }
+    axios.put(configData.VOTE_API_URL + '/' + props.uid + '/' + direction, {}, {
+      headers: {
+        Authorization: `Bearer ${props.cookies.token}`
+      }
+    }).then(response => {
+      setNewState(direction);
+      handleVote(direction);
+    })
+  }
+
   function handleClickOpen(e) {
+    console.log(handleVote)
     e.preventDefault();
     props.setOpen(true);
+    props.setPostInfo(
+      {
+        uid: props.uid, 
+        author: props.author, 
+        sr: props.sr, 
+        createdAt: props.created_at,
+        title: props.title,
+        type: props.type,
+        url: props.url,
+        text: props.text,
+        voteCount: props.count,
+        voteState: props.state,
+        upArrowColor: upArrowColor,
+        downArrowColor: downArrowColor,
+        currentVotes: currentVotes,
+        handleVote: handleVote,
+        vote: vote
+      }
+    )
   };
 
   return (
-      <Card elevation={0} useStyles={classes.root}>
-        <CardHeader
-          avatar={
-            <Avatar className={classes.avatar}>
-              E  
+    <Card elevation={0} useStyles={classes.root}>
+      <CardHeader
+        avatar={
+          <Avatar className={classes.avatar}>
+          {(typeof props.author !== "undefined") ? props.author[0] : ""}     
             </Avatar>
-          }
-          action={
-            <Grid container>
-              { props.showJoin == null || props.showVotes == true ?   
-                <Button size="small">+Join</Button>
-              : null}
-              
-              { props.showVotes == null || props.showVotes == true ?          
+        }
+        action={
+          <Grid container>
+            { props.showVotes == true ?   
                 <Grid item>
-                  <IconButton size="small" title="More" > 
-                    <SvgIcon ><path d={mdiArrowUpBoldOutline} /></SvgIcon>
+                  <IconButton size="small" title="More" onClick={() => { vote(1) }}>
+                    <SvgIcon ><path d={mdiArrowUpBoldOutline} style={{ color: upArrowColor }} /></SvgIcon>
                   </IconButton>
-                  <Typography component="h2">
-                    200
-                  </Typography> 
-                  <IconButton size="small" title="More" > 
-                    <SvgIcon ><path d={mdiArrowDownBoldOutline} /></SvgIcon>
+                  <Typography component="h2" style={{ textAlign: 'center' }}>
+                    {currentVotes}
+                  </Typography>
+                  <IconButton size="small" title="More" onClick={() => { vote(-1) }}>
+                    <SvgIcon ><path d={mdiArrowDownBoldOutline} style={{ color: downArrowColor }} /></SvgIcon>
                   </IconButton>
-                </Grid> 
+                </Grid>
               : null }
-            </Grid>
-          }
-          title={
-            <Link href="http://localhost:3000/r/HowToPictures" color="inherit">
-              {'r/HowToPictures'}
+          </Grid>
+        }
+        title={
+          <Link href={"/r/" + props.sr} color="inherit">
+            {'r/' + props.sr}
+          </Link>
+        }
+        subheader={
+          <Typography component="h2">
+            Posted by
+              <Link href={"/u/" + props.author} color="inherit">
+              {" u/" + props.author}
             </Link>
+            <br />
+            {createdAt + createdAtType }
+            {/* {((typeof createdAt === "number") ? createdAt + ' Minutes ago': createdAt)} */}
+          </Typography>
+        }
+      />
+
+      <CardActionArea onClick={handleClickOpen}>
+        <CardContent>
+          <Typography variant="h5" component="h2">
+            {props.title}
+            {/* <Chip label="Informative 👨‍🎓" color="secondary" href="http://localhost:3000/" clickable /> */}
+          </Typography>
+        </CardContent>
+
+
+        {props.type === "image" ?
+          <img alt="" className={classes.img} src={props.url} />
+          : null}
+
+        {props.type === "self" ?
+          <CardContent>
+            <Typography>{props.text.slice(0, 400)}</Typography>
+          </CardContent>
+          : null}
+        {(props.type === "self" && show_multiple_img) || (show_text && show_vid) || (show_multiple_img && show_vid) ?
+          <CardContent>
+            <Typography>Internal Error... (Filetype has multiple types)</Typography>
+          </CardContent>
+          : null}
+      </CardActionArea>
+
+      { show_multiple_img && props.type === "image" ?
+        <MobileStepper
+          steps={maxSteps}
+          position="static"
+          variant="text"
+          activeStep={activeStep}
+          nextButton={
+            <Button size="small" onClick={handleNext} disabled={activeStep === maxSteps - 1}>
+              Next
+                {theme.direction === 'rtl' ? <KeyboardArrowLeft /> : <KeyboardArrowRight />}
+            </Button>
           }
-          subheader={
-            <Typography component="h2">
-              Posted by 
-              <Link href="http://localhost:3000/" color="inherit">
-                {' u/Pictureman180 '}
-              </Link> 
-              2 days ago
-            </Typography>
+          backButton={
+            <Button size="small" onClick={handleBack} disabled={activeStep === 0}>
+              {theme.direction === 'rtl' ? <KeyboardArrowRight /> : <KeyboardArrowLeft />}
+              Back
+              </Button>
           }
         />
-
-        <ButtonBase onClick={handleClickOpen}>
-          <CardContent>
-            <Typography variant="h5" component="h2">
-              How does Shutter, ISO & Apature effect your pictures? 
-              <Chip label="Informative 👨‍🎓" color="secondary" href="http://localhost:3000/" clickable />
-            </Typography>
-          </CardContent>
-
-          { !show_multiple_img && !show_vid && !show_text ? 
-            <img alt="" className={classes.img} src={tutorialSteps[activeStep].imgPath} />
-          : null }
-
-          { show_multiple_img && !show_vid && !show_text ? 
-            <img alt="" className={classes.img} src={tutorialSteps[activeStep].imgPath} /> 
-          : null }
-
-          {show_text && !show_multiple_img && !show_vid ? 
-            <CardContent>
-              <Typography>{text.slice(0,400)}</Typography>
-            </CardContent>
-          : null}
-          {(show_text && show_multiple_img) || (show_text && show_vid) || (show_multiple_img && show_vid) ?
-            <CardContent>
-              <Typography>Internal Error... (Filetype has multiple types)</Typography>
-            </CardContent>
-          : null}
-        </ButtonBase>
-
-        { show_multiple_img && !show_vid && !show_text ? 
-          <MobileStepper
-            steps={maxSteps}
-            position="static"
-            variant="text"
-            activeStep={activeStep}
-            nextButton={
-              <Button size="small" onClick={handleNext} disabled={activeStep === maxSteps - 1}>
-                Next
-                {theme.direction === 'rtl' ? <KeyboardArrowLeft /> : <KeyboardArrowRight />}
-              </Button>
-            }
-            backButton={
-              <Button size="small" onClick={handleBack} disabled={activeStep === 0}>
-                {theme.direction === 'rtl' ? <KeyboardArrowRight /> : <KeyboardArrowLeft />}
-                Back
-              </Button>
-            }
-          /> 
         : null}
-        
-        {props.clickable? 
-          <ButtonBase onClick={handleClickOpen}>
-            {show_vid && !show_multiple_img && !show_text ? 
-              <video className={classes.img} controls src={vid} type={'video/mp4'} id="myVideo"/> 
-            : null}
-          </ButtonBase> 
-        :
-          <div>
-            {show_vid && !show_multiple_img && !show_text ? 
-              <video className={classes.img} controls src={vid} type={'video/mp4'} id="myVideo"/> 
-            : null}
-          </div>
-        }
-        <CardActions>
-          <Button size="small" className={classes.button} title="Comments" startIcon={<SvgIcon ><path d={mdiCommentOutline} /></SvgIcon>} >Comments</Button>
-          <Button size="small" className={classes.button} title="Give Award" startIcon={<SvgIcon ><path d={mdiGiftOutline} /></SvgIcon>} >Award</Button>
-          <Button size="small" className={classes.button} title="Share" startIcon={<ShareRoundedIcon />} >Share</Button>
-          <Button size="small" className={classes.button} title="Save" startIcon={<BookmarkBorderRoundedIcon />} >Save</Button>
-          <IconButton size="small" title="More" onClick={()=>{alert('More') }}> 
-            <MoreHorizRoundedIcon /> 
-          </IconButton>
-        </CardActions>
-      </Card>
+
+      <CardActionArea onClick={handleClickOpen}>
+        {(props.type === "video" || props.type === "videogif") ?
+          <video className={classes.img} controls src={props.url} type={'video/mp4'} id="myVideo" />
+          : null}
+      </CardActionArea>
+      <CardActions>
+        <Button size="small" className={classes.button} title="Comments" startIcon={<SvgIcon ><path d={mdiCommentOutline} /></SvgIcon>} onClick={() => { alert('Go to comments') }} >Comments</Button>
+        <Button size="small" className={classes.button} title="Give Award" startIcon={<SvgIcon ><path d={mdiGiftOutline} /></SvgIcon>} onClick={() => { alert('Give Award') }}>Award</Button>
+        <Button size="small" className={classes.button} title="Share" startIcon={<ShareRoundedIcon />} onClick={() => { alert('Share with') }}>Share</Button>
+        <Button size="small" className={classes.button} title="Save" startIcon={<BookmarkBorderRoundedIcon />} onClick={() => { alert('Saved') }}>Save</Button>
+        <IconButton size="small" title="More" onClick={() => { alert('More') }}>
+          <MoreHorizRoundedIcon />
+        </IconButton>
+      </CardActions>
+    </Card>
   );
 } 

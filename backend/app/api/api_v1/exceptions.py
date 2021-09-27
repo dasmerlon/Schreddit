@@ -85,3 +85,11 @@ class UnauthorizedUpdateException(HTTPException):
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="You are not authorized to modify this resource.",
         )
+
+
+class ForbiddenFiletypeException(HTTPException):
+    def __init__(self):
+        super().__init__(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="The file must be an image or a video.",
+        )

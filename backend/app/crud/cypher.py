@@ -29,7 +29,6 @@ base = (
     # match post authors
     f"OPTIONAL MATCH (post)-[:{authored_by_rel}]-(author:{user_lbl}) "
 )
-
 unite = (
     # put post properties into a map
     # put author, sr and vote count into a map

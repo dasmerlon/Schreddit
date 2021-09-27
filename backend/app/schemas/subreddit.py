@@ -1,8 +1,9 @@
+import re
 from datetime import datetime
 from enum import Enum
 from typing import List, Optional
 
-from pydantic import UUID4, BaseModel, constr
+from pydantic import UUID4, BaseModel, constr, validator
 
 from app.core.config import settings
 from app.schemas.base import SubredditGetterDict
@@ -18,7 +19,9 @@ class SubredditType(str, Enum):
 
 
 class SubredditBase(BaseModel):
-    description: Optional[str] = None
+    description: Optional[
+        constr(min_length=1, max_length=settings.MAX_DESCRIPTION_LENGTH)
+    ]
     # over_18: Optional[bool] = None
     # public_description: Optional[bool] = None
     # spoilers_enable: Optional[bool] = None
@@ -28,10 +31,24 @@ class SubredditBase(BaseModel):
 
 
 class SubredditCreate(SubredditBase):
-    description: str
+    description: constr(min_length=1, max_length=settings.MAX_DESCRIPTION_LENGTH)
     sr: str
     title: constr(min_length=1, max_length=settings.MAX_TITLE_LENGTH)
     type: SubredditType
+
+    @validator("sr")
+    def sr_limitations(cls, value):
+        if len(value) < settings.MIN_SR_LENGTH or len(value) > settings.MAX_SR_LENGTH:
+            raise ValueError(
+                f"Subreddit name must be between {settings.MIN_SR_LENGTH} and "
+                f"{settings.MAX_SR_LENGTH} characters."
+            )
+        elif not re.fullmatch(r"\w+", value):
+            raise ValueError(
+                "Subreddit name must only consist of letters, numbers, and underscores."
+            )
+        else:
+            return value
 
     class Config:
         use_enum_values = True
@@ -41,10 +58,9 @@ class SubredditUpdate(SubredditBase):
     pass
 
 
-class Subreddit(SubredditCreate):
+class SubredditNoAdmin(SubredditCreate):
     created_at: Optional[datetime]
     updated_at: Optional[datetime]
-    admin: User
     uid: UUID4
 
     class Config:
@@ -52,5 +68,9 @@ class Subreddit(SubredditCreate):
         getter_dict = SubredditGetterDict
 
 
-class SubscriptionList(BaseModel):
-    subscriptions: List[Subreddit]
+class Subreddit(SubredditNoAdmin):
+    admin: User
+
+
+class SubredditList(BaseModel):
+    subreddits: List[SubredditNoAdmin]

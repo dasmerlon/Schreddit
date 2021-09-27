@@ -18,12 +18,23 @@ class Settings(BaseSettings):
     REDIS_DSN: RedisDsn = "redis://localhost:6379/0"
 
     MAX_TITLE_LENGTH = 300
+    MAX_USERNAME_LENGTH = 20
+    MAX_SR_LENGTH = 21
+    MAX_DESCRIPTION_LENGTH = 500
+
+    MIN_USERNAME_LENGTH = 3
+    MIN_SR_LENGTH = 3
 
     TEST_USER_USERNAME: str
     TEST_USER_EMAIL: str
     TEST_USER_PASSWORD: str
 
-    FRONTEND_ORIGINS: Set[str] = {"http://localhost:3000", "https://kind-sea-014761903.azurestaticapps.net"}
+    AZURE_STORAGE_CREDENTIALS: str
+
+    FRONTEND_ORIGINS: Set[str] = {
+        "http://localhost:3000",
+        "https://kind-sea-014761903.azurestaticapps.net",
+    }
 
     class Config:
         case_sensitive = True
