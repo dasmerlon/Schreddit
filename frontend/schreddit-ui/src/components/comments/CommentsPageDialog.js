@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import {makeStyles} from "@material-ui/core/styles";
-import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Divider, Grid, IconButton, SvgIcon, Typography} from "@material-ui/core";
+import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Divider, Grid, IconButton, SvgIcon} from "@material-ui/core";
 import Post from "../Post";
 import Comment from "./Comment";
 import CreateComment from "./CreateComment";
@@ -8,102 +8,24 @@ import configData from '../config.json';
 import axios from 'axios';
 
 // Source: https://materialdesignicons.com/
-import { mdiArrowUpBoldOutline, mdiArrowDownBoldOutline, mdiCommentMinus, mdiConsoleNetworkOutline} from '@mdi/js';
+import { mdiArrowUpBoldOutline, mdiArrowDownBoldOutline} from '@mdi/js';
 
 
 const useStyles = makeStyles((theme) => ({
-    root: {
-        backgroundColor: "#dae0e6",   
-    },
     grid: {
         width: '100%',
         margin: '0px',
         paddingTop: '8px', 
         maxWidth: "750px",
     },
-    answer1: {
-        paddingLeft: "20px",
-    }
   }));
 
 export default function CommentsPageBody(props) {
     const classes = useStyles();
     const [postID, setPostID] = React.useState("4a2c8573-9d1e-49f2-8665-3fbefa32834e");
 
-    const [comInfo, setComInfo] = React.useState("");
-    const [list, setList] = React.useState("");
-
-    const commentInfos = [
-        {
-            indent: 0,
-            commenterName:
-                "UserA",
-            commentText:
-                "How does Shutter, ISO & Apature effect your pictures? afasdjfklöjdasfölkajsdfklöjlöHow does Shutter, ISO & Apature effect your pictures? afasdjfklöjdasfölkajsdfklöjlöHow does Shutter, ISO & Apature effect your pictures? afasdjfklöjdasfölkajsdfklöjlö", 
-        },
-        {
-            indent: 1,
-            commenterName:
-                "UserB",
-            commentText:
-                "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.",
-        },
-        {
-            indent: 0,
-            commenterName:
-                "UserB",
-            commentText:
-                "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.",
-        },
-        {
-            indent: 1,
-            commenterName:
-                "UserB",
-            commentText:
-                "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.",
-        },
-        {
-            indent: 1,
-            commenterName:
-                "UserB",
-            commentText:
-                "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.",
-        },
-        {
-            indent: 2,
-            commenterName:
-                "UserB",
-            commentText:
-                "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.",
-        },
-        {
-            indent: 3,
-            commenterName:
-                "UserB",
-            commentText:
-                "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.",
-        },
-        {
-            indent: 1,
-            commenterName:
-                "UserB",
-            commentText:
-                "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.",
-        },
-        {
-            indent: 0,
-            commenterName:
-                "UserB",
-            commentText:
-                "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.",
-        },
-    ];
-
-    const comInfo2 = commentInfos.map((entry) =>
-        <Grid item>
-            <Comment commenterName={entry["commenterName"]} commentText={entry["commentText"]} commentOn={entry["indent"]}/>
-        </Grid>);
-
+    var comRequestResponse = "";
+    const [comments, setComments] = React.useState("");
 
     useEffect(() => {
         sendGetCommentsRequest("?sort=top");
@@ -113,15 +35,33 @@ export default function CommentsPageBody(props) {
         if(props.open) {
             axios.get(configData.POST_API_URL + postID + "/tree" + sortBy)
             .then(userResponse => {
-                //console.log("list ", list)
-                console.log("userResponse ", userResponse.config.url)
-                setComInfo(commentMaker(userResponse.data, setList, list));
-                //console.log("list", list)
+                comRequestResponse = commentMaker(userResponse.data);
+                if(comRequestResponse[0] === undefined){
+                    setComments("")
+                } else{
+                    buildComments();
+                }
             })
             .catch(error => {
-                setComInfo("Comments could not load... Please try again later.");
-            })
+                console.log(error)
+                comRequestResponse = ("Comments could not load... Please try again later.");
+            });
         }
+    }
+
+    function buildComments(uid) {
+        var g = comRequestResponse.map((entry) => {
+            return entry[3] === uid ?
+                <Grid item> 
+                    <Comment commenterName={entry[0]} commentText={entry[1]} commentOnLevel={entry[2]} commentID={entry[3]} buildComments={buildComments}/>   
+                    <CreateComment postID={uid} sendGetCommentsRequest={sendGetCommentsRequest} commentOnLevel={entry[2]} cookies={props.cookies} withSortingBar={false}/>   
+                </Grid>
+            :
+                <Grid item>
+                    <Comment commenterName={entry[0]} commentText={entry[1]} commentOnLevel={entry[2]} commentID={entry[3]} buildComments={buildComments}/>   
+                </Grid>
+        })
+        setComments(g);
     }
 
     return (
@@ -134,7 +74,7 @@ export default function CommentsPageBody(props) {
             aria-describedby="scroll-dialog-description"
         >
             <DialogTitle id="scroll-dialog-title">
-                        <IconButton size="small" title="More" onClick={()=>{alert('Upvote') }}> 
+                        <IconButton size="small" title="More" onClick={()=>{buildComments("b9837c50-178c-46b3-a74a-495c83290da5") }}> 
                             <SvgIcon ><path d={mdiArrowUpBoldOutline} /></SvgIcon>
                         </IconButton>
                         200
@@ -145,15 +85,14 @@ export default function CommentsPageBody(props) {
             <DialogContent >
                 <DialogContentText id="scroll-dialog-description" tabIndex={-1}>
                     <Grid container spacing={3} direction='column' className={classes.grid} >
-                        <Grid item>
+                        <Grid item style={{paddingLeft:20}}>
                             <Post clickable={false} showVotes={false} showJoin={false}/>
                         </Grid>
-                        <Grid item> 
-                                    <CreateComment postID={postID} sendGetCommentsRequest={sendGetCommentsRequest} cookies={props.cookies}/>
-                                
+                        <Grid item style={{paddingLeft:20}}> 
+                            <CreateComment postID={postID} sendGetCommentsRequest={sendGetCommentsRequest} cookies={props.cookies} withSortingBar={true}/>   
                             <Divider style={{marginTop: 15, marginRight: 13}}/>
                         </Grid>
-                        {comInfo}
+                        {comments}
                         
                     </Grid>
 
@@ -166,54 +105,47 @@ export default function CommentsPageBody(props) {
     );
 } 
 
-function commentMaker(postTree, setList, list) {
-    setList();
+function commentMaker(postTree) {
     var a = postTree.children;
-    //console.log("commentmaker")
+    var count = 0;
+    var temp = [];
 
     for (var i = 0; i < postTree.children.length; i++) {
       var b = a[i];
-      whileLoop(b, setList, list);
-      //console.log("back to mainLoop")
+      whileLoop(b, temp, count);
     }
 
-    return 0;
+    return temp;
   }
 
-  function forLoop(b, setList, list) {
-    //console.log("newFor", b)
-    setList(list=>[list, b.content.text]);
+  function forLoop(b, temp, count) {
+    temp.push([b.metadata.author, b.content.text, count, b.metadata.uid]);
+    count++;
 
     for (var j = 0; j < b.children.length; j++) {
-      //console.log("j" + j + "; b-length" + b.children.length)
-      
-      //console.log("for", b)
-      whileLoop(b.children[j], setList, list);
-      //console.log("back from while")
+      temp = whileLoop(b.children[j], temp, count);
     }
-    return 0;
+    return temp;
   }
 
-  function whileLoop(b, setList, list) {
+  function whileLoop(b, temp, count) {
     var bLength = b.children.length;
 
     while (bLength > 0) {
-        //console.log("while", b)
       if (b.children.length === 1) {
-        setList(list=>[list, b.content.text]);
-        //console.log(b.content.text)
-        //console.log(list)
+        temp.push([b.metadata.author, b.content.text, count, b.metadata.uid]);
+
+        count++;
         b = b.children[0];
         bLength = b.children.length
-      } else if (b.children.length > 1) {
-        //console.log("while elif")
-        forLoop(b, setList, list);
-        bLength = -1
+      } 
+      else if (b.children.length > 1) {
+        forLoop(b, temp, count);
+        bLength = -1;
       }
     }
     if (b.children.length === 0) {
-        //console.log("while 0children", b)
-        setList(list=>[list, b.content.text]);
-    }
-    return 0;
+        temp.push([b.metadata.author, b.content.text, count, b.metadata.uid]);
+        }
+    return temp;
   }
