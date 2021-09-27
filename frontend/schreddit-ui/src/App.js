@@ -34,7 +34,7 @@ const App = () => {
 
   return (
     <Router>
-      <Header cookies={cookies} handleLogin={handleLogin} handleLogout={handleLogout} history={history} />
+      <Header cookies={cookies} handleLogin={handleLogin} handleLogout={handleLogout} />
       <Switch>
         <Route exact path={"/"} component={() => <FrontpageBody cookies={cookies}/>} />
         <Route path={"/createSubreddit"} component={() => <CreateSubreddit cookies={cookies}/>}/>
