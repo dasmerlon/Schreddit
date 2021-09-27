@@ -75,7 +75,9 @@ export default function CreateComment(props) {
                                     <Button className={classes.button} onClick={sendComment} size="small"> Comment</Button>
                                 </Grid>
                                 <Grid item style={{paddingRight: 30}}>
-                                    {requestError}
+                                    <Typography style={{textTransform:"none"}} variant="button">
+                                        {requestError}
+                                    </Typography>
                                 </Grid>
                             </Grid>
                         </Grid>
