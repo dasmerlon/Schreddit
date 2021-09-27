@@ -117,6 +117,8 @@ export default function ForntpageBody(props) {
                     voteCount={post.metadata.count}
                     voteState={post.metadata.state}
                     cookies={props.cookies}
+                    setShowLogin={props.setShowLogin}
+                    handleLogout={props.handleLogout}
                     /> 
                 </Grid>
               ), ((lastSortBy !== sortBy) ? true : false))
@@ -126,11 +128,8 @@ export default function ForntpageBody(props) {
           setAllPostsLoaded(true);
         }
       }).catch(error => {
-        if (error.response.status === 422) {
-            setError({ message: "Please check your input. Something is not valid." });
-        }
-        else {
-            setError({ message: "Something went wrong, please try again later." });
+        if (error.response.status === 401) {
+            props.handleLogout();
         }
         console.log(error.response);
       })

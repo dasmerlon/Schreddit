@@ -83,6 +83,10 @@ export default function CreatePostBody(props) {
         if(props.cookies.loggedIn){
             getSubscribedSubreddits();
         }
+        else{
+          props.handleLogout();
+          props.setShowLogin(true);
+        }
     }, [props.cookies.loggedIn]);
 
     const getSubscribedSubreddits = () => {
@@ -96,7 +100,12 @@ export default function CreatePostBody(props) {
             if(response.data.subreddits.length !== 0){
               setSubreddit('r/' + response.data.subreddits[0].sr);
             }
-        });
+        }).catch(error => {
+        if(error.response.status === 401){
+          props.handleLogout();
+          props.setShowLogin(true);
+        }
+      });
     }
 
     const handleTitleChange = (event) => {

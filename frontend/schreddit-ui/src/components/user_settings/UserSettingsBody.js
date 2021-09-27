@@ -93,6 +93,8 @@ export default function UserSettingsBody(props) {
             })
             .catch(error => {
                 setEmail("User information could not load... Please try again later.");
+                props.handleLogout();
+                props.showLogin(true);
             })
         } else {
             setEmail("")
@@ -153,6 +155,8 @@ export default function UserSettingsBody(props) {
                                         <Grid item>
                                             <ChangeMail 
                                                 cookies={props.cookies}
+                                                handleLogout={props.handleLogout}
+                                                setShowLogin={props.setShowLogin}
                                             />
                                         </Grid>
                                     </Grid>

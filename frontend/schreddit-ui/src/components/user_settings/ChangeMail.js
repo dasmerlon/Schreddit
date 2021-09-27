@@ -89,7 +89,12 @@ export default function ChangeMail(props) {
             }).catch(error => {
                 if (error.response.status === 304) {
                     setError({ message: "Please enter a new email." });
-                } else {
+                }
+                else if (error.response.status === 401) {
+                    props.handleLogout();
+                    props.setShowLogin(true);
+                } 
+                else {
                     setError({ message: "Something went wrong, please try again later." });
                 }
             })

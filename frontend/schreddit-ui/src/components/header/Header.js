@@ -283,6 +283,8 @@ export default function PrimarySearchAppBar(props) {
                             cookies={props.cookies}
                             error={error}
                             setError={setError}
+                            setShowLogin={props.setShowLogin}
+                            showLogin={props.showLogin}
                         />
 
                         <Register

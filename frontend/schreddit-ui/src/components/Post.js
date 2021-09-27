@@ -149,6 +149,11 @@ export default function Posts(props) {
     }).then(response => {
       setNewState(direction);
       handleVote(direction, true);
+    }).catch(error => {
+      if(error.response.status === 401){
+        props.handleLogout();
+        props.setShowLogin(true);
+      }
     })
   }
 

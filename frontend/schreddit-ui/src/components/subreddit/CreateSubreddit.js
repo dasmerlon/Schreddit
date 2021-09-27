@@ -99,7 +99,12 @@ export default function CreateSubreddit(props) {
                 console.log(error.response)
                 if (error.response.status === 422) {
                     setError({ message: "Please check your input. Something is not valid." });
-                } else {
+                } 
+                else if (error.response.status === 401){
+                    props.handleLogout();
+                    props.setShowLogin(true);
+                }
+                else {
                     setError({ message: "Something went wrong, please try again later." });
                 }
                 console.log(error.response);
