@@ -74,6 +74,9 @@ export default function Dropdown(props) {
     useEffect(() => {
         if(props.cookies.loggedIn){
             getSubscribedSubreddits();
+            if(window.location.pathname.includes('/r/')){
+                setSubreddit(window.location.pathname.split('/')[2])
+            }
         }
     }, [props.cookies.loggedIn]);
 
