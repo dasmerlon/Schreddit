@@ -98,7 +98,7 @@ export default function Posts(props) {
   }
 
   useEffect(() => {
-    handleVote(props.voteState);
+    handleVote(props.voteState, false);
   }, []);
 
   const handleNext = () => {
@@ -109,11 +109,14 @@ export default function Posts(props) {
     setActiveStep((prevActiveStep) => prevActiveStep - 1);
   };
 
-  const handleVote = (direction) => {
-    axios.get(configData.VOTE_API_URL + '/' + props.uid + '/count'
-    ).then(response => 
-      setCurrentVotes(response.data)
-    )
+  const handleVote = (direction, newVote) => {
+    if(newVote){
+        axios.get(configData.VOTE_API_URL + '/' + props.uid + '/count'
+        ).then(response => 
+          setCurrentVotes(response.data)
+        ) 
+    }
+
     if (direction === 1) {
       setUpArrowColor('orange');
       setDownArrowColor('unset');
@@ -145,7 +148,7 @@ export default function Posts(props) {
       }
     }).then(response => {
       setNewState(direction);
-      handleVote(direction);
+      handleVote(direction, true);
     })
   }
 
