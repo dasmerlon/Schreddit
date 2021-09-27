@@ -80,14 +80,14 @@ export default function CreatePostBody(props) {
     let history = useHistory();
 
     useEffect(() => {
-        if(props.cookies.loggedIn){
-            getSubscribedSubreddits();
+        if(typeof props.cookies.token !== "undefined"){
+          getSubscribedSubreddits();
         }
         else{
           props.handleLogout();
           props.setShowLogin(true);
         }
-    }, [props.cookies.loggedIn]);
+    }, [props.cookies.token]);
 
     const getSubscribedSubreddits = () => {
         let config = {
@@ -165,7 +165,7 @@ export default function CreatePostBody(props) {
           else if(file.type.startsWith('video')){
             parameters.metadata.type = "video";
           }
-          createPost(parameters)
+          createPost(parameters);
         })
       }
       else{

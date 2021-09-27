@@ -23,8 +23,8 @@ const App = () => {
 
   const handleLogin = (token, username) => {
     setCookie("token", token, { path: '/' });
-    setCookie("loggedIn", true, { path: '/' });
     setCookie("username", username, {path: '/'});
+    setCookie("loggedIn", true, { path: '/' });
   };
 
   const handleLogout = () => {
