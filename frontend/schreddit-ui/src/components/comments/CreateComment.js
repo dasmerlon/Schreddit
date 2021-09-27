@@ -6,9 +6,6 @@ import Button from '@material-ui/core/Button';
 import axios from 'axios';
 import configData from '../config.json';
 
-// Source: https://materialdesignicons.com/
-import { mdiCommentOutline, mdiArrowUpBoldOutline, mdiArrowDownBoldOutline} from '@mdi/js';
-
 const useStyles = makeStyles((theme) => ({
     grid: {
         width: '100%',
@@ -28,7 +25,8 @@ export default function CreateComment(props) {
     const classes = useStyles();
 
     const [textValue, setTextFieldValue] = React.useState('');
-    const [error, setError] = React.useState('');
+    const [requestError, setRequestError] = React.useState('');
+    const [sortByValue, setSortByValue] = React.useState('Top');
     const paddingLeft = props.commentOnLevel *50;
 
     const handleTextfieldChange = (event) => {
@@ -46,12 +44,15 @@ export default function CreateComment(props) {
                     Authorization: `Bearer ${props.cookies.token}`
                 }
             }).then(response => {
-                console.log("Succesfull")
+                console.log(response)
+                setRequestError("Succesfull!")
+                props.sendGetCommentsRequest("?sort=" + sortByValue.toLowerCase());
             }).catch(error => {
+                console.log(error)
                 if (error.response.status === 422) {
-                    setError({ message: "Please login first befor to submit a comment." });
+                    setRequestError("Please login first befor you try to submit a comment.");
                 } else {
-                    setError({ message: "Something went wrong, please try again later." });
+                    setRequestError("Something went wrong, please try again later.");
                 }
             })
     };
@@ -65,22 +66,31 @@ export default function CreateComment(props) {
                 <Grid item>
                     <Grid container justify="space-between">
                         <Grid item>
-                            <Button className={classes.button} onClick={sendComment} size="small"> Comment</Button>
-                        </Grid>
-                        <Grid item>
-                            <Grid container justify="space-between">
-                                <Grid item style={{marginTop: 3}}>
-                                    <Typography style={{textTransform: "none"}} variant="button">
-                                        Sort comments by: 
-                                    </Typography>
+                            <Grid container spacing={4}>
+                                <Grid item>
+                                    <Button className={classes.button} onClick={sendComment} size="small"> Comment</Button>
                                 </Grid>
                                 <Grid item>
-                                    <Button size="small" style={{textTransform: "none"}} onClick={(e) => (e.preventDefault(), props.sendGetCommentsRequest("?sort=top"))}>Top</Button>
-                                    <Button size="small" style={{textTransform: "none"}} onClick={(e) => (e.preventDefault(), props.sendGetCommentsRequest("?sort=new"))}>New</Button>
-                                    <Button size="small" style={{textTransform: "none"}} onClick={(e) => (e.preventDefault(), props.sendGetCommentsRequest("?sort=old"))}>Old</Button>
+                                    {requestError}
                                 </Grid>
                             </Grid>
                         </Grid>
+                        { props.withSortingBar ? 
+                            <Grid item>
+                                <Grid container justify="space-between">
+                                    <Grid item style={{marginTop: 3}}>
+                                        <Typography style={{textTransform: "none"}} variant="button">
+                                            Sort comments by: 
+                                        </Typography>
+                                    </Grid>
+                                    <Grid item>
+                                        <Button size="small" style={{textTransform: "none"}} onClick={(e) => (e.preventDefault(), props.sendGetCommentsRequest("?sort=top"), setSortByValue("Top"))}>Top</Button>
+                                        <Button size="small" style={{textTransform: "none"}} onClick={(e) => (e.preventDefault(), props.sendGetCommentsRequest("?sort=new"), setSortByValue("New"))}>New</Button>
+                                        <Button size="small" style={{textTransform: "none"}} onClick={(e) => (e.preventDefault(), props.sendGetCommentsRequest("?sort=old"), setSortByValue("Old"))}>Old</Button>
+                                    </Grid>
+                                </Grid>
+                            </Grid> 
+                        : null}
                     </Grid>
                 </Grid> 
             </Grid>
