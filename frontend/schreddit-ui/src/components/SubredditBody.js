@@ -54,6 +54,7 @@ export default function SubreditBody(props) {
     const [subreddit, setSubreddit] = React.useState("");
     const [subredditOneLetter, setSubredditOneLetter] = React.useState("");
     const [lastSortBy, setLastSortBy] = React.useState('new');
+    const [allPostsLoaded, setAllPostsLoaded] = React.useState(false);
 
     const [page, setPage] = useState(1);
     const loader = useRef(null);
@@ -151,23 +152,28 @@ export default function SubreditBody(props) {
       }
       axios.get(configData.POSTS_API_URL, config 
       ).then(response => {
-              handlePosts(response.data.data.map((post) => 
-                <Grid item> 
-                  <Post uid={post.metadata.uid} 
-                    author={post.metadata.author} 
-                    sr={post.metadata.sr} 
-                    createdAt={post.metadata.created_at}
-                    title={post.content.title}
-                    type={post.metadata.type}
-                    url={post.content.url}
-                    text={post.content.text}
-                    voteCount={post.metadata.count}
-                    voteState={post.metadata.state}
-                    cookies={props.cookies}
-                    /> 
-                </Grid>
-              ), ((lastSortBy !== sortBy || clear) ? true : false))
-              setLastSortBy(sortBy);
+          if(response.data.data.length !== 0){
+            handlePosts(response.data.data.map((post) => 
+            <Grid item> 
+              <Post uid={post.metadata.uid} 
+                author={post.metadata.author} 
+                sr={post.metadata.sr} 
+                createdAt={post.metadata.created_at}
+                title={post.content.title}
+                type={post.metadata.type}
+                url={post.content.url}
+                text={post.content.text}
+                voteCount={post.metadata.count}
+                voteState={post.metadata.state}
+                cookies={props.cookies}
+                /> 
+            </Grid>
+            ), ((lastSortBy !== sortBy || clear) ? true : false))
+            setLastSortBy(sortBy);
+          } else {
+            setAllPostsLoaded(true);
+          }
+
            }).catch(error => {
               if (error.response.status === 422) {
                   setError({ message: "Please check your input. Something is not valid." });
@@ -222,7 +228,7 @@ export default function SubreditBody(props) {
             </Grid>
             {posts}
             <div className="loading" ref={loader}>
-                <h2>Loading Posts ...</h2>
+                <h2>{(allPostsLoaded) ? "All posts have been loaded": "Loading Posts..."}</h2>
           </div>
           </Grid>
           <Grid item container spacing={3} direction='column' className={classes.grid} xs={1}>

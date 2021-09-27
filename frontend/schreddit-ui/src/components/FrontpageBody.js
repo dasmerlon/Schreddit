@@ -35,6 +35,7 @@ export default function ForntpageBody(props) {
     const [error, setError] = React.useState("");
     const [subredditOneLetter, setSubredditOneLetter] = React.useState("");
     const [lastSortBy, setLastSortBy] = React.useState('new');
+    const [allPostsLoaded, setAllPostsLoaded] = React.useState(false);
 
     const [page, setPage] = useState(1);
     const loader = useRef(null);
@@ -102,6 +103,7 @@ export default function ForntpageBody(props) {
       }
       axios.get(configData.POSTS_API_URL, config 
       ).then(response => {
+        if(response.data.data.length !== 0){
               handlePosts(response.data.data.map((post) => 
                 <Grid item> 
                   <Post uid={post.metadata.uid} 
@@ -119,15 +121,19 @@ export default function ForntpageBody(props) {
                 </Grid>
               ), ((lastSortBy !== sortBy) ? true : false))
               setLastSortBy(sortBy);
-           }).catch(error => {
-              if (error.response.status === 422) {
-                  setError({ message: "Please check your input. Something is not valid." });
-              }
-              else {
-                  setError({ message: "Something went wrong, please try again later." });
-              }
-              console.log(error.response);
-          })
+        }
+        else {
+          setAllPostsLoaded(true);
+        }
+      }).catch(error => {
+        if (error.response.status === 422) {
+            setError({ message: "Please check your input. Something is not valid." });
+        }
+        else {
+            setError({ message: "Something went wrong, please try again later." });
+        }
+        console.log(error.response);
+      })
     };
 
 
@@ -149,7 +155,7 @@ export default function ForntpageBody(props) {
 
              {posts}
               <div className="loading" ref={loader}>
-                <h2>Loading Posts ...</h2>
+                <h2>{(allPostsLoaded) ? "All posts have been loaded": "Loading Posts..."}</h2>
               </div>
 
           </Grid>
