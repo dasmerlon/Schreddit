@@ -28,38 +28,79 @@ export default function CommentsPageBody(props) {
     const [comments, setComments] = React.useState("");
 
     useEffect(() => {
-        sendGetCommentsRequest("?sort=top");
+        sendGetCommentsRequest("?sort=new");
     }, [props.open]);
 
     function sendGetCommentsRequest(sortBy) {
-        console.log(props.postInfo)
         if(props.open) {
-            axios.get(configData.POST_API_URL + postID + "/tree" + sortBy)
-            .then(userResponse => {
-                comRequestResponse = commentMaker(userResponse.data);
-                if(comRequestResponse[0] === undefined){
-                    setComments("")
-                } else{
-                    buildComments();
-                }
-            })
-            .catch(error => {
-                console.log(error)
-                comRequestResponse = ("Comments could not load... Please try again later.");
-            });
+            console.log(props.postInfo.uid)
+            if(props.cookies.token === undefined) {
+                axios.get(configData.POST_API_URL + postID + "/tree" + sortBy)
+                .then(userResponse => {
+                    comRequestResponse = commentMaker(userResponse.data);
+                    if(comRequestResponse[0] === undefined){
+                        setComments("")
+                    } else{
+                        buildComments();
+                    }
+                })
+                .catch(error => {
+                    console.log(error)
+                    comRequestResponse = ("Comments could not load... Please try again later.");
+                });
+            } else {
+                axios.get(configData.POST_API_URL + postID + "/tree" + sortBy, {
+                    headers: {
+                        Authorization: `Bearer ${props.cookies.token}`
+                    }
+                })
+                .then(userResponse => {
+                    comRequestResponse = commentMaker(userResponse.data);
+                    if(comRequestResponse[0] === undefined){
+                        setComments("")
+                    } else{
+                        buildComments();
+                    }
+                })
+                .catch(error => {
+                    console.log(error)
+                    comRequestResponse = ("Comments could not load... Please try again later.");
+                });
+            }
         }
     }
 
     function buildComments(uid) {
         var g = comRequestResponse.map((entry) => {
+            console.log("votestate compage", entry[5])
             return entry[3] === uid ?
                 <Grid item> 
-                    <Comment commenterName={entry[0]} commentText={entry[1]} commentOnLevel={entry[2]} commentID={entry[3]} buildComments={buildComments}/>   
+                    <Comment 
+                        commenterName={entry[0]} 
+                        commentText={entry[1]} 
+                        commentOnLevel={entry[2]} 
+                        commentID={entry[3]} 
+                        voteCount={entry[4]} 
+                        voteState={entry[5]} 
+                        createdAt={entry[6]} 
+                        cookies={props.cookies} 
+                        buildComments={buildComments}
+                        />   
                     <CreateComment postID={uid} sendGetCommentsRequest={sendGetCommentsRequest} commentOnLevel={entry[2]} cookies={props.cookies} withSortingBar={false}/>   
                 </Grid>
             :
-                <Grid item>
-                    <Comment commenterName={entry[0]} commentText={entry[1]} commentOnLevel={entry[2]} commentID={entry[3]} buildComments={buildComments}/>   
+            <Grid item>
+                    <Comment 
+                        commenterName={entry[0]} 
+                        commentText={entry[1]}
+                        commentOnLevel={entry[2]}
+                        commentID={entry[3]} 
+                        voteCount={entry[4]} 
+                        voteState={entry[5]} 
+                        createdAt={entry[6]} 
+                        cookies={props.cookies} 
+                        buildComments={buildComments}
+                        />   
                 </Grid>
         })
         setComments(g);
@@ -74,15 +115,6 @@ export default function CommentsPageBody(props) {
             aria-labelledby="scroll-dialog-title"
             aria-describedby="scroll-dialog-description"
         >
-            <DialogTitle id="scroll-dialog-title">
-                        <IconButton size="small" title="More" onClick={()=>{ props.postInfo.vote(1) }}> 
-                            <SvgIcon ><path d={mdiArrowUpBoldOutline} style={{ color: props.postInfo.upArrowColor }} /></SvgIcon>
-                        </IconButton>
-                        {props.postInfo.currentVotes}
-                        <IconButton size="small" title="More" onClick={()=>{ props.postInfo.vote(-1) }}> 
-                            <SvgIcon ><path d={mdiArrowDownBoldOutline} style={{ color: props.postInfo.downArrowColor }} /></SvgIcon>
-                        </IconButton>
-            </DialogTitle>
             <DialogContent >
                 <DialogContentText id="scroll-dialog-description" tabIndex={-1}>
                     <Grid container spacing={3} direction='column' className={classes.grid} >
@@ -91,16 +123,15 @@ export default function CommentsPageBody(props) {
                                 uid={props.postInfo.uid} 
                                 author={props.postInfo.author} 
                                 sr={props.postInfo.sr} 
-                                createdAt={props.postInfo.created_at}
+                                createdAt={props.postInfo.createdAt}
                                 title={props.postInfo.title}
                                 type={props.postInfo.type}
                                 url={props.postInfo.url}
                                 text={props.postInfo.text}
-                                voteCount={props.postInfo.count}
-                                voteState={props.postInfo.state}
-                                cookies={props.postInfo.cookies}
+                                voteCount={props.postInfo.voteCount}
+                                voteState={props.postInfo.voteState}
+                                cookies={props.cookies}
                                 clickable={false}
-                                showVotes={false}
                             />
                         </Grid>
                         <Grid item style={{paddingLeft:20}}> 
@@ -134,7 +165,7 @@ function commentMaker(postTree) {
   }
 
   function forLoop(b, temp, count) {
-    temp.push([b.metadata.author, b.content.text, count, b.metadata.uid]);
+    temp.push([b.metadata.author, b.content.text, count, b.metadata.uid, b.metadata.count, b.metadata.state, b.metadata.created_at]);
     count++;
 
     for (var j = 0; j < b.children.length; j++) {
@@ -148,7 +179,7 @@ function commentMaker(postTree) {
 
     while (bLength > 0) {
       if (b.children.length === 1) {
-        temp.push([b.metadata.author, b.content.text, count, b.metadata.uid]);
+        temp.push([b.metadata.author, b.content.text, count, b.metadata.uid, b.metadata.count, b.metadata.state, b.metadata.created_at]);
 
         count++;
         b = b.children[0];
@@ -160,7 +191,7 @@ function commentMaker(postTree) {
       }
     }
     if (b.children.length === 0) {
-        temp.push([b.metadata.author, b.content.text, count, b.metadata.uid]);
+        temp.push([b.metadata.author, b.content.text, count, b.metadata.uid, b.metadata.count, b.metadata.state, b.metadata.created_at]);
         }
     return temp;
   }
