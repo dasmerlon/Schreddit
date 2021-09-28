@@ -76,7 +76,6 @@ export default function ChangeMail(props) {
 
     const sendUserSettingsUpdate = async () => {
         if(emailConfirmed.email === email.email) {
-            console.log("yes1")
             axios.put(configData.USER_SETTINGS_API_URL, {
                 email: email.email
             },
@@ -85,7 +84,6 @@ export default function ChangeMail(props) {
                     Authorization: `Bearer ${props.cookies.token}`
                 }
             }).then(response => {
-                console.log("yes")
                 handleEmailChangeDialogClose();
                 window.location.reload();
                 //history.push("/r/" + subreddit.name);
@@ -97,7 +95,6 @@ export default function ChangeMail(props) {
                 }
             })
         } else {
-            console.log("no")
             setError({ message: "The emails have to match." });
         }
     };
