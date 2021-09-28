@@ -162,13 +162,13 @@ export default function Posts(props) {
         uid: props.uid, 
         author: props.author, 
         sr: props.sr, 
-        createdAt: props.created_at,
+        createdAt: props.createdAt,
         title: props.title,
         type: props.type,
         url: props.url,
         text: props.text,
-        voteCount: props.count,
-        voteState: props.state,
+        voteCount: props.voteCount,
+        voteState: props.voteState,
         upArrowColor: upArrowColor,
         downArrowColor: downArrowColor,
         currentVotes: currentVotes,
@@ -187,20 +187,18 @@ export default function Posts(props) {
             </Avatar>
         }
         action={
-          <Grid container>
-            { props.showVotes == true ?   
-                <Grid item>
-                  <IconButton size="small" title="More" onClick={() => { vote(1) }}>
-                    <SvgIcon ><path d={mdiArrowUpBoldOutline} style={{ color: upArrowColor }} /></SvgIcon>
-                  </IconButton>
-                  <Typography component="h2" style={{ textAlign: 'center' }}>
-                    {currentVotes}
-                  </Typography>
-                  <IconButton size="small" title="More" onClick={() => { vote(-1) }}>
-                    <SvgIcon ><path d={mdiArrowDownBoldOutline} style={{ color: downArrowColor }} /></SvgIcon>
-                  </IconButton>
-                </Grid>
-              : null }
+          <Grid container> 
+            <Grid item>
+              <IconButton size="small" title="More" onClick={() => { vote(1) }}>
+                <SvgIcon ><path d={mdiArrowUpBoldOutline} style={{ color: upArrowColor }} /></SvgIcon>
+              </IconButton>
+              <Typography component="h2" style={{ textAlign: 'center' }}>
+                {currentVotes}
+              </Typography>
+              <IconButton size="small" title="More" onClick={() => { vote(-1) }}>
+                <SvgIcon ><path d={mdiArrowDownBoldOutline} style={{ color: downArrowColor }} /></SvgIcon>
+              </IconButton>
+            </Grid>
           </Grid>
         }
         title={
@@ -221,7 +219,8 @@ export default function Posts(props) {
         }
       />
 
-      <CardActionArea onClick={handleClickOpen}>
+      
+      <CardActionArea onClick={props.clickable ? handleClickOpen : null}>
         <CardContent>
           <Typography variant="h5" component="h2">
             {props.title}
@@ -262,12 +261,12 @@ export default function Posts(props) {
             <Button size="small" onClick={handleBack} disabled={activeStep === 0}>
               {theme.direction === 'rtl' ? <KeyboardArrowRight /> : <KeyboardArrowLeft />}
               Back
-              </Button>
+            </Button>
           }
         />
         : null}
 
-      <CardActionArea onClick={handleClickOpen}>
+      <CardActionArea onClick={props.clickable ? handleClickOpen : null}>
         {(props.type === "video" || props.type === "videogif") ?
           <video className={classes.img} controls src={props.url} type={'video/mp4'} id="myVideo" />
           : null}

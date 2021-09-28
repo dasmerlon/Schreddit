@@ -124,7 +124,6 @@ export default function ForntpageBody(props) {
                     voteState={post.metadata.state}
                     cookies={props.cookies}
                     clickable={true}
-                    showVotes={true}
                     setOpen={setOpen}
                     setPostInfo={setPostInfo}
                     /> 
