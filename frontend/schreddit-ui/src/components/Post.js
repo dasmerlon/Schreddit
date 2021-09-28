@@ -154,7 +154,6 @@ export default function Posts(props) {
   }
 
   function handleClickOpen(e) {
-    console.log(handleVote)
     e.preventDefault();
     props.setOpen(true);
     props.setPostInfo(

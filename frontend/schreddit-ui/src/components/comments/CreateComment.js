@@ -46,7 +46,6 @@ export default function CreateComment(props) {
                     Authorization: `Bearer ${props.cookies.token}`
                 }
             }).then(response => {
-                console.log(response)
                 setRequestError("Succesfull!")
                 props.sendGetCommentsRequest("?sort=" + sortByValue.toLowerCase());
                 textField.current.value = "";
