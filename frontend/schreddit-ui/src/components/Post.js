@@ -102,11 +102,6 @@ export default function Posts(props) {
     setCurrentVotes(props.voteCount);
     handleVote(props.voteState, false);
   }, [props.uid]);
-
-  useEffect(() => {
-    
-  })
-
   const handleNext = () => {
     setActiveStep((prevActiveStep) => prevActiveStep + 1);
   };
