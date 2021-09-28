@@ -83,11 +83,9 @@ export default function SubreditBody(props) {
     }
 
     useEffect(() => {
-      if(page !== 1){
         setPage(1);
         getSubreddit();
         getPosts(lastSortBy, true);
-      }
     }, [window.location.pathname])
 
     useEffect(() => {
