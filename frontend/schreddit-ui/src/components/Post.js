@@ -102,6 +102,7 @@ export default function Posts(props) {
     setCurrentVotes(props.voteCount);
     handleVote(props.voteState, false);
   }, [props.uid]);
+  
   const handleNext = () => {
     setActiveStep((prevActiveStep) => prevActiveStep + 1);
   };
