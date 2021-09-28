@@ -9,8 +9,8 @@ import Premium from "./Premium";
 import CommunitiesByCategory from "./PopularComs";
 import Info from "./Info";
 import TopComs from "./TopComs";
+import CommentsPageBody from './comments/CommentsPageDialog';
 import axios from 'axios';
-import { useHistory } from "react-router-dom"
 import configData from './config.json'
 
 // InfiniteScrolling source:
@@ -31,6 +31,9 @@ const useStyles = makeStyles((theme) => ({
 export default function ForntpageBody(props) {
     const classes = useStyles();
 
+    const [open, setOpen] = React.useState(false);
+    const [postInfo, setPostInfo] = React.useState(0);
+
     const [posts, setPosts] = React.useState();
     const [error, setError] = React.useState("");
     const [subredditOneLetter, setSubredditOneLetter] = React.useState("");
@@ -38,6 +41,11 @@ export default function ForntpageBody(props) {
 
     const [page, setPage] = useState(1);
     const loader = useRef(null);
+
+
+    const handleClose = () => {
+      setOpen(false);
+    };
 
     useEffect(() => {
       getPosts(lastSortBy);
@@ -115,6 +123,9 @@ export default function ForntpageBody(props) {
                     voteCount={post.metadata.count}
                     voteState={post.metadata.state}
                     cookies={props.cookies}
+                    clickable={true}
+                    setOpen={setOpen}
+                    setPostInfo={setPostInfo}
                     /> 
                 </Grid>
               ), ((lastSortBy !== sortBy) ? true : false))
@@ -126,7 +137,6 @@ export default function ForntpageBody(props) {
               else {
                   setError({ message: "Something went wrong, please try again later." });
               }
-              console.log(error.response);
           })
     };
 
@@ -174,8 +184,10 @@ export default function ForntpageBody(props) {
           </Grid>
         </Grid>
       </Container>
-
+      <CommentsPageBody handleClose={handleClose} open={open} postInfo={postInfo} cookies={props.cookies}/>
     </React.Fragment>
     </div>
     );
 } 
+
+

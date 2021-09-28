@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
-import { makeStyles, useTheme } from "@material-ui/core/styles";
-import { Card, CardHeader, Avatar, SvgIcon, Link, Grid, CardActionArea, Chip, MobileStepper } from "@material-ui/core";
+import {makeStyles, useTheme} from "@material-ui/core/styles";
+import {Card, CardHeader, Avatar, SvgIcon, Link, Grid, CardActionArea, Chip, MobileStepper} from "@material-ui/core";
 import CardActions from '@material-ui/core/CardActions';
 import CardContent from '@material-ui/core/CardContent';
 import IconButton from '@material-ui/core/IconButton';
@@ -45,6 +45,9 @@ const useStyles = makeStyles({
   avatar: {
     backgroundColor: "rgb(0,180,200)",
   },
+  button: {
+      textTransform:"none",
+  },
   //this is okayish but could be better.
   img: {
     height: '50%',
@@ -76,6 +79,7 @@ export default function Posts(props) {
   const theme = useTheme();
   const [activeStep, setActiveStep] = React.useState(0);
   const maxSteps = tutorialSteps.length;
+
   const [upArrowColor, setUpArrowColor] = React.useState("");
   const [downArrowColor, setDownArrowColor] = React.useState("");
   const [newState, setNewState] = React.useState(props.voteState);
@@ -149,8 +153,32 @@ export default function Posts(props) {
     })
   }
 
+  function handleClickOpen(e) {
+    e.preventDefault();
+    props.setOpen(true);
+    props.setPostInfo(
+      {
+        uid: props.uid, 
+        author: props.author, 
+        sr: props.sr, 
+        createdAt: props.createdAt,
+        title: props.title,
+        type: props.type,
+        url: props.url,
+        text: props.text,
+        voteCount: props.voteCount,
+        voteState: props.voteState,
+        upArrowColor: upArrowColor,
+        downArrowColor: downArrowColor,
+        currentVotes: currentVotes,
+        handleVote: handleVote,
+        vote: vote
+      }
+    )
+  };
+
   return (
-    <Card useStyles={classes.root}>
+    <Card elevation={0} useStyles={classes.root}>
       <CardHeader
         avatar={
           <Avatar className={classes.avatar}>
@@ -158,7 +186,7 @@ export default function Posts(props) {
             </Avatar>
         }
         action={
-          <Grid container>
+          <Grid container> 
             <Grid item>
               <IconButton size="small" title="More" onClick={() => { vote(1) }}>
                 <SvgIcon ><path d={mdiArrowUpBoldOutline} style={{ color: upArrowColor }} /></SvgIcon>
@@ -190,7 +218,8 @@ export default function Posts(props) {
         }
       />
 
-      <CardActionArea href={"" + props.uid}>
+      
+      <CardActionArea onClick={props.clickable ? handleClickOpen : null}>
         <CardContent>
           <Typography variant="h5" component="h2">
             {props.title}
@@ -215,7 +244,7 @@ export default function Posts(props) {
           : null}
       </CardActionArea>
 
-      {show_multiple_img && props.type === "image" ?
+      { show_multiple_img && props.type === "image" ?
         <MobileStepper
           steps={maxSteps}
           position="static"
@@ -231,21 +260,21 @@ export default function Posts(props) {
             <Button size="small" onClick={handleBack} disabled={activeStep === 0}>
               {theme.direction === 'rtl' ? <KeyboardArrowRight /> : <KeyboardArrowLeft />}
               Back
-              </Button>
+            </Button>
           }
         />
         : null}
 
-      <CardActionArea href={"" + props.uid}>
+      <CardActionArea onClick={props.clickable ? handleClickOpen : null}>
         {(props.type === "video" || props.type === "videogif") ?
           <video className={classes.img} controls src={props.url} type={'video/mp4'} id="myVideo" />
           : null}
       </CardActionArea>
       <CardActions>
-        <Button size="small" title="Comments" startIcon={<SvgIcon ><path d={mdiCommentOutline} /></SvgIcon>} onClick={() => { alert('Go to comments') }} >Comments</Button>
-        <Button size="small" title="Give Award" startIcon={<SvgIcon ><path d={mdiGiftOutline} /></SvgIcon>} onClick={() => { alert('Give Award') }}>Award</Button>
-        <Button size="small" title="Share" startIcon={<ShareRoundedIcon />} onClick={() => { alert('Share with') }}>Share</Button>
-        <Button size="small" title="Save" startIcon={<BookmarkBorderRoundedIcon />} onClick={() => { alert('Saved') }}>Save</Button>
+        <Button size="small" className={classes.button} title="Comments" startIcon={<SvgIcon ><path d={mdiCommentOutline} /></SvgIcon>} onClick={() => { alert('Go to comments') }} >Comments</Button>
+        <Button size="small" className={classes.button} title="Give Award" startIcon={<SvgIcon ><path d={mdiGiftOutline} /></SvgIcon>} onClick={() => { alert('Give Award') }}>Award</Button>
+        <Button size="small" className={classes.button} title="Share" startIcon={<ShareRoundedIcon />} onClick={() => { alert('Share with') }}>Share</Button>
+        <Button size="small" className={classes.button} title="Save" startIcon={<BookmarkBorderRoundedIcon />} onClick={() => { alert('Saved') }}>Save</Button>
         <IconButton size="small" title="More" onClick={() => { alert('More') }}>
           <MoreHorizRoundedIcon />
         </IconButton>
