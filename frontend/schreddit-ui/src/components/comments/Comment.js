@@ -61,14 +61,20 @@ export default function Comment(props) {
     }
 
     useEffect(() => {
-        handleVote(props.voteState);
-    }, []);
+        setNewState(props.voteState);
+        setCurrentVotes(props.voteCount);
+        handleVote(props.voteState, false);
+    }, [props.commentID]);
+
     
-    const handleVote = (direction) => {
-        axios.get(configData.VOTE_API_URL + '/' + props.commentID + '/count'
-        ).then(response => 
-            setCurrentVotes(response.data)
-        )
+    const handleVote = (direction, newVote) => {
+        if(newVote){
+            axios.get(configData.VOTE_API_URL + '/' + props.commentID + '/count'
+                ).then(response => 
+                    setCurrentVotes(response.data)
+            )
+        }
+
         if (direction === 1) {
             setUpArrowColor('orange');
             setDownArrowColor('unset');
@@ -96,7 +102,7 @@ export default function Comment(props) {
             }
         }).then(response => {
             setNewState(direction);
-            handleVote(direction);
+            handleVote(direction, true);
         }).catch(error => {
             console.log("error: ", error)
         })
