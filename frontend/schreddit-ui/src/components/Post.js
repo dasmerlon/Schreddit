@@ -22,6 +22,7 @@ import { mdiGiftOutline, mdiCommentOutline, mdiArrowUpBoldOutline, mdiArrowDownB
 
 import KeyboardArrowLeft from '@material-ui/icons/KeyboardArrowLeft';
 import KeyboardArrowRight from '@material-ui/icons/KeyboardArrowRight';
+import ErrorMessage from "./ErrorMessage";
 
 const tutorialSteps = [
   {
@@ -80,6 +81,7 @@ export default function Posts(props) {
   const [downArrowColor, setDownArrowColor] = React.useState("");
   const [newState, setNewState] = React.useState(props.voteState);
   const [currentVotes, setCurrentVotes] = React.useState(props.voteCount)
+  const [error, setError] = React.useState('');
   
   let createdAtType = "";
   let createdAt = new Date(props.createdAt);
@@ -111,7 +113,7 @@ export default function Posts(props) {
 
   const handleVote = (direction) => {
     axios.get(configData.VOTE_API_URL + '/' + props.uid + '/count'
-    ).then(response => 
+    ).then(response =>
       setCurrentVotes(response.data)
     )
     if (direction === 1) {
@@ -146,6 +148,8 @@ export default function Posts(props) {
     }).then(response => {
       setNewState(direction);
       handleVote(direction);
+    }).catch(error => {
+      setError(error)
     })
   }
 
@@ -169,6 +173,7 @@ export default function Posts(props) {
               <IconButton size="small" title="More" onClick={() => { vote(-1) }}>
                 <SvgIcon ><path d={mdiArrowDownBoldOutline} style={{ color: downArrowColor }} /></SvgIcon>
               </IconButton>
+              { error !== '' && <ErrorMessage error={error} setError={setError}/> }
             </Grid>
           </Grid>
         }

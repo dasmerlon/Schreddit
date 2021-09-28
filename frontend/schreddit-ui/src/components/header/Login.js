@@ -12,6 +12,7 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 import { CardActionArea, Grid, Typography } from '@material-ui/core';
 import AccountCircle from '@material-ui/icons/AccountCircle';
 import { Avatar } from '@material-ui/core';
+import ErrorMessage from "../ErrorMessage";
 
 const useStyles = makeStyles((theme) => ({
     small: {
@@ -28,9 +29,9 @@ export default function Login(props) {
 
     const [showLoginDialog, setShowLoginDialog] = React.useState(false);
     const [renderProfile, setrenderProfile] = React.useState(null);
+    const [error, setError] = React.useState('');
 
     const openLoginDialog = () => {
-        props.setError({ message: "" })
         setShowLoginDialog(true);
     };
 
@@ -52,13 +53,11 @@ export default function Login(props) {
                         handleLoginDialogClose();
                     })
                     .catch(error => {
-                        props.setError({ message: "User information could not load... Please try again later." });
-                        console.log(error);
+                        setError(error);
                     });
             })
             .catch(error => {
-                props.setError({ message: "Something went wrong, please try again later." });
-                console.log(error);
+                setError(error)
             });
     };
 
@@ -73,6 +72,9 @@ export default function Login(props) {
     if (!props.cookies.loggedIn) {
             return (
                 <div>
+                    { error !== '' &&
+                    <ErrorMessage error={error} setError={setError}/>
+                    }
                     <Button variant="outlined" aria-label="login button" style={{ margin: '7px' }} color="inherit" onClick={openLoginDialog}>
                         Login
                                 </Button>
@@ -104,9 +106,6 @@ export default function Login(props) {
                                 fullWidth
                                 onChange={props.handlePasswordChange}
                             />
-                            <p >
-                                {props.error.message}
-                            </p>
                         </DialogContent>
                         <DialogActions>
                             <Button onClick={handleLoginDialogClose} color="primary">

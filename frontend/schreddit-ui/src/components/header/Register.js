@@ -9,18 +9,18 @@ import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import { InputAdornment } from '@material-ui/core';
-
+import ErrorMessage from "../ErrorMessage";
 
 export default function Register(props) {
     const [showRegisterDialog, setShowRegisterDialog] = React.useState(false);
     const [titleValue, setTitleValue] = React.useState('');
+    const [error, setError] = React.useState('');
 
     const handleTitleChange = (event) => {
       setTitleValue(event.target.value);
     };
 
     const openRegisterDialog = () => {
-        props.setError({ message: "" })
         setShowRegisterDialog(true);
     };
 
@@ -37,19 +37,15 @@ export default function Register(props) {
         }).then(response => {
             handleRegisterDialogClose();
         }).catch(error => {
-            if (error.response.status === 422) {
-                props.setError({ message: "Please check your input. Something is not valid." });
-            }
-            else {
-                props.setError({ message: "Something went wrong, please try again later." });
-            }
-
-            console.log(error.response);
+            setError(error)
         })
     };
     if (!props.cookies.loggedIn) {
         return (
             <div>
+                { error !== '' &&
+                <ErrorMessage error={error} setError={setError}/>
+                }
                 <Button variant="outlined" aria-label="register button" style={{ margin: '7px' }} color="inherit" styles="theme.spacing(1)" onClick={openRegisterDialog}>
                     Register
                                 </Button>
@@ -98,9 +94,6 @@ export default function Register(props) {
                             fullWidth
                             onChange={props.handlePasswordChange}
                         />
-                        <p>
-                            {props.error.message}
-                        </p>
                     </DialogContent>
                     <DialogActions>
                         <Button onClick={handleRegisterDialogClose} color="primary">

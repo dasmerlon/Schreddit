@@ -11,6 +11,7 @@ import AboutCom from "./AboutCom";
 import axios from 'axios';
 import { useHistory } from "react-router-dom"
 import configData from './config.json'
+import ErrorMessage from "./ErrorMessage";
 
 
 const useStyles = makeStyles((theme) => ({
@@ -156,18 +157,15 @@ export default function SubreditBody(props) {
               ), ((lastSortBy !== sortBy) ? true : false))
               setLastSortBy(sortBy);
            }).catch(error => {
-              if (error.response.status === 422) {
-                  setError({ message: "Please check your input. Something is not valid." });
-              }
-              else {
-                  setError({ message: "Something went wrong, please try again later." });
-              }
-              console.log(error.response);
+              setError(error)
           })
     };
 
     return (
-    <div className={classes.root}> 
+    <div className={classes.root}>
+    { error !== '' &&
+    <ErrorMessage error={error} setError={setError}/>
+    }
     <React.Fragment>
       <CssBaseline />
       <Paper variant="outlined" elevation={0} className={classes.headerBackground} />

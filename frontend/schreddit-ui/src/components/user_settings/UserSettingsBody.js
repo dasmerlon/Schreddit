@@ -13,6 +13,7 @@ import axios from 'axios';
 import configData from '../config.json';
 import ChangeMail from './ChangeMail';
 import ChangePassword from './ChangePassword';
+import ErrorMessage from "../ErrorMessage";
 
 //Für meinen privaten user a@b.com, a, a
 //"access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2MjkyODUxNzcsInN1YiI6InVpZDpkMDY2ZmIzNGUxOTY0NTI4YmYyMDc0ZDFlN2E2MTZlOCJ9.sVrTQtnB9O_lVUZOGw0zGgRjOgdRk96v0ygK_oPhfBI",
@@ -78,7 +79,8 @@ export default function UserSettingsBody(props) {
 
     const theme = useTheme();
     const [value, setValue] = React.useState(0);
-    const [email, setEmail] = React.useState("a@g.com");
+    const [email, setEmail] = React.useState('');
+    const [error, setError] = React.useState('');
     
     // For the navigation tabs
     const handleChange = (event, newValue) => {
@@ -92,7 +94,7 @@ export default function UserSettingsBody(props) {
                 setEmail(userResponse.data.email);
             })
             .catch(error => {
-                setEmail("User information could not load... Please try again later.");
+                setError(error)
             })
         } else {
             setEmail("")
@@ -101,7 +103,10 @@ export default function UserSettingsBody(props) {
 
 
     return (
-    <div className={classes.root}> 
+    <div className={classes.root}>
+        { error !== '' &&
+        <ErrorMessage error={error} setError={setError}/>
+        }
         <React.Fragment>
         <CssBaseline />
             <Container fixed >
