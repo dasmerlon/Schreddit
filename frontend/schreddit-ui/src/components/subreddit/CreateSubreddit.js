@@ -10,6 +10,7 @@ import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
 import { useHistory } from "react-router-dom"
 import { makeStyles } from "@material-ui/core/styles";
+import ErrorMessage from "../ErrorMessage";
 
 
 const useStyles = makeStyles((theme) => ({
@@ -37,78 +38,55 @@ const useStyles = makeStyles((theme) => ({
 export default function CreateSubreddit(props) {
     const classes = useStyles();
     let history = useHistory();
-    const [subreddit, setSubreddit] = React.useState({
-        name: '',
-        title: '',
-        description: '',
-        type: ''
-    });
+    const [sr, setSr] = React.useState('')
+    const [title, setTitle] = React.useState('')
+    const [description, setDescription] = React.useState('')
+    const [type, setType] = React.useState('')
 
     const [error, setError] = React.useState("");
 
-    const handleSubredditNameChange = event => {
-        setSubreddit({
-            name: event.target.value,
-            title: subreddit.title,
-            description: subreddit.description,
-            type: subreddit.type
-        })
+    const handleSrChange = event => {
+        setSr(event.target.value)
     };
 
-    const handleSubredditTitleChange = event => {
-        setSubreddit({
-            name: subreddit.name,
-            title: event.target.value,
-            description: subreddit.description,
-            type: subreddit.type
-        })
+    const handleTitleChange = event => {
+        setTitle(event.target.value)
     };
 
-    const handleSubredditDescriptionChange = event => {
-        setSubreddit({
-            name: subreddit.name,
-            title: subreddit.title,
-            description: event.target.value,
-            type: subreddit.type
-        })
+    const handleDescriptionChange = event => {
+        setDescription(event.target.value)
     };
 
-    const handleSubredditTypeChange = event => {
-        setSubreddit({
-            name: subreddit.name,
-            title: subreddit.title,
-            description: subreddit.description,
-            type: event.target.value
-        })
+    const handleTypeChange = event => {
+        setType(event.target.value)
     };
 
-    const sendCreateSubredditData = async () => {
-        axios.post(configData.SUBREDDIT_API_URL + subreddit.name, {
-            sr: subreddit.name,
-            title: subreddit.title,
-            description: subreddit.description,
-            type: subreddit.type
+    const handleSubmit = async (event) => {
+        axios.post(configData.SUBREDDIT_API_URL + sr, {
+            sr: sr,
+            title: title,
+            description: description,
+            type: type
         },
-            {
-                headers: {
-                    Authorization: `Bearer ${props.cookies.token}`
-                }
-            }).then(response => {
-                history.push("/r/" + subreddit.name);
-            }).catch(error => {
-                console.log(error.response)
-                if (error.response.status === 422) {
-                    setError({ message: "Please check your input. Something is not valid." });
-                } else {
-                    setError({ message: "Something went wrong, please try again later." });
-                }
-                console.log(error.response);
-            })
+        {
+            headers: {
+                Authorization: `Bearer ${props.cookies.token}`
+            }
+        }).then(response => {
+            history.push("/r/" + response.data.sr);
+        }).catch(error => {
+            console.log(error)
+            setError(error)
+        });
+        event.preventDefault()
     };
 
     return (
         <div className={classes.container}>
-            <form onSubmit={sendCreateSubredditData}>
+            { error !== '' &&
+            <ErrorMessage error={error} setError={setError}/>
+            }
+            <form onSubmit={handleSubmit}>
                 <TextField
                     name="subredditName"
                     variant="outlined"
@@ -120,7 +98,7 @@ export default function CreateSubreddit(props) {
                     }}
                     id="subredditName"
                     label="Subreddit Name"
-                    onChange={handleSubredditNameChange}
+                    onChange={handleSrChange}
                     autoFocus
                 />
                 <TextField
@@ -131,7 +109,7 @@ export default function CreateSubreddit(props) {
                     className={classes.textField}
                     id="subredditTitle"
                     label="Subreddit Title"
-                    onChange={handleSubredditTitleChange}
+                    onChange={handleTitleChange}
                 />
                 <TextField
                     id="subredditDescription"
@@ -143,7 +121,7 @@ export default function CreateSubreddit(props) {
                     fullWidth
                     className={classes.textField}
                     variant="outlined"
-                    onChange={handleSubredditDescriptionChange}
+                    onChange={handleDescriptionChange}
                 />
                 <FormControl variant="outlined" className={classes.formControl}>
                     <InputLabel id="subreddit-type-dropdown-label">Type</InputLabel>
@@ -151,7 +129,8 @@ export default function CreateSubreddit(props) {
                         required
                         labelId="subreddit-type-dropdown-label"
                         id="subreddit-type-dropdown"
-                        onChange={handleSubredditTypeChange}
+                        value={type}
+                        onChange={handleTypeChange}
                         label="Type"
                     >
                         <MenuItem value={'public'}>Public</MenuItem>
@@ -159,7 +138,6 @@ export default function CreateSubreddit(props) {
                         <MenuItem value={'restricted'}>Restricted</MenuItem>
                     </Select>
                 </FormControl>
-                <label style={{ color: 'red' }}>{error.message}</label>
                 <br />
                 <Button type="submit" className={classes.submitButton}>
                     Create Subreddit

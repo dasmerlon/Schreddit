@@ -108,7 +108,7 @@ export default function ForntpageBody(props) {
       if(typeof posts !== "undefined" && lastSortBy === sortBy){
         config.params.after = posts[posts.length-1].props.children.props.uid
       }
-      axios.get(configData.POSTS_API_URL, config 
+      axios.get(configData.POSTS_API_URL, config
       ).then(response => {
               handlePosts(response.data.data.map((post) => 
                 <Grid item> 
@@ -130,14 +130,10 @@ export default function ForntpageBody(props) {
                 </Grid>
               ), ((lastSortBy !== sortBy) ? true : false))
               setLastSortBy(sortBy);
-           }).catch(error => {
-              if (error.response.status === 422) {
-                  setError({ message: "Please check your input. Something is not valid." });
-              }
-              else {
-                  setError({ message: "Something went wrong, please try again later." });
-              }
-          })
+           }
+       ).catch(error => {
+           setError(error)
+      });
     };
 
 

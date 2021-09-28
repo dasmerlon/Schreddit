@@ -29,10 +29,10 @@ export default function CreatePost(props) {
                 <Link className={classes.link} to={{ pathname:'/submit', state: [{id: 1, name: 'Ford', color: 'red'}] }}>
                     <TextField id="outlined-basic" label="Create Post" variant="outlined" fullWidth className={classes.textField} />
                 </Link>
-                <IconButton size="small" title="More" href="http://localhost:3000/submit"> 
+                <IconButton size="small" title="More" href="/submit">
                     <SvgIcon ><path d={mdiImageMultipleOutline} /></SvgIcon>
                 </IconButton>
-                <IconButton size="small" title="More" href="http://localhost:3000/submit"> 
+                <IconButton size="small" title="More" href="/submit">
                     <SvgIcon ><path d={mdiLinkVariant} /></SvgIcon>
                 </IconButton>
             </CardActions>
