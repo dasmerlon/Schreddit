@@ -11,6 +11,7 @@ import AboutCom from "./AboutCom";
 import axios from 'axios';
 import { useHistory } from "react-router-dom"
 import configData from './config.json'
+import CommentsPageBody from './comments/CommentsPageDialog';
 
 
 const useStyles = makeStyles((theme) => ({
@@ -48,6 +49,9 @@ const useStyles = makeStyles((theme) => ({
 //      - Infinit Scrolling einbauen
 export default function SubreditBody(props) {
     const classes = useStyles();
+
+    const [open, setOpen] = React.useState(false);
+    const [postInfo, setPostInfo] = React.useState(0);
 
     const [posts, setPosts] = React.useState();
     const [error, setError] = React.useState("");
@@ -151,6 +155,9 @@ export default function SubreditBody(props) {
                     voteCount={post.metadata.count}
                     voteState={post.metadata.state}
                     cookies={props.cookies}
+                    clickable={true}
+                    setOpen={setOpen}
+                    setPostInfo={setPostInfo}
                     /> 
                 </Grid>
               ), ((lastSortBy !== sortBy) ? true : false))
@@ -164,6 +171,10 @@ export default function SubreditBody(props) {
               }
               console.log(error.response);
           })
+    };
+
+    const handleClose = () => {
+      setOpen(false);
     };
 
     return (
@@ -256,6 +267,7 @@ export default function SubreditBody(props) {
           </Grid>
         </Grid>
       </Container>
+      <CommentsPageBody handleClose={handleClose} open={open} postInfo={postInfo} cookies={props.cookies}/>
     </React.Fragment>
     </div>
     );
