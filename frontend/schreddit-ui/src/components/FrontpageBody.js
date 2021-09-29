@@ -12,6 +12,7 @@ import TopComs from "./TopComs";
 import CommentsPageBody from './comments/CommentsPageDialog';
 import axios from 'axios';
 import configData from './config.json'
+import ErrorMessage from "./ErrorMessage";
 
 // InfiniteScrolling source:
 // https://dev.to/hunterjsbit/react-infinite-scroll-in-few-lines-588f
@@ -128,6 +129,7 @@ export default function ForntpageBody(props) {
                     clickable={true}
                     setOpen={setOpen}
                     setPostInfo={setPostInfo}
+                    setShowLogin={props.setShowLogin}
                     /> 
                 </Grid>
               ), ((lastSortBy !== sortBy) ? true : false))
@@ -146,7 +148,9 @@ export default function ForntpageBody(props) {
     <div className={classes.root}> 
     <React.Fragment>
       <CssBaseline />
-
+      { error !== '' &&
+        <ErrorMessage error={error} setError={setError} cookies={props.cookies} setShowLogin={props.setShowLogin}/>
+        }
       <Container fixed >
         <Grid container spacing={2} direction='row' className={classes.grid}>
           <Grid item container spacing={3} direction='column' className={classes.grid} xs={12} md={7}>

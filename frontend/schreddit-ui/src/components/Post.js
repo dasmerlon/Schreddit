@@ -206,7 +206,7 @@ export default function Posts(props) {
               <IconButton size="small" title="More" onClick={() => { vote(-1) }}>
                 <SvgIcon ><path d={mdiArrowDownBoldOutline} style={{ color: downArrowColor }} /></SvgIcon>
               </IconButton>
-              { error !== '' && <ErrorMessage error={error} setError={setError}/> }
+              { error !== '' && <ErrorMessage error={error} setError={setError} cookies={props.cookies} setShowLogin={props.setShowLogin}/> }
             </Grid>
           </Grid>
         }

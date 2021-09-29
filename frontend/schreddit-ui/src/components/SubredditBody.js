@@ -173,6 +173,7 @@ export default function SubreditBody(props) {
                     clickable={true}
                     setOpen={setOpen}
                     setPostInfo={setPostInfo}
+                    setShowLogin={props.setShowLogin}
                     /> 
                 </Grid>
               ), ((lastSortBy !== sortBy || clear) ? true : false))
@@ -193,7 +194,7 @@ export default function SubreditBody(props) {
     return (
     <div className={classes.root}>
     { error !== '' &&
-    <ErrorMessage error={error} setError={setError}/>
+    <ErrorMessage error={error} setError={setError} cookies={props.cookies} setShowLogin={props.setShowLogin}/>
     }
     <React.Fragment>
       <CssBaseline />

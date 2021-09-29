@@ -281,6 +281,8 @@ export default function PrimarySearchAppBar(props) {
                             handleLogin={props.handleLogin}
                             handleLogout={props.handleLogout}
                             cookies={props.cookies}
+                            showLogin={props.showLogin}
+                            setShowLogin={props.setShowLogin}
                         />
 
                         <Register

@@ -105,7 +105,7 @@ export default function UserSettingsBody(props) {
     return (
     <div className={classes.root}>
         { error !== '' &&
-        <ErrorMessage error={error} setError={setError}/>
+        <ErrorMessage error={error} setError={setError} cookies={props.cookies} setShowLogin={props.setShowLogin} />
         }
         <React.Fragment>
         <CssBaseline />

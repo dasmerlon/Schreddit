@@ -12,6 +12,9 @@ export default function ErrorMessage(props) {
             return;
         }
         setOpen(false);
+        if(status === 401 && props.cookies.loggedIn){
+            props.setShowLogin(true);
+        }
         props.setError('');
     };
 
@@ -48,6 +51,14 @@ export default function ErrorMessage(props) {
     else if (status === 304) {
         errorMessage = "The resource remains unchanged."
     }
+    else if (status === 401) {
+        if (props.cookies.loggedIn){
+            errorMessage = "Your session timed out, please login again."
+        }
+        else {
+            errorMessage = "To perform this action, you need to be logged in."
+        }
+    }
     else if (status >= 400 && status < 500) {
         errorMessage = props.error.response.data.detail
     }
@@ -64,7 +75,7 @@ export default function ErrorMessage(props) {
     return (
         <Snackbar
             open={open}
-            autoHideDuration={6000}
+            autoHideDuration={4500}
             onClose={handleClose}
             message={errorMessage}
             action={action}

@@ -82,13 +82,7 @@ export default function CreatePostBody(props) {
     let history = useHistory();
 
     useEffect(() => {
-        if(typeof props.cookies.token !== "undefined"){
           getSubscribedSubreddits();
-        }
-        else{
-          props.handleLogout();
-          props.setShowLogin(true);
-        }
     }, [props.cookies.token]);
 
     const getSubscribedSubreddits = () => {
@@ -189,7 +183,7 @@ export default function CreatePostBody(props) {
     return (
     <div className={classes.root}>
         { error !== '' &&
-        <ErrorMessage error={error} setError={setError}/>
+        <ErrorMessage error={error} setError={setError} cookies={props.cookies} setShowLogin={props.setShowLogin}/>
         }
         <React.Fragment>
           <CssBaseline />

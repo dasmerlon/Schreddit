@@ -72,9 +72,9 @@ export default function Login(props) {
     if (!props.cookies.loggedIn) {
             return (
                 <div>
-                    { error !== '' &&
-                    <ErrorMessage error={error} setError={setError}/>
-                    }
+                    {/* { error !== '' &&
+                    <ErrorMessage error={error} setError={setError} cookies={props.cookies}/>
+                    } */}
                     <Button variant="outlined" aria-label="login button" style={{ margin: '7px' }} color="inherit" onClick={openLoginDialog}>
                         Login
                                 </Button>

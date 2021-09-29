@@ -84,7 +84,7 @@ export default function CreateSubreddit(props) {
     return (
         <div className={classes.container}>
             { error !== '' &&
-            <ErrorMessage error={error} setError={setError}/>
+            <ErrorMessage error={error} setError={setError} cookies={props.cookies} setShowLogin={props.setShowLogin}/>
             }
             <form onSubmit={handleSubmit}>
                 <TextField
