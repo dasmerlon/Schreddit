@@ -251,6 +251,7 @@ export default function PrimarySearchAppBar(props) {
     
     const [searchBarResults, setSearchBarResults] = React.useState("");
     const [dialog, setDialog] = React.useState("");
+    const [open, setOpen] = React.useState(false);
 
     const handleSearchBarChange = (event) => {
         if(event.key === 'Enter'){
@@ -270,20 +271,15 @@ export default function PrimarySearchAppBar(props) {
             console.log(response)
             setSearchBarResults(response.data)
             setOpen(true);
-            setDialog(<SearchResultsDialog setOpen={setOpen} open={true} searchBarResults={response.data} />)
+            setDialog(<SearchResultsDialog handleClose={handleClose} open={true} searchBarResults={response.data} />)
         }).catch(error => {
             console.log(error)
             setError(error)
         });
     }
-
-    const [open, setOpen] = React.useState(false);
   
-    const handleClickOpen = () => {
-    };
-  
-    const handleClose = (value) => {
-      setOpen(false);
+    function handleClose() {
+      setDialog("");
     };
   
 
@@ -388,12 +384,8 @@ function SearchResultsDialog(props) {
         history.push('/r/' + sr);
     }
 
-    function handleClose() {
-        props.setOpen(false)
-    }
-
     return (
-      <Dialog onClose={handleClose} open={props.open}>
+      <Dialog onClose={props.handleClose} open={props.open}>
         <DialogTitle>Matching Subreddits found:</DialogTitle>
         <List>
             {list}
