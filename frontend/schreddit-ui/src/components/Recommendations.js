@@ -100,7 +100,7 @@ export default function RecipeReviewCard(props) {
                                     <ArrowDown color="secondary" />
                                 }
                             </TableCell> <TableCell component="th" scope="row">
-                                <Avatar>
+                                <Avatar style={{ backgroundColor: "#ff332f"}} >
                                     {subreddit.sr[0]}
                                 </Avatar>
                             </TableCell>

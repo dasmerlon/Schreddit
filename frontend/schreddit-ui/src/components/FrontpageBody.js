@@ -178,7 +178,7 @@ export default function ForntpageBody(props) {
                 <Premium />
               </Grid>
               <Grid item>
-                <TrendingComs />
+                <TrendingComs cookies={props.cookies}/>
               </Grid>
               <Grid item>
                 <CommunitiesByCategory />
