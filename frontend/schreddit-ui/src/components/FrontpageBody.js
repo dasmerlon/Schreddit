@@ -8,7 +8,7 @@ import TrendingComs from "./TrendingComs";
 import Premium from "./Premium";
 import CommunitiesByCategory from "./PopularComs";
 import Info from "./Info";
-import TopComs from "./TopComs";
+import Recommendations from "./Recommendations";
 import CommentsPageBody from './comments/CommentsPageDialog';
 import axios from 'axios';
 import configData from './config.json'
@@ -169,14 +169,16 @@ export default function ForntpageBody(props) {
           </Grid>
           <Grid item container spacing={3} direction='column' className={classes.grid} xs={1}>
             <Hidden smDown>
-              <Grid item>
-                <TopComs />
-              </Grid>
+              {props.cookies.loggedIn ? 
+                <Grid item>
+                  <Recommendations cookies={props.cookies}/>
+                </Grid>
+              : null }
               <Grid item>
                 <Premium />
               </Grid>
               <Grid item>
-                <TrendingComs />
+                <TrendingComs cookies={props.cookies}/>
               </Grid>
               <Grid item>
                 <CommunitiesByCategory />

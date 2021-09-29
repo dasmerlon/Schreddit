@@ -54,6 +54,7 @@ export default function SubreditBody(props) {
     const [open, setOpen] = React.useState(false);
     const [postInfo, setPostInfo] = React.useState(0);
 
+    const [joinStatus, setJoinStatus] = React.useState("Join");
     const [posts, setPosts] = React.useState();
     const [error, setError] = React.useState("");
     const [subreddit, setSubreddit] = React.useState("");
@@ -72,12 +73,10 @@ export default function SubreditBody(props) {
     const getSubreddit = () => {
       axios.get(configData.SUBREDDIT_API_URL + window.location.pathname.split('/')[2]
       ).then(response => {
-        console.log(response.data)
         setSubreddit(response.data);
         setSubredditOneLetter(response.data.sr[0])
         getSubredditSubscriber();
       });
-
     }
 
     const getSubredditSubscriber = () => {
@@ -88,9 +87,10 @@ export default function SubreditBody(props) {
     }
 
     useEffect(() => {
-        setPage(1);
-        getSubreddit();
-        getPosts(lastSortBy, true);
+      setPage(1);
+      getSubreddit();
+      getPosts(lastSortBy, true);
+      setStatusForJoining(window.location.pathname.split('/')[2])
     }, [window.location.pathname])
 
     useEffect(() => {
@@ -191,6 +191,56 @@ export default function SubreditBody(props) {
       setOpen(false);
     };
 
+
+    function setStatusForJoining(sr) {
+      axios.get(configData.SUBSCRIPTION_API_URL + '/' + sr + "/state", 
+        {
+          headers: {
+            'Authorization': `Bearer ${props.cookies.token}`
+          }
+        }
+      ).then(response => {
+        if(response.data){
+          setJoinStatus("Joined")
+        } else {
+          setJoinStatus("Join")          
+        }
+      }).catch(error => {
+        setError(error);
+      }) 
+    }
+    
+
+    function handleSubscribe() {
+      if(joinStatus === "Join"){
+        axios.put(configData.SUBSCRIPTION_API_URL + '/' + subreddit.sr + "/sub", {},
+        {
+          headers: {
+            'Authorization': `Bearer ${props.cookies.token}`
+          }
+        }
+        ).then(response => {
+          setStatusForJoining(subreddit.sr);
+        }).catch(error => {
+          setError(error);
+        }) 
+      } 
+      else {
+        axios.put(configData.SUBSCRIPTION_API_URL + '/' + subreddit.sr + "/unsub", {},
+        {
+          headers: {
+            'Authorization': `Bearer ${props.cookies.token}`
+          }
+        }
+        ).then(response => {
+          setStatusForJoining(subreddit.sr);
+        }).catch(error => {
+          setError(error);
+        }) 
+      }
+
+    }
+
     return (
     <div className={classes.root}>
     { error !== '' &&
@@ -218,7 +268,7 @@ export default function SubreditBody(props) {
                   </Typography>
                 </Grid>
                 <Grid item>
-                  <Button variant="contained" color="inherit">Join</Button>
+                  <Button variant="contained" color="inherit" onClick={handleSubscribe} >{joinStatus}</Button>
                 </Grid>
               </Grid>
             </Container>
