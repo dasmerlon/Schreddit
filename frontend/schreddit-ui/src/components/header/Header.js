@@ -17,6 +17,7 @@ import Login from './Login'
 import Register from './Register'
 import Dropdown from './SubredditSelector'
 import { CardActionArea } from '@material-ui/core';
+import Logo from '../../images/schreddit.svg'
 
 const useStyles = makeStyles((theme) => ({
     grow: {
@@ -52,7 +53,7 @@ const useStyles = makeStyles((theme) => ({
         marginLeft: 0,
         width: '100%',
         [theme.breakpoints.up('sm')]: {
-            marginLeft: theme.spacing(3),
+            marginLeft: '5.5%',
             width: '40%',
             borderStyle: 'solid',
             border: '2px   '
@@ -249,7 +250,7 @@ export default function PrimarySearchAppBar(props) {
         <div className={classes.grow}>
             <AppBar position="static" className={classes.appBar}>
                 <Toolbar>
-                    <img alt="" src={props.logo} className={classes.schredditIcon} />
+                    <img alt="" src={Logo} className={classes.schredditIcon} />
                     <CardActionArea href="/" className={classes.logo}>
                         <Typography className={classes.title} variant="h6" noWrap>
                             Schreddit
