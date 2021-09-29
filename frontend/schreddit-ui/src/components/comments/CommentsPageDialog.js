@@ -35,7 +35,7 @@ export default function CommentsPageBody(props) {
         if(props.open) {
             console.log(props.postInfo.uid)
             if(props.cookies.token === undefined) {
-                axios.get(configData.POST_API_URL + postID + "/tree" + sortBy)
+                axios.get(configData.POST_API_URL + '/' + postID + "/tree" + sortBy)
                 .then(userResponse => {
                     comRequestResponse = commentMaker(userResponse.data);
                     if(comRequestResponse[0] === undefined){
@@ -49,7 +49,7 @@ export default function CommentsPageBody(props) {
                     comRequestResponse = ("Comments could not load... Please try again later.");
                 });
             } else {
-                axios.get(configData.POST_API_URL + postID + "/tree" + sortBy, {
+                axios.get(configData.POST_API_URL + '/' + postID + "/tree" + sortBy, {
                     headers: {
                         Authorization: `Bearer ${props.cookies.token}`
                     }
