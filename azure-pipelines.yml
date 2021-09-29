@@ -18,6 +18,19 @@ variables:
   value: https://schreddit.azurewebsites.net/api/v1/auth/login
 - name: SUBREDDIT_API_URL
   value: https://schreddit.azurewebsites.net/api/v1/subreddits/r/
+- name: POSTS_API_URL
+  value: https://schreddit.azurewebsites.net/api/v1/posts/list
+- name: VOTE_API_URL
+  value: https://schreddit.azurewebsites.net/api/v1/vote
+- name: COMMENT_API_URL
+  value: https://schreddit.azurewebsites.net/api/v1/comments/
+- name: SUBSCRIPTION_API_URL
+  value: https://schreddit.azurewebsites.net/api/v1/subscription
+- name: UPLOAD_API_URL
+  value: https://schreddit.azurewebsites.net/api/v1/blob/upload
+- name: "POST_API_URL": 
+  value: "https://schreddit.azurewebsites.net/api/v1/posts"
+
 
 
 steps:

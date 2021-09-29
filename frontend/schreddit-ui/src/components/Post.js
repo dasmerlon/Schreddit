@@ -104,9 +104,11 @@ export default function Posts(props) {
   }
 
   useEffect(() => {
-    handleVote(props.voteState);
-  }, []);
-
+    setNewState(props.voteState);
+    setCurrentVotes(props.voteCount);
+    handleVote(props.voteState, false);
+  }, [props.uid]);
+  
   const handleNext = () => {
     setActiveStep((prevActiveStep) => prevActiveStep + 1);
   };
@@ -115,11 +117,14 @@ export default function Posts(props) {
     setActiveStep((prevActiveStep) => prevActiveStep - 1);
   };
 
-  const handleVote = (direction) => {
-    axios.get(configData.VOTE_API_URL + '/' + props.uid + '/count'
-    ).then(response =>
-      setCurrentVotes(response.data)
-    )
+  const handleVote = (direction, newVote) => {
+    if(newVote){
+        axios.get(configData.VOTE_API_URL + '/' + props.uid + '/count'
+        ).then(response => 
+          setCurrentVotes(response.data)
+        ) 
+    }
+
     if (direction === 1) {
       setUpArrowColor('orange');
       setDownArrowColor('unset');
@@ -151,7 +156,7 @@ export default function Posts(props) {
       }
     }).then(response => {
       setNewState(direction);
-      handleVote(direction);
+      handleVote(direction, true);
     }).catch(error => {
       setError(error)
     })
@@ -201,7 +206,7 @@ export default function Posts(props) {
               <IconButton size="small" title="More" onClick={() => { vote(-1) }}>
                 <SvgIcon ><path d={mdiArrowDownBoldOutline} style={{ color: downArrowColor }} /></SvgIcon>
               </IconButton>
-              { error !== '' && <ErrorMessage error={error} setError={setError}/> }
+              { error !== '' && <ErrorMessage error={error} setError={setError} cookies={props.cookies} setShowLogin={props.setShowLogin}/> }
             </Grid>
           </Grid>
         }

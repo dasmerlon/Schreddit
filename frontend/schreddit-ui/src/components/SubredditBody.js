@@ -59,6 +59,8 @@ export default function SubreditBody(props) {
     const [subreddit, setSubreddit] = React.useState("");
     const [subredditOneLetter, setSubredditOneLetter] = React.useState("");
     const [lastSortBy, setLastSortBy] = React.useState('new');
+    const [allPostsLoaded, setAllPostsLoaded] = React.useState(false);
+    const [subscriberCount, setSubscriberCount] = React.useState()
 
     const [page, setPage] = useState(1);
     const loader = useRef(null);
@@ -73,15 +75,26 @@ export default function SubreditBody(props) {
         console.log(response.data)
         setSubreddit(response.data);
         setSubredditOneLetter(response.data.sr[0])
+        getSubredditSubscriber();
       });
-      axios.get(configData.SUBSCRIPTION_API_URL + '/' + subreddit.sr + '/subscriber'
+
+    }
+
+    const getSubredditSubscriber = () => {
+      axios.get(configData.SUBSCRIPTION_API_URL + '/' + window.location.pathname.split('/')[2] + '/subscriber'
       ).then(response => {
-        console.log(response)
+        setSubscriberCount(response.data)
       })
     }
 
     useEffect(() => {
-      getPosts(lastSortBy);
+        setPage(1);
+        getSubreddit();
+        getPosts(lastSortBy, true);
+    }, [window.location.pathname])
+
+    useEffect(() => {
+      getPosts(lastSortBy, false);
     }, [page])
 
     useEffect(() => {
@@ -116,7 +129,7 @@ export default function SubreditBody(props) {
       }
     }
 
-    const getPosts = (sortBy) => {
+    const getPosts = (sortBy, clear) => {
       let config = '';
       if(typeof props.cookies.token !== "undefined"){
         config = {
@@ -138,12 +151,13 @@ export default function SubreditBody(props) {
         }
       }
 
-      if(typeof posts !== "undefined" && lastSortBy === sortBy){
+      if(typeof posts !== "undefined" && lastSortBy === sortBy && !clear){
         config.params.after = posts[posts.length-1].props.children.props.uid
       }
       axios.get(configData.POSTS_API_URL, config 
       ).then(response => {
-              handlePosts(response.data.data.map((post) => 
+          if(response.data.data.length !== 0){  
+            handlePosts(response.data.data.map((post) => 
                 <Grid item> 
                   <Post uid={post.metadata.uid} 
                     author={post.metadata.author} 
@@ -159,13 +173,18 @@ export default function SubreditBody(props) {
                     clickable={true}
                     setOpen={setOpen}
                     setPostInfo={setPostInfo}
+                    setShowLogin={props.setShowLogin}
                     /> 
                 </Grid>
-              ), ((lastSortBy !== sortBy) ? true : false))
+              ), ((lastSortBy !== sortBy || clear) ? true : false))
               setLastSortBy(sortBy);
-           }).catch(error => {
-              setError(error)
-          })
+          } 
+          else {
+            setAllPostsLoaded(true);
+          }
+      }).catch(error => {
+          setError(error)
+      })
     };
 
     const handleClose = () => {
@@ -175,7 +194,7 @@ export default function SubreditBody(props) {
     return (
     <div className={classes.root}>
     { error !== '' &&
-    <ErrorMessage error={error} setError={setError}/>
+    <ErrorMessage error={error} setError={setError} cookies={props.cookies} setShowLogin={props.setShowLogin}/>
     }
     <React.Fragment>
       <CssBaseline />
@@ -218,13 +237,13 @@ export default function SubreditBody(props) {
             </Grid>
             {posts}
             <div className="loading" ref={loader}>
-                <h2>Loading Posts ...</h2>
+                <h2>{(allPostsLoaded) ? "All posts have been loaded": "Loading Posts..."}</h2>
           </div>
           </Grid>
           <Grid item container spacing={3} direction='column' className={classes.grid} xs={1}>
             <Hidden smDown>
               <Grid item>
-                <AboutCom members={subreddit.subscriberCount} createdAt={subreddit.created_at} description={subreddit.description} />
+                <AboutCom members={subscriberCount} createdAt={subreddit.created_at} description={subreddit.description} />
               </Grid>
               <Grid item>
                 <Rules />

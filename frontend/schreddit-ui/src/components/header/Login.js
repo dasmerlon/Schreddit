@@ -24,19 +24,19 @@ const useStyles = makeStyles((theme) => ({
     }
 }));
 
+
 export default function Login(props) {
     const classes = useStyles();
 
-    const [showLoginDialog, setShowLoginDialog] = React.useState(false);
     const [renderProfile, setrenderProfile] = React.useState(null);
     const [error, setError] = React.useState('');
 
     const openLoginDialog = () => {
-        setShowLoginDialog(true);
+        props.setShowLogin(true);
     };
 
     const handleLoginDialogClose = () => {
-        setShowLoginDialog(false);
+        props.setShowLogin(false);
     };
 
     const sendLoginData = async () => {
@@ -72,13 +72,13 @@ export default function Login(props) {
     if (!props.cookies.loggedIn) {
             return (
                 <div>
-                    { error !== '' &&
-                    <ErrorMessage error={error} setError={setError}/>
-                    }
+                    {/* { error !== '' &&
+                    <ErrorMessage error={error} setError={setError} cookies={props.cookies}/>
+                    } */}
                     <Button variant="outlined" aria-label="login button" style={{ margin: '7px' }} color="inherit" onClick={openLoginDialog}>
                         Login
                                 </Button>
-                    <Dialog open={showLoginDialog} onClose={handleLoginDialogClose} onKeyDown={(e) => { if (e.keyCode === 13) { sendLoginData() } }} aria-labelledby="login-form-dialog">
+                    <Dialog open={props.showLogin} onClose={handleLoginDialogClose} onKeyDown={(e) => { if (e.keyCode === 13) { sendLoginData() } }} aria-labelledby="login-form-dialog">
                         <DialogTitle id="login-form-dialog-title">Login</DialogTitle>
                         <DialogContent>
                             <DialogContentText>
