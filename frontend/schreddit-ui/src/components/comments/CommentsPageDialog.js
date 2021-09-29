@@ -6,6 +6,8 @@ import Comment from "./Comment";
 import CreateComment from "./CreateComment";
 import configData from '../config.json';
 import axios from 'axios';
+import ErrorMessage from "../ErrorMessage";
+
 
 // Source: https://materialdesignicons.com/
 import { mdiArrowUpBoldOutline, mdiArrowDownBoldOutline} from '@mdi/js';
@@ -26,6 +28,8 @@ export default function CommentsPageBody(props) {
 
     var comRequestResponse = "";
     const [comments, setComments] = React.useState("");
+    const [error, setError] = React.useState("");
+
 
     useEffect(() => {
         sendGetCommentsRequest("?sort=new");
@@ -45,7 +49,7 @@ export default function CommentsPageBody(props) {
                     }
                 })
                 .catch(error => {
-                    console.log(error)
+                    setError(error);
                     comRequestResponse = ("Comments could not load... Please try again later.");
                 });
             } else {
@@ -63,7 +67,7 @@ export default function CommentsPageBody(props) {
                     }
                 })
                 .catch(error => {
-                    console.log(error)
+                    setError(error);
                     comRequestResponse = ("Comments could not load... Please try again later.");
                 });
             }
@@ -115,6 +119,9 @@ export default function CommentsPageBody(props) {
             aria-labelledby="scroll-dialog-title"
             aria-describedby="scroll-dialog-description"
         >
+            { error !== '' &&
+                <ErrorMessage error={error} setError={setError} cookies={props.cookies} setShowLogin={props.setShowLogin} handleLogout={props.handleLogout}/>
+            }
             <DialogContent >
                 <DialogContentText id="scroll-dialog-description" tabIndex={-1}>
                     <Grid container spacing={3} direction='column' className={classes.grid} >

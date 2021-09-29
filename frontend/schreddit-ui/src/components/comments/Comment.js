@@ -8,6 +8,7 @@ import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
 import axios from 'axios';
 import configData from '../config.json';
+import ErrorMessage from "../ErrorMessage";
 
 // Source: https://materialdesignicons.com/
 import { mdiCommentOutline, mdiArrowUpBoldOutline, mdiArrowDownBoldOutline} from '@mdi/js';
@@ -43,6 +44,8 @@ export default function Comment(props) {
     const [downArrowColor, setDownArrowColor] = React.useState("");
     const [newState, setNewState] = React.useState(props.voteState);
     const [currentVotes, setCurrentVotes] = React.useState(props.voteCount)  
+    const [error, setError] = React.useState("");
+
 
     let createdAtType = "";
     let createdAt = new Date(props.createdAt);
@@ -104,7 +107,7 @@ export default function Comment(props) {
             setNewState(direction);
             handleVote(direction, true);
         }).catch(error => {
-            console.log("error: ", error)
+            setError(error);
         })
     }
 
@@ -114,6 +117,9 @@ export default function Comment(props) {
 
     return (
         <Card fullWidth elevation={0} style={{paddingLeft: paddingLeft }}>
+            { error !== '' &&
+                <ErrorMessage error={error} setError={setError} cookies={props.cookies} setShowLogin={props.setShowLogin} handleLogout={props.handleLogout}/>
+            }
             <CardHeader className={classes.header}
             avatar={
                 <Avatar className={classes.avatar} style={{backgroundColor: props.cookies.username === props.commenterName ? "#00B464" : "rgb(0,180,200)"}}>
