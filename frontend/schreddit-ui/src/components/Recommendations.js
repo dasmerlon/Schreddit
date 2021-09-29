@@ -87,14 +87,11 @@ export default function RecipeReviewCard(props) {
             var subreddits = response.data.subreddits
             setRecommendations(subreddits.map((subreddit) =>
                 {
-                    console.log(subreddit.sr[0]*10);
                     return(
                         <TableRow>
                             <TableCell style={{ width: '5px'}} component="th" scope="row">
                                 {count++}.
                             </TableCell>
-                            {/* <TableCell component="th" scope="row">
-                            </TableCell>  */}
                             <TableCell style={{ width: '5px'}} component="th" scope="row">
                                 <Avatar style={{ backgroundColor: "#ff332f"}} >
                                     {subreddit.sr[0]}
@@ -110,7 +107,6 @@ export default function RecipeReviewCard(props) {
                 }
             ));
         }).catch(error => {
-            console.log(error)
             setError(error)
         });
     }, []);
