@@ -193,7 +193,8 @@ export default function SubreditBody(props) {
 
 
     function setStatusForJoining(sr) {
-      axios.get(configData.SUBSCRIPTION_API_URL + '/' + sr + "/state", 
+      if(props.cookies.loggedIn){
+        axios.get(configData.SUBSCRIPTION_API_URL + '/' + sr + "/state", 
         {
           headers: {
             'Authorization': `Bearer ${props.cookies.token}`
@@ -207,7 +208,8 @@ export default function SubreditBody(props) {
         }
       }).catch(error => {
         setError(error);
-      }) 
+      })
+      } 
     }
     
 
