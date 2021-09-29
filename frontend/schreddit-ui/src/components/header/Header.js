@@ -1,4 +1,4 @@
-import React, {useRef} from 'react';
+import React from 'react';
 import { fade, makeStyles } from '@material-ui/core/styles';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
@@ -248,11 +248,8 @@ export default function PrimarySearchAppBar(props) {
         </Menu>
     );
 
-    
-    const [searchBarResults, setSearchBarResults] = React.useState("");
+
     const [dialog, setDialog] = React.useState("");
-    const [open, setOpen] = React.useState(false);
-    const textField = useRef(null);
 
     const handleSearchBarChange = (event) => {
         if(event.key === 'Enter'){
@@ -261,7 +258,6 @@ export default function PrimarySearchAppBar(props) {
     };
 
     function searchFor(sr) {
-        console.log(sr)
         axios.get(configData.SUBREDDITS_API_URL + 'search', {   
             params: {
                 q: sr,
@@ -269,20 +265,13 @@ export default function PrimarySearchAppBar(props) {
             }
         }
         ).then(response => {
-            console.log(response)
-            setSearchBarResults(response.data)
-            setOpen(true);
-            setDialog(<SearchResultsDialog clearSearchBar={clearSearchBar} handleClose={handleClose} open={true} searchBarResults={response.data} />)
+            setDialog(<SearchResultsDialog handleClose={handleClose} open={true} searchBarResults={response.data} />)
         }).catch(error => {
             console.log(error)
             setError(error)
         });
     }
 
-    function clearSearchBar() {
-        textField.current.value = "";
-    }
-  
     function handleClose() {
         setDialog("");
     };
@@ -309,7 +298,6 @@ export default function PrimarySearchAppBar(props) {
                             <SearchIcon />
                         </div>
                             <InputBase
-                                ref={textField}
                                 placeholder="Search…"
                                 classes={{
                                     root: classes.inputRoot,
@@ -379,14 +367,14 @@ function SearchResultsDialog(props) {
                             {subreddit.sr[0]}
                         </Avatar>
                 </ListItemAvatar>
-                <ListItemText primary={subreddit.sr} />
+                <ListItemText primary={subreddit.sr} secondary={subreddit.title}/>
             </ListItem>
         ))
 
     function handleClick(sr){
         history.push("/r/" + sr)
         props.handleClose()
-        props.clearSearchBar()
+        window.location.reload(false);
     }
 
     return (
