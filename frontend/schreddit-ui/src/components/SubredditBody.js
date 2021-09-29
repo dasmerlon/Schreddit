@@ -54,6 +54,7 @@ export default function SubreditBody(props) {
     const [open, setOpen] = React.useState(false);
     const [postInfo, setPostInfo] = React.useState(0);
 
+    const [joinStatus, setJoinStatus] = React.useState();
     const [posts, setPosts] = React.useState();
     const [error, setError] = React.useState("");
     const [subreddit, setSubreddit] = React.useState("");
@@ -77,7 +78,6 @@ export default function SubreditBody(props) {
         setSubredditOneLetter(response.data.sr[0])
         getSubredditSubscriber();
       });
-
     }
 
     const getSubredditSubscriber = () => {
@@ -88,9 +88,10 @@ export default function SubreditBody(props) {
     }
 
     useEffect(() => {
-        setPage(1);
-        getSubreddit();
-        getPosts(lastSortBy, true);
+      setPage(1);
+      getSubreddit();
+      getPosts(lastSortBy, true);
+      setStatusForJoining(subreddit.sr);
     }, [window.location.pathname])
 
     useEffect(() => {
@@ -191,11 +192,49 @@ export default function SubreditBody(props) {
       setOpen(false);
     };
 
+    function setStatusForJoining(sr) {
+      console.log("hey status")
+      axios.get(configData.SUBSCRIPTION_API_URL + '/' + sr + "/state", 
+        {
+          headers: {
+            'Authorization': `Bearer ${props.cookies.token}`
+          }
+        }
+      ).then(response => {
+        console.log()
+        if(response.data){
+          setJoinStatus("Join")
+        } else {
+          setJoinStatus("")          
+        }
+      }).catch(error => {
+        console.log(error)
+        setError(error);
+      }) 
+    }
+    
+
+    function handleSubscribe() {
+      axios.put(configData.SUBSCRIPTION_API_URL + '/' + subreddit.sr + "/recommendations", 
+        {
+          headers: {
+            'Authorization': `Bearer ${props.cookies.token}`
+          }
+        }
+      ).then(response => {
+        
+
+      }).catch(error => {
+        console.log(error)
+        setError(error);
+      }) 
+    }
+
     return (
     <div className={classes.root}>
-    { error !== '' &&
+    {/* error !== '' &&
     <ErrorMessage error={error} setError={setError} cookies={props.cookies} setShowLogin={props.setShowLogin}/>
-    }
+    */}
     <React.Fragment>
       <CssBaseline />
       <Paper variant="outlined" elevation={0} className={classes.headerBackground} />
@@ -218,7 +257,7 @@ export default function SubreditBody(props) {
                   </Typography>
                 </Grid>
                 <Grid item>
-                  <Button variant="contained" color="inherit">Join</Button>
+                  <Button variant="contained" color="inherit" onClick={handleSubscribe} >{joinStatus}</Button>
                 </Grid>
               </Grid>
             </Container>
