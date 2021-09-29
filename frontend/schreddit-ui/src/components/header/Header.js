@@ -281,10 +281,6 @@ export default function PrimarySearchAppBar(props) {
                             handleLogin={props.handleLogin}
                             handleLogout={props.handleLogout}
                             cookies={props.cookies}
-                            error={error}
-                            setError={setError}
-                            setShowLogin={props.setShowLogin}
-                            showLogin={props.showLogin}
                         />
 
                         <Register
@@ -295,8 +291,6 @@ export default function PrimarySearchAppBar(props) {
                             handleUsernameChange={handleUsernameChange}
                             handlePasswordChange={handlePasswordChange}
                             cookies={props.cookies}
-                            error={error}
-                            setError={setError}
                         />
                     </div>
                         

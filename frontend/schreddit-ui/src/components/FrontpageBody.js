@@ -9,8 +9,8 @@ import Premium from "./Premium";
 import CommunitiesByCategory from "./PopularComs";
 import Info from "./Info";
 import TopComs from "./TopComs";
+import CommentsPageBody from './comments/CommentsPageDialog';
 import axios from 'axios';
-import { useHistory } from "react-router-dom"
 import configData from './config.json'
 
 // InfiniteScrolling source:
@@ -31,6 +31,9 @@ const useStyles = makeStyles((theme) => ({
 export default function ForntpageBody(props) {
     const classes = useStyles();
 
+    const [open, setOpen] = React.useState(false);
+    const [postInfo, setPostInfo] = React.useState(0);
+
     const [posts, setPosts] = React.useState();
     const [error, setError] = React.useState("");
     const [subredditOneLetter, setSubredditOneLetter] = React.useState("");
@@ -39,6 +42,11 @@ export default function ForntpageBody(props) {
 
     const [page, setPage] = useState(1);
     const loader = useRef(null);
+
+
+    const handleClose = () => {
+      setOpen(false);
+    };
 
     useEffect(() => {
       getPosts(lastSortBy);
@@ -101,7 +109,7 @@ export default function ForntpageBody(props) {
       if(typeof posts !== "undefined" && lastSortBy === sortBy){
         config.params.after = posts[posts.length-1].props.children.props.uid
       }
-      axios.get(configData.POSTS_API_URL, config 
+      axios.get(configData.POSTS_API_URL, config
       ).then(response => {
         if(response.data.data.length !== 0){
               handlePosts(response.data.data.map((post) => 
@@ -117,8 +125,9 @@ export default function ForntpageBody(props) {
                     voteCount={post.metadata.count}
                     voteState={post.metadata.state}
                     cookies={props.cookies}
-                    setShowLogin={props.setShowLogin}
-                    handleLogout={props.handleLogout}
+                    clickable={true}
+                    setOpen={setOpen}
+                    setPostInfo={setPostInfo}
                     /> 
                 </Grid>
               ), ((lastSortBy !== sortBy) ? true : false))
@@ -128,13 +137,9 @@ export default function ForntpageBody(props) {
           setAllPostsLoaded(true);
         }
       }).catch(error => {
-        if (error.response.status === 401) {
-            props.handleLogout();
-        }
-        console.log(error.response);
-      })
-    };
-
+        setError(error)
+   });
+  }
 
 
     return (
@@ -179,8 +184,10 @@ export default function ForntpageBody(props) {
           </Grid>
         </Grid>
       </Container>
-
+      <CommentsPageBody handleClose={handleClose} open={open} postInfo={postInfo} cookies={props.cookies}/>
     </React.Fragment>
     </div>
     );
 } 
+
+

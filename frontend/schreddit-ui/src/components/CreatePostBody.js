@@ -14,6 +14,7 @@ import FormatQuoteIcon from '@material-ui/icons/FormatQuote';
 import axios from 'axios';
 import configData from './config.json'
 import { useHistory } from "react-router-dom"
+import ErrorMessage from "./ErrorMessage";
 
 //TODO: - Code aufräumen
 //      - Textfeldgröße an Fenstergröße anpassen
@@ -71,6 +72,7 @@ export default function CreatePostBody(props) {
     const [titleValue, setTitleValue] = React.useState('');
     const [file, setFile] = React.useState(null);
     const [url, setUrl] = React.useState();
+    const [error, setError] = React.useState('');
 
     const [textLink, makeTextLink] = React.useState(false);
     const [textValue, setTextFieldValue] = React.useState('');
@@ -101,11 +103,8 @@ export default function CreatePostBody(props) {
               setSubreddit('r/' + response.data.subreddits[0].sr);
             }
         }).catch(error => {
-        if(error.response.status === 401){
-          props.handleLogout();
-          props.setShowLogin(true);
-        }
-      });
+            setError(error);
+        });
     }
 
     const handleTitleChange = (event) => {
@@ -165,7 +164,9 @@ export default function CreatePostBody(props) {
           else if(file.type.startsWith('video')){
             parameters.metadata.type = "video";
           }
-          createPost(parameters);
+          createPost(parameters)
+        }).catch(error => {
+            setError(error)
         })
       }
       else{
@@ -178,13 +179,18 @@ export default function CreatePostBody(props) {
         headers: {'Authorization': `Bearer ${props.cookies.token}`}
       }).then(response => {
         history.push('/' + subreddit)
+      }).catch(error => {
+          setError(error)
       })
     }
 
 
 
     return (
-    <div className={classes.root}> 
+    <div className={classes.root}>
+        { error !== '' &&
+        <ErrorMessage error={error} setError={setError}/>
+        }
         <React.Fragment>
           <CssBaseline />
           <Container fixed >

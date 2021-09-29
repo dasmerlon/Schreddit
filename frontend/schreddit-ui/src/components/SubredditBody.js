@@ -11,6 +11,8 @@ import AboutCom from "./AboutCom";
 import axios from 'axios';
 import { useHistory } from "react-router-dom"
 import configData from './config.json'
+import ErrorMessage from "./ErrorMessage";
+import CommentsPageBody from './comments/CommentsPageDialog';
 
 
 const useStyles = makeStyles((theme) => ({
@@ -48,6 +50,9 @@ const useStyles = makeStyles((theme) => ({
 //      - Infinit Scrolling einbauen
 export default function SubreditBody(props) {
     const classes = useStyles();
+
+    const [open, setOpen] = React.useState(false);
+    const [postInfo, setPostInfo] = React.useState(0);
 
     const [posts, setPosts] = React.useState();
     const [error, setError] = React.useState("");
@@ -151,40 +156,45 @@ export default function SubreditBody(props) {
       }
       axios.get(configData.POSTS_API_URL, config 
       ).then(response => {
-          if(response.data.data.length !== 0){
+          if(response.data.data.length !== 0){  
             handlePosts(response.data.data.map((post) => 
-            <Grid item> 
-              <Post uid={post.metadata.uid} 
-                author={post.metadata.author} 
-                sr={post.metadata.sr} 
-                createdAt={post.metadata.created_at}
-                title={post.content.title}
-                type={post.metadata.type}
-                url={post.content.url}
-                text={post.content.text}
-                voteCount={post.metadata.count}
-                voteState={post.metadata.state}
-                cookies={props.cookies}
-                setShowLogin={props.setShowLogin}
-                handleLogout={props.handleLogout}
-                /> 
-            </Grid>
-            ), ((lastSortBy !== sortBy || clear) ? true : false))
-            setLastSortBy(sortBy);
-          } else {
+                <Grid item> 
+                  <Post uid={post.metadata.uid} 
+                    author={post.metadata.author} 
+                    sr={post.metadata.sr} 
+                    createdAt={post.metadata.created_at}
+                    title={post.content.title}
+                    type={post.metadata.type}
+                    url={post.content.url}
+                    text={post.content.text}
+                    voteCount={post.metadata.count}
+                    voteState={post.metadata.state}
+                    cookies={props.cookies}
+                    clickable={true}
+                    setOpen={setOpen}
+                    setPostInfo={setPostInfo}
+                    /> 
+                </Grid>
+              ), ((lastSortBy !== sortBy || clear) ? true : false))
+              setLastSortBy(sortBy);
+          } 
+          else {
             setAllPostsLoaded(true);
           }
+      }).catch(error => {
+          setError(error)
+      })
+    };
 
-           }).catch(error => {
-              if (error.response.status === 401) {
-                props.handleLogout();
-              }
-              console.log(error.response);
-          })
+    const handleClose = () => {
+      setOpen(false);
     };
 
     return (
-    <div className={classes.root}> 
+    <div className={classes.root}>
+    { error !== '' &&
+    <ErrorMessage error={error} setError={setError}/>
+    }
     <React.Fragment>
       <CssBaseline />
       <Paper variant="outlined" elevation={0} className={classes.headerBackground} />
@@ -273,6 +283,7 @@ export default function SubreditBody(props) {
           </Grid>
         </Grid>
       </Container>
+      <CommentsPageBody handleClose={handleClose} open={open} postInfo={postInfo} cookies={props.cookies}/>
     </React.Fragment>
     </div>
     );

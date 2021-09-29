@@ -75,9 +75,10 @@ export default function ChangeMail(props) {
     }
 
     const sendUserSettingsUpdate = async () => {
-        axios.put(configData.USER_SETTINGS_API_URL, {
-            email: email.email
-        },
+        if(emailConfirmed.email === email.email) {
+            axios.put(configData.USER_SETTINGS_API_URL, {
+                email: email.email
+            },
             {
                 headers: {
                     Authorization: `Bearer ${props.cookies.token}`
@@ -98,6 +99,9 @@ export default function ChangeMail(props) {
                     setError({ message: "Something went wrong, please try again later." });
                 }
             })
+        } else {
+            setError({ message: "The emails have to match." });
+        }
     };
 
     return (
@@ -143,10 +147,10 @@ export default function ChangeMail(props) {
                 <DialogActions>
                     <Button onClick={handleEmailChangeDialogClose} color="primary">
                         Cancel
-                                </Button>
+                    </Button>
                     <Button onClick={sendUserSettingsUpdate} color="primary">
                         Save email
-                                </Button>
+                    </Button>
                 </DialogActions>
             </Dialog>
         </div>
