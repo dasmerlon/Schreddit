@@ -54,7 +54,7 @@ export default function SubreditBody(props) {
     const [open, setOpen] = React.useState(false);
     const [postInfo, setPostInfo] = React.useState(0);
 
-    const [joinStatus, setJoinStatus] = React.useState();
+    const [joinStatus, setJoinStatus] = React.useState("Join");
     const [posts, setPosts] = React.useState();
     const [error, setError] = React.useState("");
     const [subreddit, setSubreddit] = React.useState("");
@@ -73,7 +73,6 @@ export default function SubreditBody(props) {
     const getSubreddit = () => {
       axios.get(configData.SUBREDDIT_API_URL + window.location.pathname.split('/')[2]
       ).then(response => {
-        console.log(response.data)
         setSubreddit(response.data);
         setSubredditOneLetter(response.data.sr[0])
         getSubredditSubscriber();
@@ -91,7 +90,7 @@ export default function SubreditBody(props) {
       setPage(1);
       getSubreddit();
       getPosts(lastSortBy, true);
-      setStatusForJoining(subreddit.sr);
+      setStatusForJoining(window.location.pathname.split('/')[2])
     }, [window.location.pathname])
 
     useEffect(() => {
@@ -192,8 +191,8 @@ export default function SubreditBody(props) {
       setOpen(false);
     };
 
+
     function setStatusForJoining(sr) {
-      console.log("hey status")
       axios.get(configData.SUBSCRIPTION_API_URL + '/' + sr + "/state", 
         {
           headers: {
@@ -201,33 +200,45 @@ export default function SubreditBody(props) {
           }
         }
       ).then(response => {
-        console.log()
         if(response.data){
-          setJoinStatus("Join")
+          setJoinStatus("Joined")
         } else {
-          setJoinStatus("")          
+          setJoinStatus("Join")          
         }
       }).catch(error => {
-        console.log(error)
         setError(error);
       }) 
     }
     
 
     function handleSubscribe() {
-      axios.put(configData.SUBSCRIPTION_API_URL + '/' + subreddit.sr + "/recommendations", 
+      if(joinStatus === "Join"){
+        axios.put(configData.SUBSCRIPTION_API_URL + '/' + subreddit.sr + "/sub", {},
         {
           headers: {
             'Authorization': `Bearer ${props.cookies.token}`
           }
         }
-      ).then(response => {
-        
+        ).then(response => {
+          setStatusForJoining(subreddit.sr);
+        }).catch(error => {
+          setError(error);
+        }) 
+      } 
+      else {
+        axios.put(configData.SUBSCRIPTION_API_URL + '/' + subreddit.sr + "/unsub", {},
+        {
+          headers: {
+            'Authorization': `Bearer ${props.cookies.token}`
+          }
+        }
+        ).then(response => {
+          setStatusForJoining(subreddit.sr);
+        }).catch(error => {
+          setError(error);
+        }) 
+      }
 
-      }).catch(error => {
-        console.log(error)
-        setError(error);
-      }) 
     }
 
     return (
