@@ -16,6 +16,7 @@ import MoreIcon from '@material-ui/icons/MoreVert';
 import Login from './Login'
 import Register from './Register'
 import Dropdown from './SubredditSelector'
+import Logo from '../../images/schreddit.svg'
 import { CardActionArea, Dialog, DialogTitle, List, ListItem, ListItemAvatar, Avatar, ListItemText } from '@material-ui/core';
 import axios from 'axios';
 import configData from '../config.json';
@@ -56,7 +57,7 @@ const useStyles = makeStyles((theme) => ({
         marginLeft: 0,
         width: '100%',
         [theme.breakpoints.up('sm')]: {
-            marginLeft: theme.spacing(3),
+            marginLeft: '5.5%',
             width: '40%',
             borderStyle: 'solid',
             border: '2px   '
@@ -284,7 +285,7 @@ export default function PrimarySearchAppBar(props) {
             }
             <AppBar position="static" className={classes.appBar}>
                 <Toolbar>
-                    <img alt="" src={props.logo} className={classes.schredditIcon} />
+                    <img alt="" src={Logo} className={classes.schredditIcon} />
                     <CardActionArea href="/" className={classes.logo}>
                         <Typography className={classes.title} variant="h6" noWrap>
                             Schreddit
