@@ -169,9 +169,11 @@ export default function ForntpageBody(props) {
           </Grid>
           <Grid item container spacing={3} direction='column' className={classes.grid} xs={1}>
             <Hidden smDown>
-              <Grid item>
-                <TopComs />
-              </Grid>
+              {props.cookies.loggedIn ? 
+                <Grid item>
+                  <TopComs cookies={props.cookies}/>
+                </Grid>
+              : null }
               <Grid item>
                 <Premium />
               </Grid>
