@@ -5,6 +5,7 @@ import { TextareaAutosize } from "@material-ui/core";
 import Button from '@material-ui/core/Button';
 import axios from 'axios';
 import configData from '../config.json';
+import ErrorMessage from "../ErrorMessage";
 
 const useStyles = makeStyles((theme) => ({
     grid: {
@@ -30,6 +31,8 @@ export default function CreateComment(props) {
     const [requestError, setRequestError] = React.useState('');
     const [sortByValue, setSortByValue] = React.useState('Top');
     const paddingLeft = props.commentOnLevel *50;
+    const [error, setError] = React.useState("");
+
 
     const handleTextfieldChange = (event) => {
         setTextFieldValue(event.target.value)
@@ -52,16 +55,15 @@ export default function CreateComment(props) {
                 setTextFieldValue("");
             }).catch(error => {
                 console.log(error)
-                if (error.response.status === 422) {
-                    setRequestError("Please login first befor you try to submit a comment.");
-                } else {
-                    setRequestError("Something went wrong, please try again later.");
-                }
+                setError(error);
             })
     };
 
     return (
         <Card elevation={0} style={{paddingLeft: paddingLeft}} >
+            { error !== '' &&
+                <ErrorMessage error={error} setError={setError} cookies={props.cookies} setShowLogin={props.setShowLogin} handleLogout={props.handleLogout}/>
+            }
             <Grid container direction="column">
                 <Grid item className={classes.text}>
                     <TextareaAutosize ref={textField} className={classes.grid} rowsMin={5} placeholder="Here could be your comment!" onChange={handleTextfieldChange}/>

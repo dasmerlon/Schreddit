@@ -13,8 +13,11 @@ export default function ErrorMessage(props) {
         }
         setOpen(false);
         if(status === 401 && props.cookies.loggedIn){
+            props.handleLogout();
             props.setShowLogin(true);
+            console.log('yayeet')
         }
+        console.log('yayeet2');
         props.setError('');
     };
 

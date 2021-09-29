@@ -194,7 +194,7 @@ export default function SubreditBody(props) {
     return (
     <div className={classes.root}>
     { error !== '' &&
-    <ErrorMessage error={error} setError={setError} cookies={props.cookies} setShowLogin={props.setShowLogin}/>
+    <ErrorMessage error={error} setError={setError} cookies={props.cookies} setShowLogin={props.setShowLogin} handleLogout={props.handleLogout}/>
     }
     <React.Fragment>
       <CssBaseline />

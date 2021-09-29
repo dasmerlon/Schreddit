@@ -149,7 +149,7 @@ export default function ForntpageBody(props) {
     <React.Fragment>
       <CssBaseline />
       { error !== '' &&
-        <ErrorMessage error={error} setError={setError} cookies={props.cookies} setShowLogin={props.setShowLogin}/>
+        <ErrorMessage error={error} setError={setError} cookies={props.cookies} setShowLogin={props.setShowLogin} handleLogout={props.handleLogout}/>
         }
       <Container fixed >
         <Grid container spacing={2} direction='row' className={classes.grid}>

@@ -113,6 +113,9 @@ export default function CreatePostBody(props) {
       setTextFieldValue(event.target.value)
     };
 
+    const handleUrlChange = (event) => {
+      setUrl(event.target.value);
+    }
     // Dies soll ein anfang sein für die verschiedenen Textmanipulationen, die in einem Texteditor möglich sind (not done yet)
     const handleBold = (event) => {
       setTextFieldValue(textValue + '**bold**');
@@ -163,8 +166,10 @@ export default function CreatePostBody(props) {
             setError(error)
         })
       }
-      else{
-        
+      else if (type === "link"){
+        parameters.content.url = url;
+        parameters.metadata.type = 'link';
+        createPost(parameters);
       } 
     }
     const createPost = (parameters) => {
@@ -183,7 +188,7 @@ export default function CreatePostBody(props) {
     return (
     <div className={classes.root}>
         { error !== '' &&
-        <ErrorMessage error={error} setError={setError} cookies={props.cookies} setShowLogin={props.setShowLogin}/>
+        <ErrorMessage error={error} setError={setError} cookies={props.cookies} setShowLogin={props.setShowLogin} handleLogout={props.handleLogout}/>
         }
         <React.Fragment>
           <CssBaseline />
@@ -220,8 +225,8 @@ export default function CreatePostBody(props) {
                             <BottomNavigationAction label="Post" icon={<NotesIcon />} onClick={() => setnavigationFocus("self")} />
                             <Divider orientation="vertical"/>
                             <BottomNavigationAction label="Image & Video" icon={<ImageOutlinedIcon />} onClick={() => setnavigationFocus("imageOrVideo")} />
-                            {/* <Divider orientation="vertical"/>
-                            <BottomNavigationAction label="Link" icon={<SvgIcon ><path d={mdiLinkVariant} /></SvgIcon>} onClick={() => setnavigationFocus("link")} /> */}
+                            <Divider orientation="vertical"/>
+                            <BottomNavigationAction label="Link" icon={<SvgIcon ><path d={mdiLinkVariant} /></SvgIcon>} onClick={() => setnavigationFocus("link")} />
                           </BottomNavigation>
                           <Divider />
                           <Grid container spacing={2} direction='column' className={classes.grid}>
@@ -238,7 +243,7 @@ export default function CreatePostBody(props) {
                                 />
                               </FormControl>
                             </Grid>
-                              {/* { navigationFocus=== "Post" ? 
+                              { navigationFocus=== "Post" ? 
                             <Grid item>
                               <Grid container alignItems="center" className={classes.toolbar}>
                                 <IconButton className={classes.button} onClick={handleBold}>
@@ -277,7 +282,7 @@ export default function CreatePostBody(props) {
                                 </IconButton>
                               </Grid>
                             </Grid>
-                              : null } */}
+                              : null }
                               { navigationFocus=== "self" ? 
                             <Grid item>
                               <TextareaAutosize className={classes.grid} rowsMin={10} placeholder=" Text (optional)" onChange={handleTextfieldChange}/>
@@ -292,7 +297,7 @@ export default function CreatePostBody(props) {
                             </Grid>
                             : 
                             <Grid item>
-                              <TextareaAutosize className={classes.grid} rowsMin={4} placeholder=" Url" />
+                              <TextareaAutosize className={classes.grid} rowsMin={4} placeholder=" Url" onChange={(e) => handleUrlChange(e)} />
                             </Grid> 
                             }
                             <Grid item>
