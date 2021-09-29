@@ -90,22 +90,18 @@ export default function RecipeReviewCard(props) {
                     console.log(subreddit.sr[0]*10);
                     return(
                         <TableRow>
-                            <TableCell component="th" scope="row">
+                            <TableCell style={{ width: '5px'}} component="th" scope="row">
                                 {count++}.
                             </TableCell>
-                            <TableCell component="th" scope="row">
-                                { subreddit.sr[0] < 'm' ?
-                                    <ArrowUp className={classes.arrowUp} />
-                                :
-                                    <ArrowDown color="secondary" />
-                                }
-                            </TableCell> <TableCell component="th" scope="row">
+                            {/* <TableCell component="th" scope="row">
+                            </TableCell>  */}
+                            <TableCell style={{ width: '5px'}} component="th" scope="row">
                                 <Avatar style={{ backgroundColor: "#ff332f"}} >
                                     {subreddit.sr[0]}
                                 </Avatar>
                             </TableCell>
                             <TableCell component="th" scope="row">
-                                <Link href={"http://localhost:3000/r/" + subreddit.sr} color="inherit">
+                                <Link href={"/r/" + subreddit.sr} color="inherit">
                                     {'r/' + subreddit.sr}
                                 </Link>
                             </TableCell>
@@ -144,9 +140,9 @@ export default function RecipeReviewCard(props) {
                     </Table>
                 </TableContainer>
 
-                <Button variant="contained" color="primary">
+                {/* <Button variant="contained" color="primary">
                     View All    
-                </Button>
+                </Button> */}
             </CardContent>
         </FiCard>
     );
