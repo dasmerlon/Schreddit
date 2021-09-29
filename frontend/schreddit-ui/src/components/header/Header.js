@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useRef} from 'react';
 import { fade, makeStyles } from '@material-ui/core/styles';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
@@ -252,6 +252,7 @@ export default function PrimarySearchAppBar(props) {
     const [searchBarResults, setSearchBarResults] = React.useState("");
     const [dialog, setDialog] = React.useState("");
     const [open, setOpen] = React.useState(false);
+    const textField = useRef(null);
 
     const handleSearchBarChange = (event) => {
         if(event.key === 'Enter'){
@@ -271,15 +272,19 @@ export default function PrimarySearchAppBar(props) {
             console.log(response)
             setSearchBarResults(response.data)
             setOpen(true);
-            setDialog(<SearchResultsDialog handleClose={handleClose} open={true} searchBarResults={response.data} />)
+            setDialog(<SearchResultsDialog clearSearchBar={clearSearchBar} handleClose={handleClose} open={true} searchBarResults={response.data} />)
         }).catch(error => {
             console.log(error)
             setError(error)
         });
     }
+
+    function clearSearchBar() {
+        textField.current.value = "";
+    }
   
     function handleClose() {
-      setDialog("");
+        setDialog("");
     };
   
 
@@ -304,6 +309,7 @@ export default function PrimarySearchAppBar(props) {
                             <SearchIcon />
                         </div>
                             <InputBase
+                                ref={textField}
                                 placeholder="Search…"
                                 classes={{
                                     root: classes.inputRoot,
@@ -362,12 +368,10 @@ function SearchResultsDialog(props) {
     const searchBarResults = props.searchBarResults;
     const history = useHistory();
 
-    console.log(searchBarResults)
-
     const list = searchBarResults.map((subreddit) => (
             <ListItem
                 button
-                oncClick={(e) => (e, handleClick(subreddit.sr))}
+                onClick={(e) => (handleClick(subreddit.sr))}
                 key={subreddit}
             >
                 <ListItemAvatar>
@@ -379,9 +383,10 @@ function SearchResultsDialog(props) {
             </ListItem>
         ))
 
-    function handleClick(e, sr){
-        e.preventDefault();
-        history.push('/r/' + sr);
+    function handleClick(sr){
+        history.push("/r/" + sr)
+        props.handleClose()
+        props.clearSearchBar()
     }
 
     return (
