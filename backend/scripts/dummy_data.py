@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 import argparse
-import re
+import requests
 from typing import List, Union
 
 from faker import Faker
@@ -25,9 +25,9 @@ def create_username():
     while True:
         username = fake.unique.user_name()
         if (
-            settings.MIN_USERNAME_LENGTH
-            <= len(username)
-            <= settings.MAX_USERNAME_LENGTH
+                settings.MIN_USERNAME_LENGTH
+                <= len(username)
+                <= settings.MAX_USERNAME_LENGTH
         ):
             break
     return username
@@ -66,7 +66,7 @@ def create_users(count: int) -> List[models.User]:
             password=fake.password(),
         )
         users.append(crud.user.create(schema))
-    print(f"Created the dummy user and {count-1} fake users.")
+    print(f"Created the dummy user and {count - 1} fake users.")
     return users
 
 
@@ -94,7 +94,7 @@ def create_subreddits(count, users: List[models.User]) -> List[models.Subreddit]
 
 
 def create_posts(
-    count: int, users: List[models.User], subreddits: List[models.Subreddit]
+        count: int, users: List[models.User], subreddits: List[models.Subreddit]
 ) -> List[models.PostMeta]:
     """
     Create random posts.
@@ -113,11 +113,27 @@ def create_posts(
             sr=fake.random_element([sr.sr for sr in subreddits]),
             type=post_type,
         )
+
+        # set content according to post type
+        text = None
+        url = None
+        if post_type == schemas.PostType.image:
+            url = requests.get("https://picsum.photos/600/300").url
+        elif post_type == schemas.PostType.video:
+            url = (
+                "https://test-videos.co.uk/"
+                "vids/bigbuckbunny/mp4/h264/360/Big_Buck_Bunny_360_10s_1MB.mp4"
+            )
+        elif post_type == schemas.PostType.link:
+            url = fake.url()
+        elif post_type == schemas.PostType.self:
+            text = fake.paragraph()
         content = schemas.PostContentCreate(
-            text=fake.paragraph() if post_type == schemas.PostType.self else None,
+            text=text,
             title=fake.sentence(),
-            url=fake.url() if post_type != schemas.PostType.self else None,
+            url=url
         )
+
         post = crud.post_meta.create(metadata)
         crud.post_content.create(post.uid, content)
         crud.post_meta.set_author(post, fake.random_element(users))
@@ -128,9 +144,9 @@ def create_posts(
 
 
 def create_comments(
-    count: int,
-    users: List[models.User],
-    parents: Union[List[models.PostMeta], List[models.CommentMeta]],
+        count: int,
+        users: List[models.User],
+        parents: Union[List[models.PostMeta], List[models.CommentMeta]],
 ) -> List[models.CommentMeta]:
     """
     Create random comments.
@@ -154,7 +170,7 @@ def create_comments(
 
 
 def create_votes(
-    count: int, users: List[models.User], things: List[models.ThingMeta]
+        count: int, users: List[models.User], things: List[models.ThingMeta]
 ) -> None:
     """
 
@@ -177,7 +193,7 @@ def create_votes(
 
 
 def create_subscriptions(
-    count: int, users: List[models.User], subreddits: List[models.Subreddit]
+        count: int, users: List[models.User], subreddits: List[models.Subreddit]
 ) -> None:
     """
     Create random subreddit subscriptions for users
@@ -194,13 +210,13 @@ def create_subscriptions(
 
 
 def fill(
-    users: int,
-    subreddits: int,
-    posts: int,
-    comments: int,
-    depth: int,
-    votes: int,
-    subscriptions: int,
+        users: int,
+        subreddits: int,
+        posts: int,
+        comments: int,
+        depth: int,
+        votes: int,
+        subscriptions: int,
 ) -> None:
     """
     Fill the databases with random fake data.

@@ -11,7 +11,6 @@ class PostType(str, Enum):
     self = "self"
     image = "image"
     video = "video"
-    videogif = "videogif"
 
 
 class PostMetaBase(ThingMetaBase):

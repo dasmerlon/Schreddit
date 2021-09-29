@@ -28,7 +28,7 @@ variables:
   value: https://schreddit.azurewebsites.net/api/v1/subscription
 - name: UPLOAD_API_URL
   value: https://schreddit.azurewebsites.net/api/v1/blob/upload
-- name: "POST_API_URL": 
+- name: "POST_API_URL"
   value: "https://schreddit.azurewebsites.net/api/v1/posts"
 
 

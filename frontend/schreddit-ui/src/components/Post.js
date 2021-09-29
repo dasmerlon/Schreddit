@@ -4,6 +4,7 @@ import {Card, CardHeader, Avatar, SvgIcon, Link, Grid, CardActionArea, Chip, Mob
 import CardActions from '@material-ui/core/CardActions';
 import CardContent from '@material-ui/core/CardContent';
 import IconButton from '@material-ui/core/IconButton';
+import OpenInNewIcon from '@material-ui/icons/OpenInNew'
 import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
 import { useHistory } from "react-router-dom"
@@ -206,7 +207,7 @@ export default function Posts(props) {
               <IconButton size="small" title="More" onClick={() => { vote(-1) }}>
                 <SvgIcon ><path d={mdiArrowDownBoldOutline} style={{ color: downArrowColor }} /></SvgIcon>
               </IconButton>
-              { error !== '' && <ErrorMessage error={error} setError={setError} cookies={props.cookies} setShowLogin={props.setShowLogin}/> }
+              { error !== '' && <ErrorMessage error={error} setError={setError} cookies={props.cookies} setShowLogin={props.setShowLogin} handleLogout={props.handleLogout}/> }
             </Grid>
           </Grid>
         }
@@ -240,6 +241,14 @@ export default function Posts(props) {
 
         {props.type === "image" ?
           <img alt="" className={classes.img} src={props.url} />
+          : null}
+
+        {props.type === "link" ?
+          <CardContent>
+            <Link href={props.url}>
+              {props.url.replace(/^\w+:\/\//, '')} <OpenInNewIcon fontSize="inherit"/>
+            </Link>
+          </CardContent>
           : null}
 
         {props.type === "self" ?
