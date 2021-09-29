@@ -245,7 +245,7 @@ export default function Posts(props) {
 
         {props.type === "link" ?
           <CardContent>
-            <Link href={props.url}>
+            <Link href={props.url} target="_blank">
               {props.url.replace(/^\w+:\/\//, '')} <OpenInNewIcon fontSize="inherit"/>
             </Link>
           </CardContent>

@@ -16,8 +16,12 @@ import MoreIcon from '@material-ui/icons/MoreVert';
 import Login from './Login'
 import Register from './Register'
 import Dropdown from './SubredditSelector'
-import { CardActionArea } from '@material-ui/core';
 import Logo from '../../images/schreddit.svg'
+import { CardActionArea, Dialog, DialogTitle, List, ListItem, ListItemAvatar, Avatar, ListItemText } from '@material-ui/core';
+import axios from 'axios';
+import configData from '../config.json';
+import ErrorMessage from '../ErrorMessage';
+import { useHistory } from 'react-router';
 
 const useStyles = makeStyles((theme) => ({
     grow: {
@@ -245,9 +249,40 @@ export default function PrimarySearchAppBar(props) {
         </Menu>
     );
 
- 
+
+    const [dialog, setDialog] = React.useState("");
+
+    const handleSearchBarChange = (event) => {
+        if(event.key === 'Enter'){
+            searchFor(event.target.value);
+        } 
+    };
+
+    function searchFor(sr) {
+        axios.get(configData.SUBREDDITS_API_URL + 'search', {   
+            params: {
+                q: sr,
+                include_title: true
+            }
+        }
+        ).then(response => {
+            setDialog(<SearchResultsDialog handleClose={handleClose} open={true} searchBarResults={response.data} />)
+        }).catch(error => {
+            console.log(error)
+            setError(error)
+        });
+    }
+
+    function handleClose() {
+        setDialog("");
+    };
+  
+
     return (
         <div className={classes.grow}>
+            { error !== '' &&
+            <ErrorMessage error={error} setError={setError} cookies={props.cookies} setShowLogin={props.setShowLogin}/>
+            }
             <AppBar position="static" className={classes.appBar}>
                 <Toolbar>
                     <img alt="" src={Logo} className={classes.schredditIcon} />
@@ -270,6 +305,7 @@ export default function PrimarySearchAppBar(props) {
                                     input: classes.inputInput,
                                 }}
                                 inputProps={{ 'aria-label': 'search' }}
+                                onKeyPress={handleSearchBarChange}
                             />
                         </div>
                     <div className={classes.grow} />
@@ -312,7 +348,43 @@ export default function PrimarySearchAppBar(props) {
             </AppBar>
             {renderMobileMenu}
             {renderMenu}
+            {dialog}
         </div >
     );
 }
+
+function SearchResultsDialog(props) {
+    const searchBarResults = props.searchBarResults;
+    const history = useHistory();
+
+    const list = searchBarResults.map((subreddit) => (
+            <ListItem
+                button
+                onClick={(e) => (handleClick(subreddit.sr))}
+                key={subreddit}
+            >
+                <ListItemAvatar>
+                        <Avatar style={{ bgcolor: "blue" }}>
+                            {subreddit.sr[0]}
+                        </Avatar>
+                </ListItemAvatar>
+                <ListItemText primary={subreddit.sr} secondary={subreddit.title}/>
+            </ListItem>
+        ))
+
+    function handleClick(sr){
+        history.push("/r/" + sr)
+        props.handleClose()
+        window.location.reload(false);
+    }
+
+    return (
+      <Dialog onClose={props.handleClose} open={props.open}>
+        <DialogTitle>Matching Subreddits found:</DialogTitle>
+        <List>
+            {list}
+        </List>
+      </Dialog>
+    );
+  }
 
