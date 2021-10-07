@@ -13,7 +13,6 @@ from app.schemas.thing import Thing, ThingCreate, ThingUpdate
 
 
 class PostSort(str, Enum):
-    best = "best"  # not used
     hot = "hot"  # see medium.com article "How Reddit ranking algorithms work"
     new = "new"  # newest posts first
     top = "top"  # highest post score (upvotes-downvotes) first

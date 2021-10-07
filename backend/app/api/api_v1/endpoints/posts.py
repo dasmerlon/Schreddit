@@ -43,7 +43,7 @@ def get_posts(
       if not specified, get all posts
     - `after` : get posts including and after this cursor
     - `before` : get posts including and before this cursor
-    - `sort` : sorting order, one of `best`, `hot`, `new`, `top`
+    - `sort` : sorting order, one of `hot`, `new`, `top`
     - `size` : maximum number of posts to return
     """
     if sr is not None:

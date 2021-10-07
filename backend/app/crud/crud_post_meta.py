@@ -54,8 +54,6 @@ class CRUDPostMeta(
                 params["cursor_prop"] = cursor.hot_score()
             elif sort == schemas.PostSort.top:
                 params["cursor_prop"] = cursor.vote_count()
-            elif sort == schemas.PostSort.best:  # TODO: implement best sorting order
-                pass
 
         results, columns = db.cypher_query(query, params)
         post_list = [row[0] for row in results]
