@@ -62,7 +62,7 @@ export default function CreateSubreddit(props) {
     };
 
     const handleSubmit = async (event) => {
-        axios.post(configData.SUBREDDIT_API_URL + sr, {
+        axios.post(configData.SUBREDDIT_API_URL, {
             sr: sr,
             title: title,
             description: description,

@@ -11,8 +11,8 @@ router = APIRouter()
 
 
 @router.post(
-    "/r/{sr}",
-    name="Create Subreddit",
+    "",
+    name="Create a subreddit",
     response_model=schemas.Subreddit,
     status_code=status.HTTP_201_CREATED,
 )
@@ -40,8 +40,8 @@ def create_subreddit(
 
 
 @router.get(
-    "/r/{sr}",
-    name="Get Subreddit",
+    "/{sr}",
+    name="Get a subreddit",
     response_model=schemas.Subreddit,
     status_code=status.HTTP_200_OK,
 )
@@ -57,27 +57,9 @@ def get_subreddit(sr: str):
     return get_sr
 
 
-@router.get(
-    "/search",
-    name="Search Subreddit",
-    response_model=List[schemas.Subreddit],
-    status_code=status.HTTP_200_OK,
-)
-def search_subreddit(q: str, include_title: Optional[bool] = False):
-    """
-    Search a subreddit and return a list of matching subreddits
-
-    :param q: a search_string
-    :param include_title: ``True`` if the subreddit titles should also be searched
-    """
-    sr_list = crud.subreddit.search(q, include_title)
-    print(sr_list)
-    return sr_list
-
-
 @router.put(
-    "/r/{sr}",
-    name="Edit Subreddit",
+    "/{sr}",
+    name="Update a subreddit",
     response_class=Response,
 )
 def update_subreddit(

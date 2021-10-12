@@ -76,7 +76,7 @@ export default function ChangeMail(props) {
 
     const sendUserSettingsUpdate = async () => {
         if(emailConfirmed.email === email.email) {
-            axios.put(configData.USER_SETTINGS_API_URL, {
+            axios.put(configData.USER_API_URL, {
                 email: email.email
             },
             {

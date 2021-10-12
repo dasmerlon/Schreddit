@@ -61,8 +61,8 @@ def get_user(username: str):
 
 
 @router.put(
-    "/settings",
-    name="Update User Data",
+    "",
+    name="Update user data",
 )
 def update_user(
     user_update: schemas.UserUpdate,

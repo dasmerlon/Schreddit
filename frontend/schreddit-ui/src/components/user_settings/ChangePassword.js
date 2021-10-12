@@ -62,7 +62,7 @@ export default function ChangePassword(props) {
     }
 
     const sendUserSettingsUpdate = async () => {
-        axios.put(configData.USER_SETTINGS_API_URL, {
+        axios.put(configData.USER_API_URL, {
             password: password.password
         },
             {
