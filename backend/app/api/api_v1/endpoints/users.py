@@ -1,11 +1,12 @@
 import re
 from typing import Optional
 
-from fastapi import APIRouter, Depends, HTTPException, Query, Response, status
+from fastapi import APIRouter, Depends, Query, Response, status
 
 from app import crud, models, schemas
 from app.api import deps
-from app.api.api_v1.exceptions import UserNotFoundException
+from app.api.api_v1.exceptions import (UserAlreadyExistsException,
+                                       UserNotFoundException)
 from app.core.security import verify_password
 
 router = APIRouter()
@@ -27,16 +28,10 @@ def register(user: schemas.UserCreate):
     """
     username_exists = crud.user.get_by_username(user.username)
     if username_exists:
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="User with this username already exists.",
-        )
+        raise UserAlreadyExistsException
     email_exists = crud.user.get_by_email(user.email)
     if email_exists:
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="User with this e-mail address already exists.",
-        )
+        raise UserAlreadyExistsException
     registered_user = crud.user.create(user)
     return registered_user
 

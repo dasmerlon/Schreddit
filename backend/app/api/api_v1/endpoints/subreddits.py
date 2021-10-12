@@ -1,10 +1,9 @@
-from typing import List, Optional
-
-from fastapi import APIRouter, Depends, HTTPException, Response, status
+from fastapi import APIRouter, Depends, Response, status
 
 from app import crud, models, schemas
 from app.api import deps
-from app.api.api_v1.exceptions import (SubredditNotFoundException,
+from app.api.api_v1.exceptions import (SubredditAlreadyExistsException,
+                                       SubredditNotFoundException,
                                        UnauthorizedUpdateException)
 
 router = APIRouter()
@@ -29,10 +28,7 @@ def create_subreddit(
     - `type`: one of `archived`, `private`, `public`, `restricted`, `user`
     """
     if crud.subreddit.get_by_sr(subreddit.sr) is not None:
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="A subreddit with this name already exists.",
-        )
+        raise SubredditAlreadyExistsException
     created_subreddit = crud.subreddit.create(subreddit)
     crud.subreddit.set_admin(created_subreddit, current_user)
 
