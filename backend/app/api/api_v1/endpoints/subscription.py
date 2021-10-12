@@ -9,16 +9,16 @@ router = APIRouter()
 
 @router.put(
     "/{sr}/sub",
-    name="Subscribe to subreddit",
+    name="Subscribe to a subreddit",
 )
 def subscribe(
     sr: str,
     current_user: models.User = Depends(deps.get_current_user),
 ):
     """
-    Subscribe a subreddit.
+    Subscribe to a subreddit.
 
-    - `sr` : the name of the subreddit that should be subscribed
+    - `sr`: name of the subreddit that should be subscribed
     """
     subreddit = crud.subreddit.get_by_sr(sr)
 
@@ -40,16 +40,16 @@ def subscribe(
 
 @router.put(
     "/{sr}/unsub",
-    name="Unsubscribe to subreddit",
+    name="Unsubscribe from a subreddit",
 )
 def unsubscribe(
     sr: str,
     current_user: models.User = Depends(deps.get_current_user),
 ):
     """
-    Unsubscribe a subreddit.
+    Unsubscribe from a subreddit.
 
-    - `sr` : the name of the subreddit that should be unsubscribed
+    - `sr`: name of the subreddit that should be unsubscribed
     """
     subreddit = crud.subreddit.get_by_sr(sr)
 
@@ -72,6 +72,7 @@ def unsubscribe(
 @router.get(
     "/{sr}/state",
     name="Get subscription state of a subreddit",
+    response_model=bool,
     status_code=status.HTTP_200_OK,
 )
 def is_subscribed(
@@ -79,10 +80,11 @@ def is_subscribed(
     current_user: models.User = Depends(deps.get_current_user),
 ):
     """
-    Get the current subscription status of a subreddit.
-    If the user is subscribed to the subreddit we return `true` otherwise `false`.
+    Get the current subscription state of a subreddit.
 
-    - `sr` : the name of the subreddit
+    Return 'true' if the user is subscribed to the subreddit; otherwise return `false`.
+
+    - `sr`: name of the subreddit
     """
     subreddit = crud.subreddit.get_by_sr(sr)
 
@@ -96,13 +98,14 @@ def is_subscribed(
 @router.get(
     "/{sr}/subscriber",
     name="Get subscriber count of a subreddit",
+    response_model=int,
     status_code=status.HTTP_200_OK,
 )
 def get_subscriber_count(sr: str):
     """
-    Get current subscriber count of a subreddit.
+    Return the number of subscribers for a subreddit.
 
-    - `sr` : the name of the subreddit
+    - `sr`: name of the subreddit
     """
     subreddit = crud.subreddit.get_by_sr(sr)
 

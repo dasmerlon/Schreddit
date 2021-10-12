@@ -21,12 +21,12 @@ def create_subreddit(
     current_user: models.User = Depends(deps.get_current_user),
 ):
     """
-    Create a new Subreddit `sr` with the title `title`.
+    Create a new subreddit.
 
-    - `description` : raw text
-    - `sr` : unique subreddit name
-    - `title` : title of the subreddit, up to 100 characters long
-    - `type` : one of `archived`, `private`, `public`, `restricted`, `user`
+    - `description`: description of the subreddit
+    - `sr`: unique subreddit name, between 3 and 21 characters long
+    - `title`: title of the subreddit
+    - `type`: one of `archived`, `private`, `public`, `restricted`, `user`
     """
     if crud.subreddit.get_by_sr(subreddit.sr) is not None:
         raise HTTPException(
@@ -47,9 +47,9 @@ def create_subreddit(
 )
 def get_subreddit(sr: str):
     """
-    Get Subreddit by sr
+    Return a subreddit.
 
-    - `str` : the name of the subreddit
+    - `sr`: name of the subreddit
     """
     get_sr = crud.subreddit.get_by_sr(sr)
     if not get_sr:
@@ -68,11 +68,11 @@ def update_subreddit(
     current_user: models.User = Depends(deps.get_current_user),
 ):
     """
-    Update a Subreddit.
+    Update a subreddit.
 
-    - `description` : raw markdown text
-    - `title` : title of the subreddit, up to 300 characters long
-    - `type` : subreddit type
+    - `sr`: name of the subreddit to edit
+    - `description`: description of the subreddit
+    - `title`: title of the subreddit
     """
     to_update = {}  # collect all changes made
     old_sr = crud.subreddit.get_by_sr(sr)

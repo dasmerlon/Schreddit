@@ -17,7 +17,7 @@ router = APIRouter()
 
 @router.get(
     "/list",
-    name="Get Posts",
+    name="Get a list of posts",
     response_model=schemas.PostList,
     status_code=status.HTTP_200_OK,
 )
@@ -31,20 +31,17 @@ def get_posts(
     current_user: Optional[models.User] = Depends(deps.get_current_user_or_none),
 ):
     """
-    Return a range of up to `size` posts with an optional sorting order.
-    If `sort` is not passed, posts are returned in descending order of their creation.
+    Return a range of up to `size` posts sorted by the order given by the `sort`
+    parameter.
 
-    `after` and `before` are cursors for pagination and refer to a post. Only one cursor
-    should be specified.
+    Cursor-based pagination is available via the `after` and `before` parameters.
 
-    If a user is authenticated, the vote state for that user is returned.
-
-    - `sr` : if specified, the subreddit to get posts from;
-      if not specified, get all posts
-    - `after` : get posts including and after this cursor
-    - `before` : get posts including and before this cursor
-    - `sort` : sorting order, one of `hot`, `new`, `top`
-    - `size` : maximum number of posts to return
+    - `sr`: if specified, only posts from this subreddit are considered;
+      if not specified, all posts are considered
+    - `after`: UUID of a post; get posts after this cursor
+    - `before`: UUID of a post; get posts before this cursor
+    - `sort`: sorting order
+    - `size`: maximum number of posts to return
     """
     if sr is not None:
         subreddit = crud.subreddit.get_by_sr(sr)
@@ -98,15 +95,15 @@ def get_posts(
 
 @router.get(
     "/{uid}",
-    name="Get Post",
+    name="Get a Post",
     response_model=schemas.Post,
     status_code=status.HTTP_200_OK,
 )
 def get_post(uid: UUID4):
     """
-    Return a post by its UUID.
+    Return a post.
 
-    - `uid` : the UUID of the post to return
+    - `uid`: UUID of the post to return
     """
     post_meta = crud.post_meta.get(uid)
     post_content = crud.post_content.get(uid)
@@ -118,7 +115,7 @@ def get_post(uid: UUID4):
 
 @router.get(
     "/{uid}/tree",
-    name="Get Post Tree",
+    name="Get a post tree",
     response_model=schemas.PostTree,
     status_code=status.HTTP_200_OK,
 )
@@ -128,10 +125,11 @@ def get_post_tree(
     current_user: Optional[models.User] = Depends(deps.get_current_user_or_none),
 ):
     """
-    Return the post tree for a post by its UUID.
+    Return the post tree for a post with the comments sorted by order given by the
+    `sort` parameter.
 
-    - `uid` : the UUID of the post whose post tree to return
-    - `sort` : sorting order, one of `new`, `old`, `top`
+    - `uid`: UUID of the post whose post tree to return
+    - `sort`: sorting order
     """
     post_meta = crud.post_meta.get(uid)
     if not post_meta:
@@ -199,7 +197,7 @@ def get_post_tree(
 
 @router.post(
     "",
-    name="Submit Post",
+    name="Submit a post",
     response_model=schemas.Post,
     status_code=status.HTTP_201_CREATED,
 )
@@ -207,17 +205,22 @@ def submit_post(
     post: schemas.PostCreate, current_user: models.User = Depends(deps.get_current_user)
 ):
     """
-    Submit a post to the subreddit `sr` with the title `title`.
-    If `type` is `"link"`, then `url` is expected to be a valid URL to link to.
+    Submit a post to the subreddit `sr`.
+
+    For posts with type `self`, the `text` parameter should contain the body of the self
+    post.
+    For all other types, the `url` parameter must contain a valid URL.
+
+
     Otherwise, `text` will be the body of the self-post.
 
-    - `nsfw` : `boolean` value
-    - `spoiler` : `boolean` value
-    - `sr` : subreddit name
-    - `text` : raw markdown text
-    - `title` : title of the submission, up to 300 characters long
-    - `type` : one of `link`, `self`, `image`, `video`, `videogif`)
-    - `url` : a valid URL
+    - `nsfw`: `boolean` value
+    - `spoiler`: `boolean` value
+    - `sr`: subreddit name
+    - `text`: content of the post
+    - `title`: title of the post, up to 300 characters long
+    - `type`: one of `link`, `self`, `image`, `video`
+    - `url`: a valid URL
     """
     # check if subreddit exists
     sr = crud.subreddit.get_by_sr(post.metadata.sr)
@@ -234,28 +237,28 @@ def submit_post(
 
 
 @router.put(
-    "/{post_uid}",
-    name="Edit Post",
+    "/{uid}",
+    name="Update a post",
     response_class=Response,
     status_code=status.HTTP_204_NO_CONTENT,
 )
 def update_post(
-    post_uid: UUID4,
+    uid: UUID4,
     post: schemas.PostUpdate,
     current_user: models.User = Depends(deps.get_current_user),
 ):
     """
     Update a post.
 
-    - `nsfw` : `boolean` value
-    - `spoiler` : `boolean` value
-    - `text` : raw markdown text
-    - `title` : title of the submission, up to 300 characters long
-    - `uid` : the unique ID of the post to be updated
-    - `url` : a valid URL
+    - `uid`: UUID of the post to update
+    - `nsfw`: `boolean` value
+    - `spoiler`: `boolean` value
+    - `text`: content of the post
+    - `title`: title of the submission, up to 300 characters long
+    - `url`: a valid URL
     """
-    old_post_meta = crud.post_meta.get(post_uid)
-    old_post_content = crud.post_content.get(post_uid)
+    old_post_meta = crud.post_meta.get(uid)
+    old_post_content = crud.post_content.get(uid)
     if not old_post_meta or not old_post_content:
         raise PostNotFoundException
     if crud.post_meta.get_author(old_post_meta) != current_user:

@@ -20,8 +20,8 @@ def vote(
     """
     Vote a thing up or down or remove a vote.
 
-    - `uid` : UUID of the thing to vote
-    - `dir` : direction of the vote,
+    - `uid`: UUID of the thing to vote
+    - `dir`: direction of the vote,
     `1` for upvotes, `-1` for downvotes and `0` for unvoting
     """
     thing_meta = crud.thing_meta.get(uid)
@@ -45,7 +45,7 @@ def vote(
 
 @router.get(
     "/{uid}/state",
-    name="Get vote state on a thing",
+    name="Get vote state",
     response_model=schemas.VoteOptions,
     status_code=status.HTTP_200_OK,
 )
@@ -53,10 +53,11 @@ def get_vote_state(
     uid: UUID4, current_user: models.User = Depends(deps.get_current_user)
 ):
     """
-    Get current vote state of a thing.
+    Get the current vote state of a thing.
 
-    :param uid: UUID of the post
-    :return current vote -- `1` for upvoted, `-1` for downvoted and `0` for unvoted
+    Return `1` if the thing is upvoted, `-1` if downvoted and `0` if unvoted
+
+    - `uid`: UUID of the post
     """
     thing_meta = crud.thing_meta.get(uid)
     if not thing_meta:
@@ -65,15 +66,14 @@ def get_vote_state(
     return crud.thing_meta.get_vote_state(thing_meta, current_user)
 
 
-@router.get(
-    "/{uid}/count", name="Get vote count on a thing", status_code=status.HTTP_200_OK
-)
+@router.get("/{uid}/count", name="Get vote count", status_code=status.HTTP_200_OK)
 def get_vote_count(uid: UUID4):
     """
-    Get current vote count of a thing.
+    Return the current vote count of a thing.
 
-    :param uid: UUID of the post
-    :return current vote count
+    The vote count is defined as `upvotes - downvotes`.
+
+    `uid`: UUID of the post
     """
     thing_meta = crud.thing_meta.get(uid)
     if not thing_meta:
