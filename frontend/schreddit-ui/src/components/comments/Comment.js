@@ -6,12 +6,15 @@ import CardActions from '@material-ui/core/CardActions';
 import IconButton from '@material-ui/core/IconButton';
 import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
+import Tooltip from "@material-ui/core/Tooltip";
 import axios from 'axios';
 import configData from '../config.json';
 import ErrorMessage from "../ErrorMessage";
 
 // Source: https://materialdesignicons.com/
 import { mdiCommentOutline, mdiArrowUpBoldOutline, mdiArrowDownBoldOutline} from '@mdi/js';
+import {DateTime} from "luxon";
+
 
 const useStyles = makeStyles((theme) => ({
     grid: {
@@ -46,22 +49,7 @@ export default function Comment(props) {
     const [currentVotes, setCurrentVotes] = React.useState(props.voteCount)  
     const [error, setError] = React.useState("");
 
-
-    let createdAtType = "";
-    let createdAt = new Date(props.createdAt);
-    if(createdAt > new Date(new Date().setDate(new Date().getDate()-1))){
-        if(createdAt > new Date(new Date().setHours(new Date().getHours()-1))){
-            createdAt = new Date(new Date().getTime() - createdAt.getTime()).getMinutes()
-            createdAtType = " Minutes ago"
-        }
-        else{
-            createdAt = new Date(new Date().getTime() - createdAt.getTime()).getHours()
-            createdAtType = " Hours ago"
-        }
-    }
-    else{
-        createdAt = createdAt.toDateString()
-    }
+    const createdAt = DateTime.fromISO(props.createdAt)
 
     useEffect(() => {
         setNewState(props.voteState);
@@ -133,8 +121,9 @@ export default function Comment(props) {
                     {" u/" + props.commenterName}
                     </Link>
                     <br />
-                    {createdAt + createdAtType }
-                    {/* {((typeof createdAt === "number") ? createdAt + ' Minutes ago': createdAt)} */}
+                    <Tooltip title={createdAt.toLocaleString(DateTime.DATETIME_FULL_WITH_SECONDS)}>
+                        <span>{createdAt.toRelative({locale: "en"})}</span>
+                    </Tooltip>
                 </Typography>
             }
             />

@@ -7,6 +7,7 @@ import IconButton from '@material-ui/core/IconButton';
 import OpenInNewIcon from '@material-ui/icons/OpenInNew'
 import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
+import Tooltip from '@material-ui/core/Tooltip';
 import { useHistory } from "react-router-dom"
 import configData from './config.json'
 import axios from 'axios';
@@ -24,6 +25,7 @@ import { mdiGiftOutline, mdiCommentOutline, mdiArrowUpBoldOutline, mdiArrowDownB
 import KeyboardArrowLeft from '@material-ui/icons/KeyboardArrowLeft';
 import KeyboardArrowRight from '@material-ui/icons/KeyboardArrowRight';
 import ErrorMessage from "./ErrorMessage";
+import {DateTime} from "luxon";
 
 const tutorialSteps = [
   {
@@ -87,22 +89,8 @@ export default function Posts(props) {
   const [newState, setNewState] = React.useState(props.voteState);
   const [currentVotes, setCurrentVotes] = React.useState(props.voteCount)
   const [error, setError] = React.useState('');
-  
-  let createdAtType = "";
-  let createdAt = new Date(props.createdAt);
-  if(createdAt > new Date(new Date().setDate(new Date().getDate()-1))){
-    if(createdAt > new Date(new Date().setHours(new Date().getHours()-1))){
-      createdAt = new Date(new Date().getTime() - createdAt.getTime()).getMinutes()
-      createdAtType = " Minutes ago"
-    }
-    else{
-      createdAt = new Date(new Date().getTime() - createdAt.getTime()).getHours()
-      createdAtType = " Hours ago"
-    }
-  }
-  else{
-    createdAt = createdAt.toDateString()
-  }
+
+  const createdAt = DateTime.fromISO(props.createdAt)
 
   useEffect(() => {
     setNewState(props.voteState);
@@ -223,8 +211,9 @@ export default function Posts(props) {
               {" u/" + props.author}
             </Link>
             <br />
-            {createdAt + createdAtType }
-            {/* {((typeof createdAt === "number") ? createdAt + ' Minutes ago': createdAt)} */}
+            <Tooltip title={createdAt.toLocaleString(DateTime.DATETIME_FULL_WITH_SECONDS)}>
+              <span>{createdAt.toRelative({locale: "en"})}</span>
+            </Tooltip>
           </Typography>
         }
       />
