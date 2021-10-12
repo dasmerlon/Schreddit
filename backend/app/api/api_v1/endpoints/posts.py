@@ -51,9 +51,7 @@ def get_posts(
         subreddit = None
 
     # act depending on which cursor is passed
-    if after and before:
-        raise PaginationAfterAndBeforeException
-    elif not after and not before:
+    if not after and not before:
         results = crud.post_meta.get_posts(
             subreddit, current_user, None, None, sort, size
         )
@@ -71,6 +69,8 @@ def get_posts(
         results = crud.post_meta.get_posts(
             subreddit, current_user, cursor, schemas.CursorDirection.before, sort, size
         )
+    else:  # both after and before specified
+        raise PaginationAfterAndBeforeException
 
     # convert list of dicts to list of PostMeta schemas
     meta_list = [schemas.PostMeta(**row) for row in results]
