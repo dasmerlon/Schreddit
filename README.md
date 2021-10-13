@@ -1,19 +1,26 @@
-# Introduction 
-This is the best Reddit clone you'll ever see.
+# Introduction
+This is Schreddit, a Reddit clone.
+
+There is a deployed version of the clone available [here](https://kind-sea-014761903.azurestaticapps.net/), but a local installation is recommended.
 
 # Run
 ### Backend
-Install [Neo4j](https://neo4j.com/download/), [MongoDB](https://www.mongodb.com/try/download/community) and [Redis](https://redis.io/download).
+Install [Neo4j](https://neo4j.com/download/), the [Neo4j APOC Core library](https://neo4j.com/labs/apoc/4.3/installation/), [MongoDB](https://www.mongodb.com/try/download/community) and [Redis](https://redis.io/download).
 
-Install the [Neo4j APOC Core library](https://neo4j.com/labs/apoc/4.3/installation/).
-
-Install [poetry](https://python-poetry.org/docs/#installation) and run `poetry install` from the `backend` directory (where the `pyproject.toml` file is located).
+Install [poetry](https://python-poetry.org/docs/#installation) and run `poetry install` from the `backend` directory (where the `pyproject.toml` file is located) to install the required dependencies.
 
 Copy the contents of the `dot_env_example` to a new file called `.env` in the same directory and adjust credentials for production DB.
 
 To run, execute `poetry run app/main.py` from the `backend` directory.
+The API documentation will be available via http://localhost:8000/docs.
 
-From the `backend` directory, run `poetry run scripts/dummy_data.py` with the `fill` argument to fill the databases with dummy data, with the `clear` argument to clear all data, or with `-h` for more information.
+From the `backend` directory, run `poetry run scripts/dummy_data.py` with the `fill` argument to fill the databases with dummy data, with the `clear` argument to clear all data, or with `-h` for more information on configuration parameters.
+
+### Frontend
+Install [Node.js](https://nodejs.org/en/download/) and run `npm install` from the `frontend/schreddit-ui` directory (where the `package.json` file is located) to install the required dependencies.
+
+To run, execute `npm start` from the `frontend/schreddit-ui` directory.
+The app will be available via http://localhost:3000.
 
 # Test
 ### Backend
