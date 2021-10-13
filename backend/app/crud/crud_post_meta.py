@@ -10,7 +10,7 @@ from app.crud.cypher import CypherGetPosts, CypherGetTree
 class CRUDPostMeta(
     CRUDThingBaseMeta[models.PostMeta, schemas.PostMetaCreate, schemas.PostMetaUpdate]
 ):
-    """Post meta class for CRUD operations"""
+    """CRUD class for post metadata"""
 
     @db.read_transaction
     def get_posts(
@@ -26,17 +26,17 @@ class CRUDPostMeta(
         Get the posts after the cursor.
 
         :param subreddit: if specified, the subreddit to get posts from;
-        if ``None``, get all posts
+            if ``None``, get all posts
         :param user: if specified, the user to get vote states for;
-        if ``None``, don't get vote states
-        :param cursor: a cursor for pagination
+            if ``None``, don't get vote states
+        :param cursor: cursor for pagination
         :param direction: if ``after``, get posts after the cursor;
-        if ``before``, get posts before the cursor;
-        if ``None`` get first posts
+            if ``before``, get posts before the cursor;
+            if ``None`` get first posts
         :param sort: sorting order
         :param limit: number of posts to get
         :return: a list of dicts containing PostMeta data,
-        author, sr, vote count and vote state
+            author, sr, vote count and vote state
         """
         query = CypherGetPosts(sort, cursor, direction, subreddit, user).get_query()
 
@@ -58,20 +58,22 @@ class CRUDPostMeta(
         results, columns = db.cypher_query(query, params)
         post_list = [row[0] for row in results]
         if direction == schemas.CursorDirection.before:
-            # TODO: need to reverse the list here, because I couldn't find an easy
-            #  way to do this in the Cypher query yet
+            # list needs to be reversed here, no easy way to do it in the query
             post_list.reverse()
         return post_list
 
     @db.read_transaction
-    def get_post_tree(self, post: models.PostMeta, user: Optional[models.User]):
+    def get_post_tree(
+        self, post: models.PostMeta, user: Optional[models.User]
+    ) -> (Dict, List[str]):
         """
         Get the post tree for a post.
 
-        :param post: the post to get the tree for
+        :param post: post to get the post tree for
         :param user: if specified, the user to get vote states for;
-        if ``None``, don't get vote states
+            if ``None``, don't get vote states
         :return: a tree-like dict that contains the comments associated with the post
+            and a list of all the thing UUIDs contained in the tree
         """
         cgt = CypherGetTree(user)
         query = cgt.get_tree_query()
@@ -116,15 +118,26 @@ class CRUDPostMeta(
         return tree, uids
 
     @db.read_transaction
-    def get_subreddit(self, db_obj: models.PostMeta):
+    def get_subreddit(self, db_obj: models.PostMeta) -> models.Subreddit:
+        """
+        Get the subreddit a post was posted in.
+
+        :param db_obj: post node
+        :return: the associated subreddit node
+        """
         return db_obj.subreddit.single()
 
     @db.write_transaction
     def set_subreddit(
         self, db_obj: models.PostMeta, subreddit: models.Subreddit
-    ) -> models.Subreddit:
-        post_subreddit = db_obj.subreddit.connect(subreddit)
-        return post_subreddit
+    ) -> None:
+        """
+        Set the subreddit a post is posted in.
+
+        :param db_obj: post node
+        :param subreddit: associated subreddit node
+        """
+        db_obj.subreddit.connect(subreddit)
 
 
 post_meta = CRUDPostMeta(models.PostMeta)

@@ -17,7 +17,7 @@ class CRUDBaseMongo(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
         """
         CRUD object with default methods to Create, Read, Update, Delete (CRUD).
 
-        :param model: a mongodb model class
+        :param model: mongodb model class
         """
         self.model = model
 
@@ -25,7 +25,7 @@ class CRUDBaseMongo(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
         """
         Get one document from the model class.
 
-        :param uid: the unique identifier of the document to get
+        :param uid: UUID of the document to get
         :return: the requested document if it exists, else None
         """
         if isinstance(uid, UUID):
@@ -35,9 +35,9 @@ class CRUDBaseMongo(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
 
     def get_all(self) -> QuerySet:
         """
-        Get an Iterable of all documents from the model class.
+        Get all documents as a QuerySet from the model class.
 
-        :return: iterable of documents
+        :return: QuerySet of documents
         """
         return self.model.objects
 
@@ -45,7 +45,8 @@ class CRUDBaseMongo(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
         """
         Create a new document.
 
-        :param obj_in: the CreateSchema of the document to create
+        :param uid: UUID of associated metadata
+        :param obj_in: ``CreateSchema`` of the document to create
         :return: the database model of the created document
         """
         obj_in_data = jsonable_encoder(obj_in)
@@ -60,21 +61,22 @@ class CRUDBaseMongo(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
         """
         Update a document.
 
-        :param db_obj: the database model of the document to be updated
-        :param obj_in: the UpdateSchema of the document to be updated
-        :return: the updated database model
+        :param db_obj: database model object of the document to be updated
+        :param obj_in: ``UpdateSchema`` or ``dict`` with updated data
+        :return: the updated document
         """
         if isinstance(obj_in, dict):
             update_data = obj_in
         else:
             update_data = obj_in.dict(exclude_unset=True)
         db_obj.update(**update_data)
+        return db_obj
 
     def remove(self, uid: Union[str, UUID4]) -> Optional[ModelType]:
         """
         Remove a document.
 
-        :param uid: the unique identifier of the document to be removed
+        :param uid: UUID of the document to be removed
         :return: the removed document
         """
         if isinstance(uid, UUID):
