@@ -13,6 +13,15 @@ from app.schemas.thing import Thing, ThingCreate, ThingUpdate
 
 
 class PostSort(str, Enum):
+    """
+    Enum for the sorting order of posts.
+
+    - ``hot`` sorts comments from highest to lowest hot score, which is similar to
+      ``top``, but also consideres post age
+    - ``new`` sorts comments from newest to oldest creation date
+    - ``top`` sorts posts from highest to lowest vote count (upvotes-downvotes)
+    """
+
     hot = "hot"  # see medium.com article "How Reddit ranking algorithms work"
     new = "new"  # newest posts first
     top = "top"  # highest post score (upvotes-downvotes) first

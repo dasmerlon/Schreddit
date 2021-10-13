@@ -14,6 +14,13 @@ class Pagination(BaseModel):
 
 
 class CursorDirection(Enum):
+    """
+    Enum for the cursor direction.
+
+    Using an ``after`` cursor returns all resources after the cursor, using a
+    ``before`` cursor returns all resources before the cursor
+    """
+
     after = auto()
     before = auto()
 
