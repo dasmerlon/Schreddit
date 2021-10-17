@@ -9,6 +9,8 @@ NEO4J_TEST_BOLT_URL = "bolt://${NEO4J_USERNAME}:${NEO4J_PASSWORD}@localhost:7687
 MONGODB_URI = "mongodb://localhost:27017/schreddit"
 MONGODB_TEST_URI = "mongodb://localhost:27017/test"
 
+REDIS_DSN = "redis://localhost:6379"
+
 JWT_SECRET_KEY = "generate this with 'openssl rand -hex 32'"
 
 TEST_USER_EMAIL = "testuser@example.com"
