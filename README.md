@@ -1,8 +1,6 @@
 # Introduction
 This is Schreddit, a Reddit clone.
 
-There is a deployed version of the clone available [here](https://kind-sea-014761903.azurestaticapps.net/), but a local installation is recommended.
-
 # Run
 ### Backend
 Install [Neo4j](https://neo4j.com/download/), the [Neo4j APOC Core library](https://neo4j.com/labs/apoc/4.3/installation/), [MongoDB](https://www.mongodb.com/try/download/community) and [Redis](https://redis.io/download).
