@@ -10,9 +10,26 @@ from app.api.api_v1.main import router
 from app.core.config import settings
 from app.db.init_db import init_mongodb, init_neo4j
 
+tags_metadata = [
+    {
+        "name": "users",
+        "description": "Operations for users",
+    },
+    {
+        "name": "content",
+        "description": "Operations for posts, comments and voting",
+    },
+    {
+        "name": "subreddits",
+        "description": "Operations for subreddits",
+    },
+]
+
 app = FastAPI(
     title="Reddit-Klon",
+    openapi_tags=tags_metadata,
     openapi_url=f"{settings.API_V1_STR}/openapi.json",
+    version="v1",
 )
 app.include_router(router, prefix=settings.API_V1_STR)
 

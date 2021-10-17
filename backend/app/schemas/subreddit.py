@@ -34,7 +34,7 @@ class SubredditCreate(SubredditBase):
     description: constr(min_length=1, max_length=settings.MAX_DESCRIPTION_LENGTH)
     sr: str
     title: constr(min_length=1, max_length=settings.MAX_TITLE_LENGTH)
-    type: SubredditType
+    type: SubredditType = SubredditType.public
 
     @validator("sr")
     def sr_limitations(cls, value):

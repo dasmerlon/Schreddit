@@ -20,7 +20,10 @@ def get_current_user(token: str = Depends(oauth2_scheme)) -> models.User:
     If the token isn't expired and associated with an existing user,
     the user is then returned to calling function.
 
-    If the credentials aren't valid, an unauthorized exception is thrown.
+    :param token: token to extract the user from
+    :return: user associated with the token
+    :raises InvalidCredentialsException: if the token cannot be decoded or is not
+        associated with a user
     """
     user_uuid = crud.redis.get(token)
     if user_uuid is None:
@@ -37,6 +40,14 @@ def get_current_user(token: str = Depends(oauth2_scheme)) -> models.User:
 def get_current_user_or_none(
     token: str = Depends(oauth2_scheme_optional),
 ) -> Optional[models.User]:
+    """
+    Check the validity of a JWT and return the associated user.
+
+    :param token: JWT to extract the user from
+    :return: user associated with the token or ``None`` if no token provided
+    :raises InvalidCredentialsException: if the token cannot be decoded or is not
+        associated with a user
+    """
     if token:
         return get_current_user(token)
     else:
@@ -45,7 +56,12 @@ def get_current_user_or_none(
 
 def get_user_id_from_jwt(token: str) -> str:
     """
-    Use the native logic to decode the JWT and return the user uuid if it succeeded.
+    Decode a JWT and return the UUID of the associated user.
+
+    :param token: JWT to decode
+    :return: UUID of the associated user
+    :raises InvalidCredentialsException: if the token cannot be decoded or does not
+        contain a ``sub`` field
     """
     try:
         # Decode the JWT payload

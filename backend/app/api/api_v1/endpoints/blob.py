@@ -16,7 +16,7 @@ router = APIRouter()
 
 @router.post(
     "/upload",
-    name="Upload Media",
+    name="Upload media",
     response_model=HttpUrl,
     status_code=status.HTTP_200_OK,
 )
@@ -25,10 +25,9 @@ def upload(
     current_user: models.User = Depends(deps.get_current_user),
 ):
     """
-    Upload a video or image as a Blob to Azure Storage.
-    Returns the URL of the saved file.
+    Upload a video or image as a BLOB and return the URL of the uploaded file.
 
-    - `file` : the file to be uploaded
+    - `file`: the file to be uploaded
     """
     # get true mimetype of file
     mime = magic.from_buffer(file.file.read(2048), mime=True)

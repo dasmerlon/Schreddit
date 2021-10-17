@@ -12,15 +12,15 @@ router = APIRouter()
 
 @router.get(
     "/{uid}",
-    name="Get Comment",
+    name="Get a comment",
     response_model=schemas.Comment,
     status_code=status.HTTP_200_OK,
 )
 def get_comment(uid: UUID4):
     """
-    Return a comment by its UUID.
+    Return a comment.
 
-    - `uid` : the UUID of the comment to return
+    - `uid`: UUID of the comment to return
     """
     comment_meta = crud.comment_meta.get(uid)
     comment_content = crud.comment_content.get(uid)
@@ -32,7 +32,7 @@ def get_comment(uid: UUID4):
 
 @router.post(
     "/{parent}",
-    name="Submit Comment",
+    name="Submit a comment",
     response_model=schemas.Comment,
     status_code=status.HTTP_201_CREATED,
 )
@@ -42,10 +42,10 @@ def submit_comment(
     current_user: models.User = Depends(deps.get_current_user),
 ):
     """
-    Submit a new comment.
+    Submit a comment to a `parent` thing.
 
-    - `parent` : the UUID of the thing being replied to, so either a post or a comment
-    - `text` : raw markdown text
+    - `parent`: UUID of a thing; parent of the new comment
+    - `text`: content of the comment
     """
     parent_thing = crud.thing_meta.get(parent)
     if not parent_thing:
@@ -61,23 +61,24 @@ def submit_comment(
 
 
 @router.put(
-    "/{comment_uid}",
-    name="Edit Comment",
+    "/{uid}",
+    name="Update a comment",
     response_class=Response,
     status_code=status.HTTP_204_NO_CONTENT,
 )
 def update_comment(
-    comment_uid: UUID4,
+    uid: UUID4,
     comment: schemas.CommentUpdate,
     current_user: models.User = Depends(deps.get_current_user),
 ):
     """
     Update a comment.
 
-    - `text` : raw markdown text
+    - `uid`: UUID of the comment to update
+    - `text`: content of the comment
     """
-    old_comment_meta = crud.comment_meta.get(comment_uid)
-    old_comment_content = crud.comment_content.get(comment_uid)
+    old_comment_meta = crud.comment_meta.get(uid)
+    old_comment_content = crud.comment_content.get(uid)
     if not old_comment_meta or not old_comment_content:
         raise CommentNotFoundException
     if crud.comment_meta.get_author(old_comment_meta) != current_user:

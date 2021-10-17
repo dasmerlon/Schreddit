@@ -16,17 +16,20 @@ class CRUDBaseNeo(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
 
     def __init__(self, model: Type[ModelType]):
         """
-        CRUD object with default methods to Create, Read, Update, Delete (CRUD).
-        :param model: a neomodel model class
+        Initialize CRUD object with default methods for Create, Read, Update, Delete
+        (CRUD).
+
+        :param model: a ``neomodel`` model class
         """
         self.model = model
 
     @db.read_transaction
     def get(self, uid: Union[str, UUID4]) -> Optional[ModelType]:
         """
-        Get one node from the model class.
-        :param uid: the unique identifier of the node to get
-        :return: the requested node if it exists, else None
+        Get a node from the model class.
+
+        :param uid: the UUID of the node to get
+        :return: the requested node if it exists, else ``None``
         """
         if isinstance(uid, UUID):
             return self.model.nodes.get_or_none(uid=uid.hex)
@@ -36,9 +39,9 @@ class CRUDBaseNeo(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
     @db.read_transaction
     def get_all(self) -> NodeSet:
         """
-        Get an Iterable of all nodes from the model class.
+        Get all nodes as a NodeSet from the model class.
 
-        :return: iterable of nodes
+        :return: NodeSet of nodes
         """
         return self.model.nodes
 
@@ -47,8 +50,8 @@ class CRUDBaseNeo(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
         """
         Create a new node.
 
-        :param obj_in: the CreateSchema of the node to create
-        :return: the database model of the created node
+        :param obj_in: the ``CreateSchema`` of the node to create
+        :return: the created node
         """
         obj_in_data = jsonable_encoder(obj_in)
         db_obj = self.model(**obj_in_data)
@@ -62,9 +65,9 @@ class CRUDBaseNeo(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
         """
         Update a node.
 
-        :param db_obj: the database model of the node to be updated
-        :param obj_in: the UpdateSchema of the node to be updated
-        :return: the updated database model
+        :param db_obj: database model of the node to be updated
+        :param obj_in: ``UpdateSchema`` or ``dict`` with updated data
+        :return: the updated node
         """
         # convert obj_in to a dict
         if isinstance(obj_in, dict):
@@ -90,7 +93,8 @@ class CRUDBaseNeo(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
     def remove(self, uid: Union[str, UUID4]) -> Optional[ModelType]:
         """
         Remove a node.
-        :param uid: the unique identifier of the node to be removed
+
+        :param uid: UUID of the node to be removed
         :return: the removed node
         """
         if isinstance(uid, UUID):

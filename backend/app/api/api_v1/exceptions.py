@@ -24,6 +24,14 @@ class UserNotFoundException(HTTPException):
         )
 
 
+class UserAlreadyExistsException(HTTPException):
+    def __init__(self):
+        super().__init__(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="A user with this username or email already exists.",
+        )
+
+
 class PostNotFoundException(HTTPException):
     def __init__(self):
         super().__init__(
@@ -67,6 +75,14 @@ class SubredditNotFoundException(HTTPException):
         super().__init__(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="This subreddit does not exist.",
+        )
+
+
+class SubredditAlreadyExistsException(HTTPException):
+    def __init__(self):
+        super().__init__(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="A subreddit with this name already exists.",
         )
 
 

@@ -23,7 +23,7 @@ def test_get_access_token_by_email(client: TestClient, test_user_in_db: User) ->
     # Make sure that we can actually use the JWT token to access routes with
     # restricted access via a valid Authentication header.
     response = client.put(
-        f"{settings.API_V1_STR}/users/settings",
+        f"{settings.API_V1_STR}/users",
         json={"password": "hunter3"},
         headers={"Authorization": f"Bearer {access_token}"},
     )
@@ -32,7 +32,7 @@ def test_get_access_token_by_email(client: TestClient, test_user_in_db: User) ->
     # Make sure that we can use the JWT token when it's not cached in Redis.
     crud.redis.delete(access_token)
     response = client.put(
-        f"{settings.API_V1_STR}/users/settings",
+        f"{settings.API_V1_STR}/users",
         json={"password": "hunter4"},
         headers={"Authorization": f"Bearer {access_token}"},
     )
@@ -55,7 +55,7 @@ def test_get_access_token_by_username(
 def test_disallow_login_with_invalid_jwt(client: TestClient) -> None:
     # Make sure that we can't use an incorrect JWT token.
     response = client.put(
-        f"{settings.API_V1_STR}/users/settings",
+        f"{settings.API_V1_STR}/users",
         json={"password": "hunter3"},
         headers={"Authorization": "Bearer wrongtoken"},
     )

@@ -9,6 +9,14 @@ from app.schemas.thing import Thing, ThingCreate, ThingUpdate
 
 
 class CommentSort(str, Enum):
+    """
+    Enum for the sorting order of comments.
+
+    - ``top`` sorts comments from highest to lowest vote count (upvotes-downvotes)
+    - ``new`` sorts comments from newest to oldest creation date
+    - ``old`` sorts comments from oldest to newest creation date
+    """
+
     top = "top"
     new = "new"
     old = "old"

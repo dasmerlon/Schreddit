@@ -259,7 +259,7 @@ export default function PrimarySearchAppBar(props) {
     };
 
     function searchFor(sr) {
-        axios.get(configData.SUBREDDITS_API_URL + 'search', {   
+        axios.get(configData.SEARCH_API_URL, {
             params: {
                 q: sr,
                 include_title: true
