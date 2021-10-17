@@ -15,7 +15,7 @@ class Settings(BaseSettings):
     SUB_PREFIX: str = "uid:"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
 
-    REDIS_DSN: RedisDsn = "redis://localhost:6379/0"
+    REDIS_DSN: RedisDsn
 
     MAX_TITLE_LENGTH = 300
     MAX_USERNAME_LENGTH = 20
